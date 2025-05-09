@@ -1,0 +1,103 @@
+<script lang="ts" setup>
+  import { EditorKey } from '@/constants/injectKey'
+  import type { Editor } from '@kditor/core'
+  import { inject } from 'vue'
+  import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
+  import { Circle, FabricObject, Rect, type CircleProps, type Constructor, type RectProps } from 'fabric'
+
+  const editor = inject(EditorKey) as Editor
+  console.error(editor)
+
+  type ShapeName = 'Rect' | 'Circle'
+
+  const shapes = [
+    {
+      name: 'Circle',
+      src: './shapes/circle.svg'
+    },
+    {
+      name: 'Rect',
+      src: './shapes/rect.svg'
+    },
+    {
+      name: 'tringle',
+      src: './shapes/tringle.svg'
+    },
+    {
+      name: 'pentagon',
+      src: './shapes/pentagon.svg'
+    },
+    {
+      name: 'five-pointed-star',
+      src: './shapes/five-pointed-star.svg'
+    }
+  ]
+
+  const shapeFactory: Record<ShapeName, Constructor<FabricObject>> = {
+    Circle: Circle,
+    Rect: Rect
+  }
+
+  function addShape(name: ShapeName) {
+    const config: Partial<CircleProps & RectProps> = {
+      fill: 'rgba(0, 255, 0, 1)',
+      strokeWidth: 0
+    }
+    if (name === 'Circle') {
+      config.radius = 200
+    } else {
+      config.width = 300
+      config.height = 300
+    }
+
+    const shape = new shapeFactory[name](config)
+    editor.add(shape)
+  }
+</script>
+
+<template>
+  <div class="resouceShapeBox">
+    <div class="block">
+      <div class="title">基本</div>
+      <div class="content">
+        <shape-item
+          v-for="item in shapes"
+          :key="item.name"
+          :name="item.name"
+          :url="item.src"
+          @click="addShape(item.name as ShapeName)"
+        ></shape-item>
+      </div>
+    </div>
+    <div class="block">
+      <div class="title">标记</div>
+      <div class="box"> </div>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+  .resouceShapeBox {
+    padding: 8px 0 16px 16px;
+    width: 100%;
+    background-color: $TAB_BGCOLOR;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .block {
+      width: 100%;
+      margin-bottom: 1rem;
+      .title {
+        color: $TAB_TITLE_COLOR;
+        font-size: $TAB_TITLE_FONTSIZE;
+        margin-bottom: 7px;
+      }
+      .content {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    }
+  }
+</style>

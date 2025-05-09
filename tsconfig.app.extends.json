@@ -1,0 +1,66 @@
+{
+  "compilerOptions": {
+    // Most non-library projects don't need to emit declarations.
+    // So we add this option by default to make the config more friendly to most users.
+    "noEmit": true, //* 不生成任何产物 js文件、声明文件.d.ts、其他文件（如映射文件.js.map）
+
+    // As long as you are using a build tool, we recommend you to author and ship in ES modules.
+    // Even if you are targeting Node.js, because
+    //  - `CommonJS` is too outdated
+    //  - the ecosystem hasn't fully caught up with `Node16`/`NodeNext`
+    // This recommendation includes environments like Vitest, Vite Config File, Vite SSR, etc.
+    "module": "ESNext", //* 指定生成代码的模块标准
+
+    // We expect users to use bundlers.
+    // So here we enable some resolution features that are only available in bundlers.
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    // Even files without `import` or `export` are treated as modules.
+    // It helps to avoid mysterious errors such as `Cannot redeclare block-scoped variable 'name`.
+    // https://www.totaltypescript.com/cannot-redeclare-block-scoped-variable#solution-3-your-module-isnt-a-module
+    "moduleDetection": "force",
+
+    // Required in Vue projects
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+
+    // `"noImplicitThis": true` is part of `strict`
+    // Added again here in case some users decide to disable `strict`.
+    // This enables stricter inference for data properties on `this`.
+    "noImplicitThis": true, //* 不允许this有隐式的any类型
+    "strict": true,
+
+    // <https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#verbatimmodulesyntax>
+    // Any imports or exports without a type modifier are left around. This is important for `<script setup>`.
+    // Anything that uses the type modifier is dropped entirely.
+    "verbatimModuleSyntax": true,
+
+    // A few notes:
+    // - Vue 3 supports ES2016+
+    // - For Vite, the actual compilation target is determined by the
+    //   `build.target` option in the Vite config.
+    //   So don't change the `target` field here. It has to be
+    //   at least `ES2020` for dynamic `import()`s and `import.meta` to work correctly.
+    // - If you are not using Vite, feel free to overwrite the `target` field.
+    "target": "ESNext",
+    // For spec compliance.
+    // `true` by default if the `target` is `ES2020` or higher.
+    // Explicitly set it to `true` here in case some users want to overwrite the `target`.
+    "useDefineForClassFields": true,
+
+    // Recommended
+    "esModuleInterop": true, //* 允许export=导出，由import from 导入
+    "forceConsistentCasingInFileNames": true,
+    // See <https://github.com/vuejs/vue-cli/pull/5688>
+    "skipLibCheck": true,
+
+
+    // 其他
+    "removeComments": false, //* 是否删除注释
+    "types": [], //* 默认node_modules/@types 下的声明文件都包含在编译中；如果types指定了模块（如["jest"]），那仅包含./node_modules/@types/jest
+    "noImplicitAny": true, //* 不允许隐式的any
+    "allowUmdGlobalAccess": true, //* 允许在模块中全局变量的方式访问umd模块(jquery!)
+    "allowSyntheticDefaultImports": true, //* 允许合成默认导入！。commonJS可能没有默认导出，此设置默认转换并设置默认导出
+  }
+}

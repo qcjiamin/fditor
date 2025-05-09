@@ -1,0 +1,39 @@
+//todo 这个配置是从外层项目的 tsconfig.json 以及其引用中截取的, 需要深入理解
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    // "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    // "moduleResolution": "nodenext",
+    //! Bundler 不需要扩展名
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    //! 设置后无法直接导出一个类型，需要export type
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+
+    //! 支持dom相关类型
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+  },
+  // "include": ["**/*.ts", "**/*.tsx"],
+  // "exclude": ["prettier.config.js"]
+}

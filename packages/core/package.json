@@ -1,0 +1,21 @@
+{
+  "name": "@kditor/core",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./index.ts",
+      "require": null
+    }
+  },
+  "author": "qc",
+  "license": "MIT",
+  "dependencies": {
+    "@types/events": "^3.0.3",
+    "@types/node": "^22.10.5",
+    "@types/uuid": "^10.0.0",
+    "events": "^3.3.0",
+    "fabric": "^6.6.4",
+    "uuid": "^11.1.0"
+  }
+}
