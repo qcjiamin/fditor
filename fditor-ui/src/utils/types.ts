@@ -8,8 +8,11 @@ export enum ElementType {
   text = 'text'
 }
 
-export const ElementTypeArr = ['bg', 'Shape', 'image', 'text', 'group'] as const
+export const ElementTypeArr = ['bg', 'Shape', 'image', 'text', 'activeselection'] as const
 export type ElementTypes = (typeof ElementTypeArr)[number]
+
+export const GradientTypeArr = ['linear90', 'linear180', 'linear135', 'radial50', 'radial0'] as const
+export type GradientTypes = (typeof GradientTypeArr)[number]
 
 // const test: keyof ElementType  = 'Bg'
 // console.log(test)

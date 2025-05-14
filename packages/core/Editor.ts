@@ -53,7 +53,10 @@ class Editor extends EventBus<EditorEventMap> {
   }
 
   public init(element: HTMLCanvasElement) {
-    this.#stage = new Canvas(element)
+    this.#stage = new Canvas(element, {
+      // 控制点绘制在overlay image 和 clippath 之上
+      controlsAboveOverlay: true
+    })
     window.editor = this.stage
     this.#stage.backgroundColor = 'rgba(255,255,255,1)'
     // todo: 这里强制监听了画布容器元素的父元素。不是很严谨，会疑惑为什么是父元素
@@ -89,27 +92,23 @@ class Editor extends EventBus<EditorEventMap> {
         return node
       })
     )
-    // this.render()
     return this
   }
   public add(...nodes: FabricObject[]): this {
     this._add(...nodes)
-    this.emit('node:add', { nodes })
+    this.emit('node:add', nodes)
     return this
   }
 
-  // public _remove(...nodes: KonvaNode[]): this {
-  //   nodes.forEach((node) => {
-  //     node.remove()
-  //   })
-  //   this.render()
-  //   return this
-  // }
-  // public remove(...nodes: KonvaNode[]) {
-  //   this._remove(...nodes)
-  //   this.emit('node:remove', nodes)
-  //   return this
-  // }
+  public _remove(...nodes: FabricObject[]): this {
+    this.stage.remove(...nodes)
+    return this
+  }
+  public remove(...nodes: FabricObject[]) {
+    this._remove(...nodes)
+    this.emit('node:remove', nodes)
+    return this
+  }
 
   // public _moveUp(...nodes: KonvaNode[]): this {
   //   nodes.forEach((node) => {

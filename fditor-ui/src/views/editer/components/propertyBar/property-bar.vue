@@ -1,7 +1,7 @@
 <!-- 按条件动态渲染指定的属性条 -->
 <script lang="ts" setup>
   import { type ElementTypes } from '@/utils/types'
-  import { inject, onMounted, type Component, type ComputedRef } from 'vue'
+  import { computed, inject, onMounted, onUpdated, type Component, type ComputedRef } from 'vue'
   import bgBar from '@/views/editer/components/propertyBar/bgBar/bg-bar.vue'
   import ShapeBar from '@/views/editer/components/propertyBar/shapeBar/shape-bar.vue'
   import historyBox from '@/views/editer/components/propertyBar/history-box.vue'
@@ -17,9 +17,13 @@
     Shape: ShapeBar,
     image: bgBar,
     text: bgBar,
-    group: bgBar
+    activeselection: bgBar
   }
   const barRef = inject(SelectTypeKey) as ComputedRef<ElementTypes>
+  onUpdated(() => {
+    console.log(barRef.value)
+  })
+  const showPublicRef = computed(() => barRef.value !== 'bg')
   // const props = withDefaults(defineProps<props>(), {
   //   type: ElementType.Bg
   // })
@@ -33,7 +37,7 @@
     <history-box></history-box>
     <!-- 条件渲染当前选中元素 -->
     <component :is="barComponents[barRef]"></component>
-    <public-bar></public-bar>
+    <public-bar v-if="showPublicRef"></public-bar>
   </div>
 </template>
 

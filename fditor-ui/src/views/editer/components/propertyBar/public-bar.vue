@@ -2,12 +2,13 @@
   import { EditorKey } from '@/constants/injectKey'
   import type { Editor } from '@kditor/core'
   import { inject } from 'vue'
-  import type { KonvaNode } from '../../../../../../core/types'
 
   const editor = inject(EditorKey) as Editor
   function deleteObj() {
     console.log('delete')
-    editor.remove(...(editor.getActiveShapes() as KonvaNode[]))
+    const activeObj = editor.stage.getActiveObject()
+    if (!activeObj) throw new Error('delete, but no object was selected ')
+    editor.remove(activeObj)
   }
 </script>
 

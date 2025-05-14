@@ -1,7 +1,11 @@
-import { FabricObject, TFiller } from 'fabric'
+import { FabricObject, Gradient } from 'fabric'
 import type Editer from './Editor'
 
-export type colorVal = string | TFiller | null
+// export type colorVal = string | TFiller | null
+export type LinearGradient = Gradient<'linear'> & { _degree: number }
+export type RadialGradient = Gradient<'radial'> & { _percent: number }
+export type _Gradient = LinearGradient | RadialGradient
+export type colorVal = string | _Gradient | null
 
 export interface IPlugin {
   name: string
@@ -23,8 +27,8 @@ export const layoutDimensions: Record<Layout, { width: number; height: number }>
 export interface EditorEventMap {
   'selected:change': FabricObject | undefined
   // 'canvas:resize': { width: number; height: number }
-  'node:add': { nodes: FabricObject[] }
-  // 'node:remove': KonvaNode[]
+  'node:add': FabricObject[]
+  'node:remove': FabricObject[]
   // 'node:zindex:change': KonvaNode[]
   // 'node:update:before': { nodes: KonvaNode[] }
   // 'node:update:after': { nodes: KonvaNode[] }

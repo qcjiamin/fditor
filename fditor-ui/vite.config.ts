@@ -15,7 +15,9 @@ export default defineConfig({
   plugins: [
     vue(),
     svgLoader({
-      defaultImport: 'component'
+      defaultImport: 'component',
+      //todo 为true时，渐变色类型的图标会全部渲染第一个。类型defs定义在了全局一样
+      svgo: false
     }),
     eslint({
       exclude: ['**/node_modules/**', 'dist/**'], // 排除所有 node_modules 文件夹之外的文件都进行 eslint 检查

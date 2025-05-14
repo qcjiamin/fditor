@@ -1,3 +1,5 @@
+import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
+import { createLinearGradient, createRadialGradient, type colorVal } from '@kditor/core'
 import { mat3, vec2 } from 'gl-matrix'
 function add(a: number, b: number) {
   // const aa = 'abc'
@@ -45,6 +47,90 @@ export function switchPointFromCoordinateSystemAToB(A: mat3, B: mat3, pointInA: 
  */
 export function _toFixed(num: number, fractionDigits: number = 2) {
   return Number(num.toFixed(fractionDigits))
+}
+
+/**
+ * 渐变对象/颜色字符串 转换为自己定义的颜色信息
+ * @param instance
+ * @returns
+ */
+export function colorInstance2Info(instance: colorVal): ColorInfo {
+  if (!instance) {
+    return {
+      type: 'solid',
+      value: 'rgba(255,255,255,1)'
+    }
+  } else if (typeof instance === 'string') {
+    return {
+      type: 'solid',
+      value: instance
+    }
+  } else {
+    if (instance.type === 'linear') {
+      const colors = instance.colorStops.map((val) => val.color)
+      const units = instance.gradientUnits
+      const degree = instance._degree
+      return {
+        type: 'gradient',
+        value: {
+          type: 'linear',
+          colors,
+          units,
+          degree
+        }
+      }
+    } else if (instance.type === 'radial') {
+      const colors = instance.colorStops.map((val) => val.color)
+      const units = instance.gradientUnits
+      const percent = instance._percent
+      return {
+        type: 'gradient',
+        value: {
+          type: 'radial',
+          colors,
+          units,
+          percent
+        }
+      }
+    } else {
+      throw new Error(`Unsupported gradient type`)
+    }
+  }
+}
+
+/**
+ * 颜色信息+对象宽高转换为渐变颜色对象
+ * @param info
+ * @param width
+ * @param height
+ * @returns
+ */
+export function color2Instance(info: ColorInfo, width: number, height: number): colorVal {
+  if (info.type === 'solid') {
+    return info.value
+  } else if (info.type === 'gradient') {
+    const gradientInfo = info.value
+    if (gradientInfo.type === 'linear') {
+      return createLinearGradient(gradientInfo.units, gradientInfo.degree, width, height, ...gradientInfo.colors)
+    } else if (gradientInfo.type === 'radial') {
+      return createRadialGradient(gradientInfo.units, gradientInfo.percent, width, height, ...gradientInfo.colors)
+    }
+  }
+  return null
+}
+
+export function createCssLinearGradient(angle = 0, ...colors: string[]) {
+  return `linear-gradient(${angle}deg, ${colors.toString()})`
+}
+
+/**
+ * 创建css表示的径向渐变
+ * @param percent 浮点数，表示百分比
+ * @param colors
+ * @returns
+ */
+export function createCssRadialGradient(percent: number, ...colors: string[]) {
+  return `radial-gradient(circle at ${percent * 100}% ${percent * 100}% ,${colors.toString()})`
 }
 
 export { add }

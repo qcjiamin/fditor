@@ -33,7 +33,6 @@ export default class SelectionPlugin implements IPlugin {
   }
 
   handleSelectEvent() {
-    console.log('?')
     const activeObj = this.editor.stage.getActiveObject()
     this.editor.emit('selected:change', activeObj)
   }

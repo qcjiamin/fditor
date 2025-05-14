@@ -16,7 +16,8 @@
 
   const type2Type: Record<string, ElementTypes> = {
     circle: 'Shape',
-    rect: 'Shape'
+    rect: 'Shape',
+    activeselection: 'activeselection'
   }
 
   const selectType = computed<ElementTypes>(() => {

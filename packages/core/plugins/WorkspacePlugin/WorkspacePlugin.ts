@@ -19,6 +19,7 @@ export default class WorkspacePlugin implements IPlugin {
       height: this.editor.workspace.height
     })
     this.editor.stage.clipPath = this.clipBox
+
     // 监听 resize 事件
     this.bindResizeEvent()
     this.editor.emit('plugin:installed', this)

@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-  import { onBeforeUpdate, onMounted } from 'vue'
+  import { inject, onBeforeUpdate, onMounted } from 'vue'
   import axios from 'axios'
   import WaterFlow from '@/components/water-flow.vue'
   import type { ImageInfo } from '@/types'
-  // import { EditorKey } from '@/constants/injectKey'
-  // import type { Editor } from '@kditor/core'
-  // import { loadImage } from '@/utils/common'
+  import { EditorKey } from '@/constants/injectKey'
+  import { loadImage } from '@/utils/common'
+  import { FabricImage } from 'fabric'
+  import type { Editor } from '@kditor/core'
 
-  // const editor = inject(EditorKey) as Editor
+  const editor = inject(EditorKey) as Editor
   onMounted(async () => {})
   onBeforeUpdate(() => {
     // 计算图片的宽度
@@ -27,12 +28,10 @@
   }
   async function addImage(src: string) {
     console.log(src)
-    // const imgEle = await loadImage(src)
-    // const image = new Konva.Image({
-    //   image: imgEle,
-    //   draggable: true
-    // })
-    // editor.add(image)
+    const imgEl = await loadImage(src)
+    const image = new FabricImage(imgEl, {})
+    image.scaleToWidth(300)
+    editor.add(image)
   }
 </script>
 

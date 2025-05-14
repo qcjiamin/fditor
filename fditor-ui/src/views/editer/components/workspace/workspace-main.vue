@@ -28,6 +28,7 @@
     display: flex;
     flex-direction: column;
     .pageContainer {
+      background-color: #e8e8ea;
       position: relative;
       flex-grow: 1;
       #canvas-container {
