@@ -4,8 +4,8 @@
   import linearA from '@/assets/icons/gradient/linear90.svg'
   import linearB from '@/assets/icons/gradient/linear180.svg'
   import linearC from '@/assets/icons/gradient/linear135.svg'
-  import radialA from '@/assets/icons/gradient/radial0.svg'
-  import radialB from '@/assets/icons/gradient/radial50.svg'
+  import radialB from '@/assets/icons/gradient/radial0.svg'
+  import radialA from '@/assets/icons/gradient/radial50.svg'
   import type { GradientOption } from '@/views/editer/components/propertyBar/types'
   import type { GradientType } from 'fabric'
   import type { GradientTypes } from '@/utils/types'
@@ -33,6 +33,7 @@
   })
 
   onBeforeMount(() => {
+    console.log(props.color)
     if (props.color.type === 'linear') {
       status.style = `${props.color.type}${props.color.degree}` as GradientTypes
     } else if (props.color.type === 'radial') {

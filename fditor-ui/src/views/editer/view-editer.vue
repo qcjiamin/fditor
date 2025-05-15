@@ -30,6 +30,7 @@
 
   // const { editor } = useEditor()
   const editor = new Editor()
+  window.editor = editor
   onMounted(() => {
     editor.init(document.querySelector('#canvas-container canvas')!)
     // 选择事件
@@ -39,6 +40,8 @@
     })
 
     editor.use(WorkspacePlugin).use(SelectionPlugin)
+    // 此时再通知属性条获取属性？ 因为默认选中背景条，但是画布初始化是在组件渲染之后 !! 需优化
+    editor.emit('canvas:ready', null)
   })
   provide(EditorKey, editor)
   provide(selectedKey, selectedRef as Ref<Selected>)

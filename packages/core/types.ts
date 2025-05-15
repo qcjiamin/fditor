@@ -1,4 +1,4 @@
-import { FabricObject, Gradient } from 'fabric'
+import { Canvas, FabricObject, Gradient } from 'fabric'
 import type Editer from './Editor'
 
 // export type colorVal = string | TFiller | null
@@ -29,12 +29,14 @@ export interface EditorEventMap {
   // 'canvas:resize': { width: number; height: number }
   'node:add': FabricObject[]
   'node:remove': FabricObject[]
+  'node:modified': FabricObject | Canvas
   // 'node:zindex:change': KonvaNode[]
   // 'node:update:before': { nodes: KonvaNode[] }
   // 'node:update:after': { nodes: KonvaNode[] }
   'workspace:resize': null
   'plugin:installed': IPlugin
   'layout:change': null
+  'canvas:ready': null
 }
 
 //todo: mainLayer 更具体的定义

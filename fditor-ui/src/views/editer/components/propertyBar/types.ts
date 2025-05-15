@@ -32,7 +32,7 @@ interface GradientOptionMap {
 
 export type GradientOption<T extends GradientType> = GradientOptionMap[T]
 
-type SolidInfo = ColorOption<'solid', string>
+type SolidInfo = ColorOption<'solid', string | null>
 export type GradientInfo = ColorOption<'gradient', GradientOption<GradientType>>
 
 export type ColorInfo = SolidInfo | GradientInfo

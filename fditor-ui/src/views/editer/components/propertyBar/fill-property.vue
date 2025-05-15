@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { computed, ref, watch } from 'vue'
+  import { computed } from 'vue'
   import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
   // import colorPicker from '@/components/colorPicker/color-picker.vue'
   import colorBox from '@/components/colorBox/color-box.vue'
@@ -17,32 +17,19 @@
   const props = defineProps<{
     color: ColorInfo
   }>()
-  const transferFill = ref(props.color)
 
-  // 外部修改fill时，向下同步这个状态
-  watch(
-    () => props.color,
-    (_val) => {
-      transferFill.value = _val
-    },
-    {
-      deep: true
-    }
-  )
+  function updateColor(info: ColorInfo) {
+    console.log('updateColor in fill-property', info)
 
-  watch(transferFill, (_val) => {
-    emit('update:color', _val)
-  })
+    emit('update:color', info)
+  }
 
   const cssColor = computed(() => {
-    console.error('change cssColor')
-    if (transferFill.value.type === 'solid') {
-      console.error('change cssColor', transferFill.value.value)
-      return transferFill.value.value
+    if (props.color.type === 'solid') {
+      return props.color.value ? props.color.value : 'rgba(255,255,255,1)'
     } else {
-      const gradientInfo = transferFill.value.value
+      const gradientInfo = props.color.value
       if (gradientInfo.type === 'linear') {
-        console.error('change cssColor', createCssLinearGradient(gradientInfo.degree, ...gradientInfo.colors))
         return createCssLinearGradient(gradientInfo.degree, ...gradientInfo.colors)
       } else if (gradientInfo.type === 'radial') {
         return createCssRadialGradient(gradientInfo.percent, ...gradientInfo.colors)
@@ -63,8 +50,8 @@
     </template>
     <template #popup>
       <div class="pickerContainer">
-        <!-- <color-picker v-model:color="transferFill"></color-picker> -->
-        <color-box v-model:color="transferFill"></color-box>
+        <!-- <color-picker v-model:color="transferColor"></color-picker> -->
+        <color-box :color="props.color" @update:color="updateColor"></color-box>
       </div>
     </template>
   </property-item>
