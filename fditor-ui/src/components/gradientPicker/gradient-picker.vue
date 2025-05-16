@@ -1,5 +1,5 @@
 <script lang="ts" setup generic="T extends GradientType">
-  import { onBeforeMount, reactive, watch } from 'vue'
+  import { computed, reactive } from 'vue'
   // import type { GradientTypes } from '@/utils/types'
   import linearA from '@/assets/icons/gradient/linear90.svg'
   import linearB from '@/assets/icons/gradient/linear180.svg'
@@ -19,27 +19,21 @@
   const emit = defineEmits(['update:color'])
 
   type GradientPickerState = {
-    style: GradientTypes
-    colors: string[]
     // 选中了第几个颜色
     colorIdx: number
   }
 
   const status: GradientPickerState = reactive({
-    style: 'linear90',
-    colors: ['reba(255,255,255,1)', 'reba(0,0,0,1)'],
-    // 选中了第几个颜色
     colorIdx: 0
   })
 
-  onBeforeMount(() => {
-    console.log(props.color)
+  const gradientType = computed<GradientTypes>(() => {
     if (props.color.type === 'linear') {
-      status.style = `${props.color.type}${props.color.degree}` as GradientTypes
+      return `${props.color.type}${props.color.degree}` as GradientTypes
     } else if (props.color.type === 'radial') {
-      status.style = `${props.color.type}${props.color.percent * 100}` as GradientTypes
+      return `${props.color.type}${props.color.percent * 100}` as GradientTypes
     }
-    status.colors = JSON.parse(JSON.stringify(props.color.colors))
+    return 'linear90'
   })
 
   function getTypeFromStyle(style: GradientTypes): GradientType {
@@ -60,34 +54,29 @@
     }
   }
 
-  watch(
-    status,
-    () => {
-      let colorInfo = null
-      const type = getTypeFromStyle(status.style)
-      // 重新拼装color，然后返回
-      if (type === 'linear') {
-        colorInfo = {
-          type: 'linear',
-          units: props.color.units,
-          colors: status.colors,
-          degree: getValFromStyle(status.style)
-        }
-      } else if (type === 'radial') {
-        colorInfo = {
-          type: 'radial',
-          units: props.color.units,
-          colors: status.colors,
-          percent: getValFromStyle(status.style)
-        }
-      }
-      emit('update:color', colorInfo)
-    },
-    { deep: true }
-  )
-
   function selectColorStop(idx: number) {
     status.colorIdx = idx
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function updateType(_type: any) {
+    const type = getTypeFromStyle(_type as GradientTypes)
+    const num = getValFromStyle(_type as GradientTypes)
+
+    emit('update:color', {
+      type,
+      units: props.color.units,
+      colors: props.color.colors,
+      [type === 'linear' ? 'degree' : 'percent']: num
+    })
+  }
+  function updateColor(color: string) {
+    const colors = JSON.parse(JSON.stringify(props.color.colors))
+    colors[status.colorIdx] = color
+    emit('update:color', {
+      ...props.color,
+      colors
+    })
   }
 </script>
 
@@ -97,7 +86,7 @@
       <div class="area">
         <p>风格</p>
         <div>
-          <el-radio-group v-model="status.style" size="large" fill="#6cf">
+          <el-radio-group :model-value="gradientType" size="large" fill="#6cf" @update:model-value="updateType">
             <el-radio-button label="linear90" value="linear90" size="small"><linearA></linearA></el-radio-button>
             <el-radio-button label="linear180" value="linear180" size="small"><linearB></linearB></el-radio-button>
             <el-radio-button label="linear135" value="linear135" size="small"><linearC></linearC></el-radio-button>
@@ -110,7 +99,7 @@
         <p>渐变色</p>
         <div class="colorstops">
           <div
-            v-for="(_color, index) in status.colors"
+            v-for="(_color, index) in props.color.colors"
             :key="index"
             class="anchor"
             :class="{ active: index === status.colorIdx }"
@@ -122,7 +111,7 @@
         </div>
       </div>
       <div class="area">
-        <color-picker v-model:color="status.colors[status.colorIdx]"></color-picker>
+        <color-picker :color="props.color.colors[status.colorIdx]" @update:color="updateColor"></color-picker>
       </div>
     </div>
   </div>

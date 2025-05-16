@@ -1,5 +1,6 @@
 import { LinearGradient, RadialGradient } from '@kditor/core'
 import { Gradient, GradientUnits } from 'fabric'
+window.Gradient = Gradient
 
 // 百分比点位计算，暂时没有用到,待测试
 export function computeGradientPercentageCoords(angleDeg: number) {

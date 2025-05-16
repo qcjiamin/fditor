@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { ref, watch } from 'vue'
+  import { computed } from 'vue'
   import strokeBox from '@/components/stroke-box/stroke-box.vue'
   import strokeIcon from '@/assets/icons/stroke.svg'
   import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
@@ -11,26 +11,14 @@
     maxWidth: number
   }>()
 
-  const dashType = ref(dash[0].toString())
-  watch(
-    () => dash,
-    (_dash) => {
-      dashType.value = _dash[0].toString()
-    }
-  )
-  watch(dashType, (newType) => {
-    emit('update:dash', [Number(newType)])
-  })
-  const localStrokeWidth = ref(strokeWidth)
-  watch(
-    () => strokeWidth,
-    (_strokeWidth) => {
-      localStrokeWidth.value = _strokeWidth
-    }
-  )
-  watch(localStrokeWidth, (val) => {
-    emit('update:strokeWidth', val)
-  })
+  const dashType = computed(() => dash[0].toString())
+
+  function updateDash(_dash: string) {
+    emit('update:dash', [Number(_dash)])
+  }
+  function updateStrokeWidth(_strokeWidth: string) {
+    emit('update:strokeWidth', _strokeWidth)
+  }
 </script>
 
 <template>
@@ -39,7 +27,13 @@
       <strokeIcon class="anchorIocn"></strokeIcon>
     </template>
     <template #popup>
-      <stroke-box v-model:dash="dashType" v-model:stroke-width="localStrokeWidth" :max-width="maxWidth"></stroke-box>
+      <stroke-box
+        :stroke-width="strokeWidth"
+        :dash="dashType"
+        :max-width="maxWidth"
+        @update:dash="updateDash"
+        @update:stroke-width="updateStrokeWidth"
+      ></stroke-box>
     </template>
   </property-item>
 </template>

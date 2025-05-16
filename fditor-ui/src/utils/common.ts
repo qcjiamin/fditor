@@ -58,7 +58,7 @@ export function colorInstance2Info(instance: colorVal): ColorInfo {
   if (!instance) {
     return {
       type: 'solid',
-      value: 'rgba(255,255,255,1)'
+      value: null
     }
   } else if (typeof instance === 'string') {
     return {

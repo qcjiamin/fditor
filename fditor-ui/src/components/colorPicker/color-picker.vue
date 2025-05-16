@@ -23,7 +23,9 @@
   let firstSet = true
   // 缓存上次返回的颜色值
   let lastColor = ''
-  const emit = defineEmits(['update:color'])
+  const emit = defineEmits<{
+    'update:color': [color: string]
+  }>()
   function emitColor(color: string) {
     lastColor = color
     emit('update:color', color)
@@ -417,7 +419,16 @@
 
     new ResizeObserver(onBoxResize).observe(svcvs.value as Element)
   })
-  onUnmounted(() => {})
+  onUnmounted(() => {
+    document.body.removeEventListener('mousemove', hueMouseMove)
+    // 全局监听mouseup事件，退出拖拽状态
+    document.body.removeEventListener('mouseup', hueMouseUp)
+
+    document.body.removeEventListener('mousemove', svMouseMove)
+    document.body.removeEventListener('mouseup', svMouseUp)
+    document.body.removeEventListener('mousemove', oMouseMove)
+    document.body.removeEventListener('mouseup', oMouseUp)
+  })
 
   function updateColorFromInput(val: string) {
     // 通知当前picker层，颜色修改了

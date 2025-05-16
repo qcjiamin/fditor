@@ -53,7 +53,10 @@
         value: info
       })
     } else {
-      emit('update:color', info)
+      emit('update:color', {
+        type: 'gradient',
+        value: info
+      })
     }
   }
 </script>
@@ -71,9 +74,6 @@
         :color="props.color.value"
         @update:color="updateColor"
       ></component>
-      <!-- <GradientPicker v-model:color="transferColor.value as GradientOption<GradientType>" /> -->
-      <!-- <ColorPicker v-if="transferColor.type === 'solid'" v-model:color="transferColor.value" />
-      <GradientPicker v-else v-model:color="transferColor.value" /> -->
     </div>
   </div>
 </template>

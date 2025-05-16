@@ -8,7 +8,7 @@ declare module 'fabric' {
   }
   // 扩展事件
   export interface CanvasEvents {
-    'def:modified': FabricObject | Canvas
+    'def:modified': { target: FabricObject | Canvas }
   }
 }
 
@@ -17,6 +17,6 @@ Canvas.prototype.eset = function (key: string, val: any) {
   const isChange = this.get(key) !== val
   if (isChange) {
     this.set(key, val)
-    this.fire('def:modified', this)
+    this.fire('def:modified', { target: this })
   }
 }

@@ -17,8 +17,6 @@
   }
 
   const { tip = '', showBorder = false } = defineProps<IPropertyItemProps>()
-  // 定义一个中转的ref, 处理v-model问题
-  // const transferVal = ref(val)
   const anchor = ref<HTMLDivElement>()
   const popRef = ref<HTMLDivElement>()
 
@@ -32,31 +30,15 @@
 
   const popStyle = reactive({
     left: '0px',
-    top: '0px',
-    display: 'none'
+    top: '0px'
   })
   watch(open, (newVal) => {
     if (newVal) {
       const rect = anchor.value!.getBoundingClientRect()
       popStyle.left = rect.left + 'px'
       popStyle.top = rect.top + rect.height + 'px'
-      popStyle.display = ''
-    } else {
-      popStyle.display = 'none'
     }
   })
-
-  // watch(
-  //   () => val,
-  //   (newVal) => {
-  //     transferVal.value = newVal
-  //     emit('update:val', newVal)
-  //   }
-  // )
-
-  // watch(transferVal, (newVal) => {
-  //   emit('update:val', newVal)
-  // })
 </script>
 
 <template>
@@ -66,7 +48,7 @@
     </div>
   </el-tooltip>
   <Teleport to="body">
-    <pallet-mask :style="{ display: popStyle.display }">
+    <pallet-mask v-if="open" :style="{ display: popStyle.display }">
       <div ref="popRef" class="popup" :style="{ left: popStyle.left, top: popStyle.top }">
         <slot name="popup"></slot>
       </div>
