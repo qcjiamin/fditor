@@ -1,16 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FabricObject } from 'fabric'
 
 declare module 'fabric' {
   export interface FabricObject {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    eset(key: string, val: any): void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    eset(props: Record<string, any>): void
+    eset(key: string, val: any, checkChange?: boolean): void
+
+    eset(props: Record<string, any>, checkChnage?: boolean): void
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-FabricObject.prototype.eset = function (keyOrProps: string | Record<string, any>, val?: any) {
+FabricObject.prototype.eset = function (
+  keyOrProps: string | Record<string, any>,
+  val?: any,
+  checkChange: boolean = true
+) {
   let changed = false
 
   if (typeof keyOrProps === 'string') {
@@ -29,7 +32,7 @@ FabricObject.prototype.eset = function (keyOrProps: string | Record<string, any>
       }
     }
   }
-
+  if (!checkChange) changed = true
   if (changed) {
     this.canvas?.fire('def:modified', { target: this })
   }

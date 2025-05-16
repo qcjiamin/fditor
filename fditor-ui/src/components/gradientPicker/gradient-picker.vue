@@ -1,4 +1,4 @@
-<script lang="ts" setup generic="T extends GradientType">
+<script lang="ts" setup>
   import { computed, reactive } from 'vue'
   // import type { GradientTypes } from '@/utils/types'
   import linearA from '@/assets/icons/gradient/linear90.svg'
@@ -11,12 +11,15 @@
   import type { GradientTypes } from '@/utils/types'
   import transparentIcon from '@/assets/transparent.svg'
   import colorPicker from '@/components/colorPicker/color-picker.vue'
+  import type { updateColorOptions } from '@/components/colorPicker/types'
 
   // 外部直接修改渐变色的情况？暂时应该没有
   const props = defineProps<{
-    color: GradientOption<T>
+    color: GradientOption<'linear'> | GradientOption<'radial'>
   }>()
-  const emit = defineEmits(['update:color'])
+  const emit = defineEmits<{
+    'update:color': [color: GradientOption<'linear'> | GradientOption<'radial'>, options: updateColorOptions]
+  }>()
 
   type GradientPickerState = {
     // 选中了第几个颜色
@@ -52,6 +55,7 @@
     } else if (type === 'radial') {
       return num / 100
     }
+    return 90
   }
 
   function selectColorStop(idx: number) {
@@ -63,20 +67,40 @@
     const type = getTypeFromStyle(_type as GradientTypes)
     const num = getValFromStyle(_type as GradientTypes)
 
-    emit('update:color', {
+    const common = {
       type,
       units: props.color.units,
-      colors: props.color.colors,
-      [type === 'linear' ? 'degree' : 'percent']: num
-    })
+      colors: props.color.colors
+    } as const
+
+    if (type === 'linear') {
+      emit('update:color', { ...common, degree: num } as GradientOption<'linear'>, { commit: true })
+    } else {
+      emit('update:color', { ...common, percent: num } as GradientOption<'radial'>, { commit: true })
+    }
+
+    // emit(
+    //   'update:color',
+    //   {
+    //     type,
+    //     units: props.color.units,
+    //     colors: props.color.colors,
+    //     [type === 'linear' ? 'degree' : 'percent']: num
+    //   },
+    //   { commit: true }
+    // )
   }
-  function updateColor(color: string) {
+  function updateColor(color: string, options: { commit: boolean }) {
     const colors = JSON.parse(JSON.stringify(props.color.colors))
     colors[status.colorIdx] = color
-    emit('update:color', {
-      ...props.color,
-      colors
-    })
+    emit(
+      'update:color',
+      {
+        ...props.color,
+        colors
+      },
+      options
+    )
   }
 </script>
 

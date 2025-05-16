@@ -11,6 +11,7 @@
   import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
   import hexInput from '@/components/colorPicker/hex-input.vue'
   import rgbInput from '@/components/colorPicker/rgb-input.vue'
+  import type { updateColorOptions } from '@/components/colorPicker/types'
   const svcvs = ref<HTMLCanvasElement>()
   const hcvs = ref<HTMLCanvasElement>()
   const ocvs = ref<HTMLCanvasElement>()
@@ -24,11 +25,11 @@
   // 缓存上次返回的颜色值
   let lastColor = ''
   const emit = defineEmits<{
-    'update:color': [color: string]
+    'update:color': [color: string, options: updateColorOptions]
   }>()
-  function emitColor(color: string) {
+  function emitColor(color: string, commit: boolean = false) {
     lastColor = color
-    emit('update:color', color)
+    emit('update:color', color, { commit })
   }
 
   const { color = 'rgba(255,255,255,1)' } = defineProps<{
@@ -177,7 +178,7 @@
     state.hsv.h = x / hcvs.value!.width
 
     const rgb = hsv2rgb(state.hsv.h, state.hsv.s, state.hsv.v)
-    emitColor(`rgba(${rgb.r},${rgb.g},${rgb.b},${state.a})`)
+    emitColor(`rgba(${rgb.r},${rgb.g},${rgb.b},${state.a})`, true)
     inHueMoving = false
   }
   function hueMouseMove(e: MouseEvent) {
@@ -267,7 +268,7 @@
     state.hsv.v = 1 - pInSv.y / svcvs.value!.height
 
     const rgb = hsv2rgb(state.hsv.h, state.hsv.s, state.hsv.v)
-    emitColor(`rgba(${rgb.r},${rgb.g},${rgb.b},${state.a})`)
+    emitColor(`rgba(${rgb.r},${rgb.g},${rgb.b},${state.a})`, true)
 
     inSVMoving = false
   }
@@ -334,7 +335,7 @@
     state.a = _toFixed(x / ocvs.value!.width, 2)
 
     const rgb = hsv2rgb(state.hsv.h, state.hsv.s, state.hsv.v)
-    emitColor(`rgba(${rgb.r},${rgb.g},${rgb.b},${state.a})`)
+    emitColor(`rgba(${rgb.r},${rgb.g},${rgb.b},${state.a})`, true)
     inOpacityMoving = false
   }
   function oMouseMove(e: MouseEvent) {
@@ -440,7 +441,7 @@
     state.hsv = { h: hsvObj.h1, s: hsvObj.s1, v: hsvObj.v1 }
     // 通知外层颜色修改了
     // updateColor(rgbStr)
-    emit('update:color', rgbStr)
+    emit('update:color', rgbStr, { commit: true })
   }
 </script>
 

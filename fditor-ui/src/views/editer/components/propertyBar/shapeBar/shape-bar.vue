@@ -9,6 +9,7 @@
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import { colorInstance2Info } from '@/utils/common'
   import type { FabricObjectProps } from 'fabric'
+  import type { updateColorOptions } from '@/components/colorPicker/types'
 
   // const props = defineProps<{
   //   foo?: string
@@ -52,10 +53,14 @@
   // 属性获取目前是在bar上，统一获取，分散到单一组件中，单独获取？
   useGetAttrs(getAttrs)
 
-  function updateFill(info: ColorInfo) {
+  function updateFill(info: ColorInfo, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
     if (info.type === 'solid') {
-      shape.eset('fill', info.value)
+      if (commit) {
+        shape.eset('fill', info.value, false)
+      } else {
+        shape.set('fill', info.value)
+      }
     } else if (info.type === 'gradient') {
       // 渐变，获取宽高后，重新设置其coords
       const gradientInfo = info.value
@@ -67,7 +72,11 @@
           shape.height,
           ...gradientInfo.colors
         )
-        shape.eset('fill', gradient)
+        if (commit) {
+          shape.eset('fill', gradient, false)
+        } else {
+          shape.set('fill', gradient)
+        }
       } else if (gradientInfo.type === 'radial') {
         const gradient = createRadialGradient(
           'pixels',
@@ -76,15 +85,23 @@
           shape.height,
           ...gradientInfo.colors
         )
-        shape.eset('fill', gradient)
+        if (commit) {
+          shape.eset('fill', gradient, false)
+        } else {
+          shape.set('fill', gradient)
+        }
       }
     }
     editor.render()
   }
-  function updateStroke(info: ColorInfo) {
+  function updateStroke(info: ColorInfo, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
     if (info.type === 'solid') {
-      shape.eset('stroke', info.value)
+      if (commit) {
+        shape.eset('fill', info.value, false)
+      } else {
+        shape.set('fill', info.value)
+      }
     } else if (info.type === 'gradient') {
       // 渐变，获取宽高后，重新设置其coords
       const gradientInfo = info.value
@@ -96,7 +113,11 @@
           shape.height,
           ...gradientInfo.colors
         )
-        shape.eset('stroke', gradient)
+        if (commit) {
+          shape.eset('stroke', gradient, false)
+        } else {
+          shape.set('stroke', gradient)
+        }
       } else if (gradientInfo.type === 'radial') {
         const gradient = createRadialGradient(
           'pixels',
@@ -105,7 +126,11 @@
           shape.height,
           ...gradientInfo.colors
         )
-        shape.eset('stroke', gradient)
+        if (commit) {
+          shape.eset('stroke', gradient, false)
+        } else {
+          shape.set('stroke', gradient)
+        }
       }
     }
     editor.render()

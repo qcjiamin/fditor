@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref, type Ref } from 'vue'
+  import { onMounted, ref } from 'vue'
   import editerHeader from './components/editer-header.vue'
   import editerSidebar from './components/sidebar/editer-sidebar.vue'
   import workspaceMain from './components/workspace/workspace-main.vue'
@@ -7,28 +7,13 @@
   import propertyBar from '@/views/editer/components/propertyBar/property-bar.vue'
   // import { useEditor } from '@/hooks/useEditor'
   import { provide } from 'vue'
-  import { EditorKey, selectedKey, SelectTypeKey } from '../../constants/injectKey'
-  import type { ElementTypes, Selected } from '@/utils/types'
+  import { EditorKey } from '../../constants/injectKey'
   import { Editor, SelectionPlugin, WorkspacePlugin } from '@kditor/core'
+  import { useEditorStore } from '@/stores/editorStore'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
-  const selectedRef = ref<Selected>(undefined)
+  const editorStore = useEditorStore()
 
-  const type2Type: Record<string, ElementTypes> = {
-    circle: 'Shape',
-    rect: 'Shape',
-    activeselection: 'activeselection'
-  }
-
-  const selectType = computed<ElementTypes>(() => {
-    if (!selectedRef.value) {
-      return 'bg'
-    } else {
-      return type2Type[selectedRef.value.type] as ElementTypes
-    }
-  })
-
-  // const { editor } = useEditor()
   const editor = new Editor()
   window.editor = editor
   onMounted(() => {
@@ -36,7 +21,7 @@
     // 选择事件
     editor.on('selected:change', (selected) => {
       console.log('selected:change', selected)
-      selectedRef.value = selected
+      editorStore.setSelected(selected)
     })
 
     editor.use(WorkspacePlugin).use(SelectionPlugin)
@@ -44,8 +29,6 @@
     editor.emit('canvas:ready', null)
   })
   provide(EditorKey, editor)
-  provide(selectedKey, selectedRef as Ref<Selected>)
-  provide(SelectTypeKey, selectType)
 </script>
 
 <template>

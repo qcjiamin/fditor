@@ -6,6 +6,7 @@
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import { colorInstance2Info } from '@/utils/common'
+  import type { updateColorOptions } from '@/components/colorPicker/types'
   const editor = inject(EditorKey) as Editor
   interface bgAttrs {
     color: ColorInfo
@@ -20,7 +21,6 @@
     //! editor.stage 在初次进入时可能为空
     if (!editor.stage) return
     console.log('get bg color')
-    console.log(editor.stage?.backgroundColor)
     attrs.color = colorInstance2Info(editor.stage?.backgroundColor as colorVal)
   }
   useGetAttrs(getAttrs)
@@ -34,10 +34,15 @@
   })
 
   // 实现背景色设置功能
-  function updateColor(info: ColorInfo) {
+  function updateColor(info: ColorInfo, { commit }: updateColorOptions) {
+    console.log(commit)
     if (info.type === 'solid') {
       if (!info.value) throw new Error('color null')
-      editor.stage.eset('backgroundColor', info.value)
+      if (commit) {
+        editor.stage.eset('backgroundColor', info.value, false)
+      } else {
+        editor.stage.set('backgroundColor', info.value)
+      }
     } else if (info.type === 'gradient') {
       // 渐变，获取宽高后，重新设置其coords
       const gradientInfo = info.value
@@ -49,7 +54,11 @@
           editor.workspace.height,
           ...gradientInfo.colors
         )
-        editor.stage.eset('backgroundColor', gradient)
+        if (commit) {
+          editor.stage.eset('backgroundColor', gradient, false)
+        } else {
+          editor.stage.set('backgroundColor', gradient)
+        }
       } else if (gradientInfo.type === 'radial') {
         const gradient = createRadialGradient(
           'pixels',
@@ -58,10 +67,14 @@
           editor.workspace.height,
           ...gradientInfo.colors
         )
-        editor.stage.eset('backgroundColor', gradient)
+        if (commit) {
+          editor.stage.eset('backgroundColor', gradient, false)
+        } else {
+          editor.stage.set('backgroundColor', gradient)
+        }
       }
     }
-
+    getAttrs()
     editor.stage.renderAll()
   }
   onUpdated(() => {

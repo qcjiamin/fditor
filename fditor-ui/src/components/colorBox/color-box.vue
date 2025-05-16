@@ -2,12 +2,15 @@
   import { ref, watch, type Component } from 'vue'
   import ColorPicker from '@/components/colorPicker/color-picker.vue'
   import GradientPicker from '@/components/gradientPicker/gradient-picker.vue'
-  import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
+  import type { ColorInfo, GradientOption } from '@/views/editer/components/propertyBar/types'
   import type { colorTypes } from '@/components/colorBox/types'
+  import type { updateColorOptions } from '@/components/colorPicker/types'
   const props = defineProps<{
     color: ColorInfo
   }>()
-  const emit = defineEmits(['update:color'])
+  const emit = defineEmits<{
+    'update:color': [color: ColorInfo, options: updateColorOptions]
+  }>()
 
   // type 用做页面切换
   const type = ref(props.color.type)
@@ -26,37 +29,53 @@
       if (newType !== oldType) {
         if (newType === 'solid') {
           // 默认色
-          emit('update:color', {
-            type: 'solid',
-            value: 'rgba(255, 255, 255, 1)'
-          })
+          emit(
+            'update:color',
+            {
+              type: 'solid',
+              value: 'rgba(255, 255, 255, 1)'
+            },
+            { commit: true }
+          )
         } else {
-          emit('update:color', {
-            type: 'gradient',
-            value: {
-              type: 'linear',
-              units: 'pixels',
-              colors: ['rgba(255,255,255,1)', 'rgba(0,0,0,1)'],
-              degree: 90
-            }
-          })
+          emit(
+            'update:color',
+            {
+              type: 'gradient',
+              value: {
+                type: 'linear',
+                units: 'pixels',
+                colors: ['rgba(255,255,255,1)', 'rgba(0,0,0,1)'],
+                degree: 90
+              }
+            },
+            { commit: true }
+          )
         }
       }
     }
   )
 
-  function updateColor(info: ColorInfo | string) {
+  function updateColor(info: GradientOption<'linear'> | GradientOption<'radial'> | string, option: updateColorOptions) {
     console.log('updateColor in colorbox', info)
     if (typeof info === 'string') {
-      emit('update:color', {
-        type: 'solid',
-        value: info
-      })
+      emit(
+        'update:color',
+        {
+          type: 'solid',
+          value: info
+        },
+        option
+      )
     } else {
-      emit('update:color', {
-        type: 'gradient',
-        value: info
-      })
+      emit(
+        'update:color',
+        {
+          type: 'gradient',
+          value: info
+        },
+        option
+      )
     }
   }
 </script>

@@ -12,16 +12,19 @@
   import transparentIcon from '@/assets/transparent.svg'
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import { createCssLinearGradient, createCssRadialGradient } from '@/utils/common'
-  const emit = defineEmits(['update:color'])
+  import type { updateColorOptions } from '@/components/colorPicker/types'
+  const emit = defineEmits<{
+    'update:color': [info: ColorInfo, options: updateColorOptions]
+  }>()
 
   const props = defineProps<{
     color: ColorInfo
   }>()
 
-  function updateColor(info: ColorInfo) {
+  function updateColor(info: ColorInfo, options: updateColorOptions) {
     console.log('updateColor in fill-property', info)
 
-    emit('update:color', info)
+    emit('update:color', info, options)
   }
 
   const cssColor = computed(() => {
