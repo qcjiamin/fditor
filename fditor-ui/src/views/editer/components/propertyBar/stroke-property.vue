@@ -3,12 +3,22 @@
   import strokeBox from '@/components/stroke-box/stroke-box.vue'
   import strokeIcon from '@/assets/icons/stroke.svg'
   import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
-  const emit = defineEmits(['update:dash', 'update:strokeWidth'])
+  import type { updateColorOptions } from '@/components/colorPicker/types'
+  const emit = defineEmits<{
+    'update:dash': [number[]]
+    'update:strokeWidth': [width: number, options: updateColorOptions]
+  }>()
 
-  const { dash, strokeWidth, maxWidth } = defineProps<{
+  const {
+    dash,
+    strokeWidth,
+    maxWidth,
+    tip = ''
+  } = defineProps<{
     dash: number[]
     strokeWidth: number
     maxWidth: number
+    tip?: string
   }>()
 
   const dashType = computed(() => dash[0].toString())
@@ -16,13 +26,13 @@
   function updateDash(_dash: string) {
     emit('update:dash', [Number(_dash)])
   }
-  function updateStrokeWidth(_strokeWidth: string) {
-    emit('update:strokeWidth', _strokeWidth)
+  function updateStrokeWidth(_strokeWidth: number, options: updateColorOptions) {
+    emit('update:strokeWidth', _strokeWidth, options)
   }
 </script>
 
 <template>
-  <property-item>
+  <property-item :tip="tip">
     <template #anchor>
       <strokeIcon class="anchorIocn"></strokeIcon>
     </template>

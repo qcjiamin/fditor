@@ -164,11 +164,12 @@ class Editor extends EventBus<EditorEventMap> {
   }
 
   public render(): void {
-    this.stage.renderAll()
     const activeObj = this.stage.getActiveObject()
     if (activeObj) {
+      console.log('set coords')
       activeObj.setCoords()
     }
+    this.stage.renderAll()
   }
 
   /** 将视口移动到指定区域的中心点 */

@@ -57,7 +57,6 @@
   )
 
   function updateColor(info: GradientOption<'linear'> | GradientOption<'radial'> | string, option: updateColorOptions) {
-    console.log('updateColor in colorbox', info)
     if (typeof info === 'string') {
       emit(
         'update:color',

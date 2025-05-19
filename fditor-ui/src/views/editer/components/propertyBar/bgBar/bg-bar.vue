@@ -84,7 +84,7 @@
 
 <template>
   <div class="typeBar">
-    <fill-property :color="attrs.color" @update:color="updateColor"></fill-property>
+    <fill-property :color="attrs.color" tip="background color" @update:color="updateColor"></fill-property>
   </div>
 </template>
 

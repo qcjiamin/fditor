@@ -49,6 +49,7 @@
     // -1 表示没有stroke
     attrs.dash = shape.strokeDashArray ? (shape.strokeDashArray ?? [-1]) : [-1]
     attrs.width = shape.width
+    attrs.opacity = shape.opacity
   }
   // 属性获取目前是在bar上，统一获取，分散到单一组件中，单独获取？
   useGetAttrs(getAttrs)
@@ -157,13 +158,15 @@
     shape.eset(toAttrs)
     editor.render()
   }
-  function updateStrokeWidth(_strokeWidth: number) {
+  function updateStrokeWidth(_strokeWidth: number, { commit }: updateColorOptions) {
+    console.log(commit)
     const old = attrs.strokeWidth
     const shape = editor.stage.getActiveObject()!
     const toAttrs: Partial<FabricObjectProps> = {}
     toAttrs.strokeWidth = _strokeWidth
     if (old === 0) {
       toAttrs.strokeDashArray = [0]
+      toAttrs.stroke = 'rgba(0,0,0,1)'
     }
     if (_strokeWidth === 0) {
       //todo: 保留上一次的颜色值, 不要恢复成黑色
@@ -171,19 +174,30 @@
       toAttrs.stroke = null
       toAttrs.strokeDashArray = [-1]
     }
-    shape.eset(toAttrs)
+    if (commit) {
+      // preview set 会让要设置的值已经设置，强制不检查change
+      shape.eset(toAttrs, false)
+    } else {
+      shape.set(toAttrs)
+    }
     editor.render()
   }
 </script>
 
 <template>
   <div class="typeBar">
-    <fill-property :color="attrs.fill" @update:color="updateFill"></fill-property>
-    <fill-property v-if="showStroke" v-model:color="attrs.stroke" @update:color="updateStroke"></fill-property>
+    <fill-property :color="attrs.fill" tip="fill" @update:color="updateFill"></fill-property>
+    <fill-property
+      v-if="showStroke"
+      v-model:color="attrs.stroke"
+      tip="stroke"
+      @update:color="updateStroke"
+    ></fill-property>
     <stroke-property
       :dash="attrs.dash"
       :stroke-width="attrs.strokeWidth"
       :max-width="attrs.width"
+      tip="stroke style"
       @update:dash="updateDash"
       @update:stroke-width="updateStrokeWidth"
     ></stroke-property>

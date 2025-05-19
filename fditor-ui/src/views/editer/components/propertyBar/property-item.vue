@@ -1,7 +1,10 @@
 <script lang="ts" setup generic="T">
-  import { ref, watch, reactive } from 'vue'
+  // import { ref, watch, reactive, nextTick, onMounted } from 'vue'
+  import { nextTick, ref, watch } from 'vue'
   import palletMask from '@/views/editer/components/propertyBar/pallet-mask.vue'
   import { onClickOutside } from '@vueuse/core'
+  import { useFloating, shift, autoUpdate } from '@floating-ui/vue'
+
   const open = ref(false)
   // const emit = defineEmits(['update:val'])
 
@@ -16,9 +19,20 @@
     showBorder?: boolean
   }
 
+  // onMounted(() => {
+  //   const {floatingStyles, update} = useFloating(anchor, popRef, {
+  //     whileElementsMounted: autoUpdate
+  //   })
+  // })
+
   const { tip = '', showBorder = false } = defineProps<IPropertyItemProps>()
   const anchor = ref<HTMLDivElement>()
   const popRef = ref<HTMLDivElement>()
+
+  const { floatingStyles, update } = useFloating(anchor, popRef, {
+    middleware: [shift()],
+    whileElementsMounted: autoUpdate
+  })
 
   async function toggleOpen() {
     open.value = true
@@ -28,15 +42,10 @@
     open.value = false
   })
 
-  const popStyle = reactive({
-    left: '0px',
-    top: '0px'
-  })
-  watch(open, (newVal) => {
+  watch(open, async (newVal) => {
     if (newVal) {
-      const rect = anchor.value!.getBoundingClientRect()
-      popStyle.left = rect.left + 'px'
-      popStyle.top = rect.top + rect.height + 'px'
+      await nextTick()
+      update()
     }
   })
 </script>
@@ -48,8 +57,9 @@
     </div>
   </el-tooltip>
   <Teleport to="body">
-    <pallet-mask v-if="open" :style="{ display: popStyle.display }">
-      <div ref="popRef" class="popup" :style="{ left: popStyle.left, top: popStyle.top }">
+    <pallet-mask v-if="open">
+      <!-- <div ref="popRef" class="popup" :style="{ left: popStyle.left, top: popStyle.top }"> -->
+      <div ref="popRef" class="popup" :style="floatingStyles">
         <slot name="popup"></slot>
       </div>
     </pallet-mask>

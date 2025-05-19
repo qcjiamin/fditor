@@ -17,21 +17,20 @@
     'update:color': [info: ColorInfo, options: updateColorOptions]
   }>()
 
-  const props = defineProps<{
+  const { color, tip = '' } = defineProps<{
     color: ColorInfo
+    tip?: string
   }>()
 
   function updateColor(info: ColorInfo, options: updateColorOptions) {
-    console.log('updateColor in fill-property', info)
-
     emit('update:color', info, options)
   }
 
   const cssColor = computed(() => {
-    if (props.color.type === 'solid') {
-      return props.color.value ? props.color.value : 'rgba(255,255,255,1)'
+    if (color.type === 'solid') {
+      return color.value ? color.value : 'rgba(255,255,255,1)'
     } else {
-      const gradientInfo = props.color.value
+      const gradientInfo = color.value
       if (gradientInfo.type === 'linear') {
         return createCssLinearGradient(gradientInfo.degree, ...gradientInfo.colors)
       } else if (gradientInfo.type === 'radial') {
@@ -44,7 +43,7 @@
 </script>
 
 <template>
-  <property-item show-border>
+  <property-item show-border :tip="tip">
     <template #anchor>
       <div class="fillAnchor">
         <transparentIcon class="child"></transparentIcon>
@@ -54,7 +53,7 @@
     <template #popup>
       <div class="pickerContainer">
         <!-- <color-picker v-model:color="transferColor"></color-picker> -->
-        <color-box :color="props.color" @update:color="updateColor"></color-box>
+        <color-box :color="color" @update:color="updateColor"></color-box>
       </div>
     </template>
   </property-item>

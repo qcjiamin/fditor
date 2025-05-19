@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.1.6",
     "@kditor/core": "*",
     "@vueuse/core": "^13.1.0",
     "axios": "^1.8.4",
