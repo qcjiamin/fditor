@@ -2,17 +2,31 @@
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { EditorKey } from '@/constants/injectKey'
   import type { Editor } from '@kditor/core'
-  import { inject, reactive } from 'vue'
+  import { computed, inject, reactive } from 'vue'
   import opacityProperty from '@/views/editer/components/propertyBar/opacity-property.vue'
+  import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
+  import { useEditorStore } from '@/stores/editorStore'
+  import { useGetAttrs } from '@/hooks/useGetAttrs'
+  import { Lock, Unlock, Delete, Orange } from '@element-plus/icons-vue'
+  const editorStore = useEditorStore()
 
   const editor = inject(EditorKey) as Editor
 
   interface PublicAttrs {
     opacity: number
+    lock: boolean
   }
   const attrs: PublicAttrs = reactive({
-    opacity: 1
+    opacity: 1,
+    lock: false
   })
+
+  function getAttrs() {
+    const shape = editorStore.selected!
+    attrs.opacity = shape.opacity
+    attrs.lock = shape.lockMovementX
+  }
+  useGetAttrs(getAttrs)
 
   function updateOpacity(_opacity: number, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
@@ -24,6 +38,21 @@
     editor.render()
   }
 
+  const openAni = computed(() => editorStore.sidebarShowProperty === 'animate')
+  function toggleAnimate() {
+    if (editorStore.sidebarShowProperty === 'animate') {
+      editorStore.setSidebarShowProperty('')
+    } else {
+      editorStore.setSidebarShowProperty('animate')
+    }
+  }
+  function toggleLock() {
+    if (!editorStore.selected) {
+      throw new Error('testLeft, but no object was selected ')
+    }
+    editorStore.selected.eset('lockMovementX', !editorStore.selected.lockMovementX)
+    editor.render()
+  }
   function deleteObj() {
     console.log('delete')
     const activeObj = editor.stage.getActiveObject()
@@ -35,8 +64,22 @@
 <template>
   <div class="historyBox">
     <opacity-property :opacity="attrs.opacity" tip="opacity" @update:opacity="updateOpacity"></opacity-property>
-    <button class="lock">L</button>
-    <button class="delete" @click="deleteObj">D</button>
+    <property-normal-item tip="animate" :active="openAni" @click="toggleAnimate">
+      <Orange></Orange>
+    </property-normal-item>
+    <property-normal-item :active="attrs.lock" :tip="attrs.lock ? 'unlock' : 'lock'" @click="toggleLock">
+      <el-icon v-if="attrs.lock" size="20" color="#409EFF">
+        <Lock></Lock>
+      </el-icon>
+      <el-icon v-else size="20">
+        <Unlock></Unlock>
+      </el-icon>
+    </property-normal-item>
+    <property-normal-item tip="delete" @click="deleteObj">
+      <el-icon size="20">
+        <Delete></Delete>
+      </el-icon>
+    </property-normal-item>
   </div>
 </template>
 
@@ -53,8 +96,8 @@
       background-color: aqua;
     }
     .lock {
-      width: 30px;
-      height: 30px;
+      width: 20px;
+      height: 20px;
       background-color: aqua;
     }
   }

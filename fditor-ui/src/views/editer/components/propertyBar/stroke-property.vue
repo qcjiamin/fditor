@@ -34,7 +34,7 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <strokeIcon class="anchorIocn"></strokeIcon>
+      <strokeIcon class="anchorIcon"></strokeIcon>
     </template>
     <template #popup>
       <stroke-box
@@ -49,7 +49,7 @@
 </template>
 
 <style scoped lang="scss">
-  .anchorIocn {
+  .anchorIcon {
     width: 100%;
     // height: 30px;
   }

@@ -3,7 +3,7 @@ import { FabricObject } from 'fabric'
 
 declare module 'fabric' {
   export interface FabricObject {
-    eset(key: string, val: any, checkChange: boolean): void
+    eset(key: string, val: any, checkChange?: boolean): void
 
     eset(props: Record<string, any>, checkChnage?: boolean): void
   }

@@ -1,0 +1,47 @@
+<script lang="ts" setup>
+  const {
+    tip = '',
+    showBorder = false,
+    active = false
+  } = defineProps<{
+    tip?: string
+    showBorder?: boolean
+    active?: boolean
+  }>()
+  const emit = defineEmits(['click'])
+  function clickHandle() {
+    emit('click')
+  }
+</script>
+
+<template>
+  <div>
+    <el-tooltip :content="tip" :disabled="tip === ''">
+      <div ref="anchor" class="anchorBox" :class="{ active, showBorder: showBorder }" @click="clickHandle">
+        <slot></slot>
+      </div>
+    </el-tooltip>
+  </div>
+</template>
+
+<style scoped lang="scss">
+  .anchorBox {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &.showBorder {
+      box-sizing: border-box;
+      box-shadow: grey 0px 0px 2px;
+      border-radius: 2px;
+    }
+    &:hover {
+      background-color: rgba(64, 87, 109, 0.07);
+    }
+    &.active {
+      background-color: rgba(57, 76, 96, 0.15);
+    }
+  }
+</style>

@@ -49,7 +49,6 @@
     // -1 表示没有stroke
     attrs.dash = shape.strokeDashArray ? (shape.strokeDashArray ?? [-1]) : [-1]
     attrs.width = shape.width
-    attrs.opacity = shape.opacity
   }
   // 属性获取目前是在bar上，统一获取，分散到单一组件中，单独获取？
   useGetAttrs(getAttrs)
