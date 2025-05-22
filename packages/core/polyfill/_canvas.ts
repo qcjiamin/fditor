@@ -39,6 +39,10 @@ Canvas.prototype.insertBefore = function (obj, desObj) {
     const idx = desObj.getZIndex()
     objects.splice(idx, 0, obj)
   }
+  obj.set('canvas', this)
+  obj.setCoords()
+  this._onObjectAdded(obj)
+
   if (this.renderOnAddRemove) {
     this.requestRenderAll()
   }

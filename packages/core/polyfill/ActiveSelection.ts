@@ -46,16 +46,18 @@ ActiveSelection.prototype.toGorup = function () {
     return item1.getZIndex() - item2.getZIndex()
   })
 
-  // const maxZindex = getMaxZindexInCollection(tempArr)
-  // const beforeObjIdx = maxZindex + 1
-  // const beforeObj = this.canvas.getObjectByZIndex(beforeObjIdx)
+  const maxZindex = getMaxZindexInCollection(tempArr)
+  const beforeObjIdx = maxZindex + 1
+  const beforeObj = this.canvas.getObjectByZIndex(beforeObjIdx)
+  console.log(beforeObjIdx, beforeObj)
 
-  const newGroup = new Group(tempArr, {})
-  newGroup.setCoords()
+  const newGroup = new Group(tempArr)
+  // newGroup.setCoords()
   // !必须先添加再删除，不然zidx不对
-  // this.canvas.insertBefore(newGroup, beforeObj)
-  this.canvas.add(newGroup)
-  this.canvas._remove(...tempArr)
+  this.canvas.insertBefore(newGroup, beforeObj)
+  // this.canvas._add(newGroup)
+  // this.canvas._remove(...tempArr)
   this.canvas._activeObject = newGroup
+  // this.canvas.renderAll()
   // return newGroup
 }
