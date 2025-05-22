@@ -29,7 +29,7 @@ export interface EditorEventMap {
   // 'canvas:resize': { width: number; height: number }
   'node:add': FabricObject[]
   'node:remove': FabricObject[]
-  'node:modified': FabricObject | Canvas
+  'node:modified': { target: FabricObject | Canvas }
   // 'node:zindex:change': KonvaNode[]
   // 'node:update:before': { nodes: KonvaNode[] }
   // 'node:update:after': { nodes: KonvaNode[] }

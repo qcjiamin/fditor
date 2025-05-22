@@ -6,6 +6,8 @@ declare module 'fabric' {
     eset(key: string, val: any, checkChange?: boolean): void
 
     eset(props: Record<string, any>, checkChnage?: boolean): void
+    getZIndex(): number
+    getNext(): FabricObject | null
   }
 }
 
@@ -37,4 +39,16 @@ FabricObject.prototype.eset = function (
   if (changed) {
     this.canvas?.fire('def:modified', { target: this })
   }
+}
+
+FabricObject.prototype.getZIndex = function () {
+  if (!this.canvas) throw new Error('getzIndex but no canvas')
+  return this.canvas.getObjects().indexOf(this)
+}
+
+FabricObject.prototype.getNext = function () {
+  if (!this.canvas) throw new Error('getzIndex but no canvas')
+  const zidx = this.getZIndex()
+  const nextObj = this.canvas.getObjectByZIndex(zidx + 1)
+  return nextObj
 }

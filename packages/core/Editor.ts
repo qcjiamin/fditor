@@ -58,8 +58,12 @@ class Editor extends EventBus<EditorEventMap> {
       controlsAboveOverlay: true
     })
 
-    this.stage.on('def:modified', (node) => {
-      this.emit('node:modified', node)
+    this.stage.on('def:modified', ({ target }) => {
+      this.emit('node:modified', { target })
+    })
+    this.stage.on('object:modified', (options) => {
+      console.log('obj modified')
+      this.emit('node:modified', { target: options.target })
     })
 
     window.fab = this.stage

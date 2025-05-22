@@ -23,10 +23,8 @@ export const useGetAttrs = (getAttrs: () => void) => {
     }
   )
   const modifiedHandle = () => {
-    console.log('modify getattrs', getAttrs)
     getAttrs()
   }
-  // 卸载
   editor?.on('node:modified', modifiedHandle)
   onUnmounted(() => {
     editor?.off('node:modified', modifiedHandle)
