@@ -1,4 +1,4 @@
-import { ActiveSelection, FabricObject, Group, Rect } from 'fabric'
+import { ActiveSelection, FabricObject, Group } from 'fabric'
 
 declare module 'fabric' {
   export interface ActiveSelection {
@@ -45,18 +45,23 @@ ActiveSelection.prototype.toGorup = function () {
   tempArr.sort((item1, item2) => {
     return item1.getZIndex() - item2.getZIndex()
   })
+  tempArr.forEach((item) => {
+    console.log(item.canvas)
+  })
 
   const maxZindex = getMaxZindexInCollection(tempArr)
   const beforeObjIdx = maxZindex + 1
   const beforeObj = this.canvas.getObjectByZIndex(beforeObjIdx)
   console.log(beforeObjIdx, beforeObj)
 
-  const newGroup = new Group(tempArr)
+  const newGroup = new Group(tempArr, {
+    // canvas: this.canvas
+  })
   // newGroup.setCoords()
   // !必须先添加再删除，不然zidx不对
-  this.canvas.insertBefore(newGroup, beforeObj)
+  this.canvas._insertBefore(newGroup, beforeObj)
   // this.canvas._add(newGroup)
-  // this.canvas._remove(...tempArr)
+  this.canvas._remove(...tempArr)
   this.canvas._activeObject = newGroup
   // this.canvas.renderAll()
   // return newGroup

@@ -1,14 +1,12 @@
-import { Canvas } from 'fabric'
+import { Canvas, StaticCanvas } from 'fabric'
 // import { CanvasEvents } from 'fabric'
 
 declare module 'fabric' {
-  export interface Canvas {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    eset(key: string, val: any, checkChnage?: boolean): void
+  export interface StaticCanvas {
     getObjectByZIndex(idx: number): FabricObject | null
-    _insertBefore(obj: FabricObject, desObj: FabricObject | null): Canvas
-    _add(...objs: FabricObject[]): Canvas
-    _remove(...objs: FabricObject[]): Canvas
+    insertBefore(obj: FabricObject, desObj: FabricObject | null): StaticCanvas
+    _add(...objs: FabricObject[]): StaticCanvas
+    _remove(...objs: FabricObject[]): StaticCanvas
   }
   // 扩展事件
   export interface CanvasEvents {
@@ -16,22 +14,11 @@ declare module 'fabric' {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-Canvas.prototype.eset = function (key: string, val: any, checkChnage: boolean = true) {
-  //! colorPicker为例，鼠标down和up在同一位置，那么up时设置的颜色值与之前的相同，导致不会触发修改事件
-  //! 但是有 commit 标记，eset 只会在up时触发，结果会导致无法触发修改事件
-  const isChange = checkChnage ? this.get(key) !== val : true
-  if (isChange) {
-    this.set(key, val)
-    this.fire('def:modified', { target: this })
-  }
-}
-
-Canvas.prototype.getObjectByZIndex = function (idx) {
+StaticCanvas.prototype.getObjectByZIndex = function (idx) {
   return this.getObjects().find((obj) => obj.getZIndex() === idx) || null
 }
 
-Canvas.prototype._insertBefore = function (obj, desObj) {
+StaticCanvas.prototype.insertBefore = function (obj, desObj) {
   const objects = this._objects
   if (!desObj) {
     objects.push(obj)
@@ -41,9 +28,7 @@ Canvas.prototype._insertBefore = function (obj, desObj) {
   }
   obj._set('canvas', this)
   obj.setCoords()
-  //! 与fabric4 不同，这个字段会保存需要重新渲染的对象列表，需要清空
-  //! by 源码 Canvas._onObjectAdded
-  this._objectsToRender = undefined
+  // this._onObjectAdded(obj)
 
   if (this.renderOnAddRemove) {
     this.requestRenderAll()
@@ -52,7 +37,7 @@ Canvas.prototype._insertBefore = function (obj, desObj) {
 }
 
 // 添加，无事件触发版本
-Canvas.prototype._add = function (...objs) {
+StaticCanvas.prototype._add = function (...objs) {
   this._objects.push(...objs)
   objs.forEach((obj) => {
     obj.canvas = this as Canvas
@@ -65,7 +50,7 @@ Canvas.prototype._add = function (...objs) {
 }
 
 // 删除，无事件触发版本
-Canvas.prototype._remove = function (...objs) {
+StaticCanvas.prototype._remove = function (...objs) {
   const objects = this._objects
   let index
   let somethingRemoved = false

@@ -49,3 +49,19 @@ StaticCanvas.prototype._renderBackgroundOrOverlay = function (ctx, property) {
     ctx.restore()
   }
 }
+
+StaticCanvas.prototype._onTest = function (obj) {
+  console.log('1!!')
+  // if (obj.canvas && obj.canvas !== this) {
+  //   log(
+  //     'warn',
+  //     'Canvas is trying to add an object that belongs to a different canvas.\n' +
+  //       'Resulting to default behavior: removing object from previous canvas and adding to new canvas'
+  //   )
+  //   obj.canvas.remove(obj)
+  // }
+  obj._set('canvas', this)
+  obj.setCoords()
+  // this.fire('object:added', { target: obj })
+  // obj.fire('added', { target: this })
+}
