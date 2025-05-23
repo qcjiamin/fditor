@@ -2,7 +2,7 @@ import { ActiveSelection, FabricObject, Group } from 'fabric'
 
 declare module 'fabric' {
   export interface ActiveSelection {
-    toGorup(): void
+    toGorup(): Group
   }
 }
 
@@ -57,12 +57,9 @@ ActiveSelection.prototype.toGorup = function () {
   const newGroup = new Group(tempArr, {
     // canvas: this.canvas
   })
-  // newGroup.setCoords()
   // !必须先添加再删除，不然zidx不对
   this.canvas._insertBefore(newGroup, beforeObj)
-  // this.canvas._add(newGroup)
   this.canvas._remove(...tempArr)
   this.canvas._activeObject = newGroup
-  // this.canvas.renderAll()
-  // return newGroup
+  return newGroup
 }

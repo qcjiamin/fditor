@@ -58,6 +58,7 @@ Canvas.prototype._add = function (...objs) {
     obj.canvas = this as Canvas
     obj.setCoords()
   })
+  this._objectsToRender = undefined
   if (this.renderOnAddRemove) {
     this.requestRenderAll()
   }
