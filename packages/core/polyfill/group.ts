@@ -1,8 +1,9 @@
-import { ActiveSelection, FabricObject, Group, GroupProps, util } from 'fabric'
+import { ActiveSelection, FabricObject, Group, util } from 'fabric'
 
 // 扩展 Group 构造函数的类型（静态方法）
 declare module 'fabric' {
   interface Group {
+    /** 解组，无事件触发。根据组上有无canvas,决定是否插入画布。插入位置为原组Zindex */
     _unGroup: () => void
     toActiveSelection: () => ActiveSelection
   }
@@ -16,7 +17,6 @@ function isGroup(obj: FabricObject | Group): obj is Group {
   return obj.type === 'group'
 }
 
-/** 解组，无事件触发 */
 Group.prototype._unGroup = function () {
   if (!this.canvas) throw new Error('')
   // 解组
@@ -79,9 +79,6 @@ Group.prototype.toActiveSelection = function () {
   const objs = this._objects
   this._unGroup()
   canvas._remove(this)
-  // for (const obj of objs) {
-  //   canvas._add(obj)
-  // }
   const selection = new ActiveSelection(objs, { canvas })
   canvas._activeObject = selection
   // canvas.setActiveObject(selection)

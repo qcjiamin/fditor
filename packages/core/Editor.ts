@@ -30,12 +30,14 @@ class Editor extends EventBus<EditorEventMap> {
   public workspace!: IRect
   public scaleRate: number
   public container: HTMLDivElement | null = null
+  public isSilence: boolean = false
   constructor(layout: Layout = Layout.Portrait) {
     super()
     this.#layout = layout
     this.scaleRate = 1
     this.workspace = { x: 0, y: 0, width: 100, height: 100 }
     this.#pluginMap = new Map()
+    this.isSilence = false
   }
   get stage() {
     return <Canvas>this.#stage
@@ -52,18 +54,50 @@ class Editor extends EventBus<EditorEventMap> {
     this.emit('layout:change', null)
   }
 
+  /** 全局静默包装器 */
+  public async withSilence<T>(dosomething: () => T | Promise<T>): Promise<T> {
+    this.isSilence = true
+    try {
+      return await Promise.resolve(dosomething())
+    } finally {
+      this.isSilence = false
+    }
+  }
+
   public init(element: HTMLCanvasElement) {
     this.#stage = new Canvas(element, {
       // 控制点绘制在overlay image 和 clippath 之上
       controlsAboveOverlay: true
     })
 
+    // 将添加、删除、移动、缩放、旋转，统一触发自定义的修改事件
     this.stage.on('def:modified', ({ target }) => {
+      if (this.isSilence) {
+        console.log('%cdef:modified but silence', 'color: rgba(255, 0, 0); font-weight: bold')
+        return
+      }
       this.emit('node:modified', { target })
     })
     this.stage.on('object:modified', (options) => {
-      console.log('obj modified')
+      if (this.isSilence) {
+        console.log('%cobject:modified but silence', 'color: rgba(255, 0, 0); font-weight: bold')
+        return
+      }
       this.emit('node:modified', { target: options.target })
+    })
+    this.stage.on('object:added', ({ target }) => {
+      if (this.isSilence) {
+        console.log('%cobject:added but silence', 'color: rgba(255, 0, 0); font-weight: bold')
+        return
+      }
+      this.emit('node:modified', { target })
+    })
+    this.stage.on('object:removed', ({ target }) => {
+      if (this.isSilence) {
+        console.log('%cobject:removed but silence', 'color: rgba(255, 0, 0); font-weight: bold')
+        return
+      }
+      this.emit('node:modified', { target })
     })
 
     window.fab = this.stage
@@ -162,7 +196,13 @@ class Editor extends EventBus<EditorEventMap> {
   // interface LayerConfig {
   //   children: Konva.Node[];
   // }
-
+  /** 无事件版本加载配置渲染 */
+  public async _fromJSON(json: string) {
+    const cvs = await this.withSilence<Canvas>(() => this.stage.loadFromJSON(json))
+    // const cvs = await this.stage.loadFromJSON(json)
+    cvs.renderAll()
+    return cvs
+  }
   public fromJSON(json: string) {
     console.log(json)
   }
