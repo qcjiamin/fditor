@@ -28,8 +28,8 @@ export interface EditorEventMap {
   'selected:change': FabricObject | undefined
   // 'canvas:resize': { width: number; height: number }
   'node:add': FabricObject[]
-  'node:remove': FabricObject[]
-  'node:modified': { target: FabricObject | Canvas }
+  'node:remove': FabricObject[] | FabricObject
+  'node:modified': { target: FabricObject | Canvas | FabricObject[] }
   // 'node:zindex:change': KonvaNode[]
   // 'node:update:before': { nodes: KonvaNode[] }
   // 'node:update:after': { nodes: KonvaNode[] }

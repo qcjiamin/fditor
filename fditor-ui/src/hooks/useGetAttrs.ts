@@ -27,6 +27,7 @@ export const useGetAttrs = (getAttrs: () => void) => {
   }
   editor?.on('node:modified', modifiedHandle)
   onUnmounted(() => {
+    console.error('销毁修改事件绑定')
     editor?.off('node:modified', modifiedHandle)
   })
 }

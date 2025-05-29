@@ -1,4 +1,4 @@
-import { Canvas } from 'fabric'
+import { ActiveSelection, Canvas } from 'fabric'
 // import { CanvasEvents } from 'fabric'
 
 declare module 'fabric' {
@@ -9,6 +9,8 @@ declare module 'fabric' {
     _insertBefore(obj: FabricObject, desObj: FabricObject | null): Canvas
     _add(...objs: FabricObject[]): Canvas
     _remove(...objs: FabricObject[]): Canvas
+    /** 删除选中的元素 */
+    _removeSelected(): FabricObject | FabricObject[] | null
   }
   // 扩展事件
   export interface CanvasEvents {
@@ -53,12 +55,12 @@ Canvas.prototype._insertBefore = function (obj, desObj) {
 
 // 添加，无事件触发版本
 Canvas.prototype._add = function (...objs) {
+  this._objectsToRender = undefined
   this._objects.push(...objs)
   objs.forEach((obj) => {
     obj.canvas = this as Canvas
     obj.setCoords()
   })
-  this._objectsToRender = undefined
   if (this.renderOnAddRemove) {
     this.requestRenderAll()
   }
@@ -67,6 +69,8 @@ Canvas.prototype._add = function (...objs) {
 
 // 删除，无事件触发版本
 Canvas.prototype._remove = function (...objs) {
+  this._objectsToRender = undefined
+
   const objects = this._objects
   let index
   let somethingRemoved = false
@@ -83,8 +87,24 @@ Canvas.prototype._remove = function (...objs) {
   }
 
   if (this.renderOnAddRemove && somethingRemoved) {
-    this.requestRenderAll()
+    this.renderAll()
   }
 
   return this
+}
+
+Canvas.prototype._removeSelected = function () {
+  const active = this.getActiveObject()
+  if (!active) return null
+
+  if (active instanceof ActiveSelection) {
+    const objs = [...active._objects]
+    this.discardActiveObject()
+    this._remove(...objs)
+    return objs
+  } else {
+    this.discardActiveObject()
+    this._remove(active)
+    return active
+  }
 }

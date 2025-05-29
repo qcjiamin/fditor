@@ -93,10 +93,15 @@ class Editor extends EventBus<EditorEventMap> {
       this.emit('node:modified', { target })
     })
     this.stage.on('object:removed', ({ target }) => {
+      console.error('removed')
       if (this.isSilence) {
         console.log('%cobject:removed but silence', 'color: rgba(255, 0, 0); font-weight: bold')
         return
       }
+      this.emit('node:modified', { target })
+    })
+    // 最终的删除响应
+    this.on('node:remove', (target) => {
       this.emit('node:modified', { target })
     })
 
@@ -140,16 +145,6 @@ class Editor extends EventBus<EditorEventMap> {
   public add(...nodes: FabricObject[]): this {
     this._add(...nodes)
     this.emit('node:add', nodes)
-    return this
-  }
-
-  public _remove(...nodes: FabricObject[]): this {
-    this.stage.remove(...nodes)
-    return this
-  }
-  public remove(...nodes: FabricObject[]) {
-    this._remove(...nodes)
-    this.emit('node:remove', nodes)
     return this
   }
 

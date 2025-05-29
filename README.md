@@ -36,9 +36,13 @@ TODO
 - [ ] 自定义形状绘制 箭头 线
 - [ ] 颜色相关的ts类型定义与颜色选择器事件!!!
 - [ ] 使用 provice inject 优化嵌套比较深，但是中间组件有透传而无自身逻辑的情况
+- [ ] 图片裁剪
+- [ ] 区分属性修改事件 和 删除事件   属性修改->history & getattr   删除 -> history
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制
+> 为什么需要静默状态？
+   删除 activeSelection(2个元素) 时，会触发2次object:removed, 业务上影响 history 的 step
 
 This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
