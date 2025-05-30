@@ -37,7 +37,8 @@ TODO
 - [ ] 颜色相关的ts类型定义与颜色选择器事件!!!
 - [ ] 使用 provice inject 优化嵌套比较深，但是中间组件有透传而无自身逻辑的情况
 - [ ] 图片裁剪
-- [ ] 区分属性修改事件 和 删除事件   属性修改->history & getattr   删除 -> history
+- [x] 区分属性修改事件 和 删除事件   属性修改->history & getattr   删除 -> history
+- [ ] 文字渐变色
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制

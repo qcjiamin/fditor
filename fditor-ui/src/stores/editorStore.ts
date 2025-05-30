@@ -6,7 +6,8 @@ import { computed, ref } from 'vue'
 const type2Type: Record<string, ElementTypes> = {
   circle: 'Shape',
   rect: 'Shape',
-  activeselection: 'activeselection'
+  activeselection: 'activeselection',
+  textbox: 'text'
 }
 
 // 主要用于管理画布的状态

@@ -7,13 +7,14 @@
   import historyBox from '@/views/editer/components/propertyBar/history-box.vue'
   import publicBar from '@/views/editer/components/propertyBar/public-bar.vue'
   import { useEditorStore } from '@/stores/editorStore'
+  import textBar from '@/views/editer/components/propertyBar/textBar/text-bar.vue'
   const editorStore = useEditorStore()
 
   const barComponents: Record<ElementTypes, Component> = {
     bg: bgBar,
     Shape: ShapeBar,
     image: bgBar,
-    text: bgBar,
+    text: textBar,
     activeselection: bgBar
   }
   const showPublicRef = computed(() => editorStore.selectType !== 'bg')

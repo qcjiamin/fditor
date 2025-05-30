@@ -1,11 +1,15 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
   import { type Editor } from '@kditor/core'
+  import { Textbox } from 'fabric'
   import { inject } from 'vue'
 
   const editor = inject(EditorKey) as Editor
   function addText() {
-    console.log(editor)
+    const text = new Textbox('TEXT', {
+      fontSize: 100
+    })
+    editor.add(text)
   }
 </script>
 

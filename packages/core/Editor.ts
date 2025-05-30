@@ -79,6 +79,7 @@ class Editor extends EventBus<EditorEventMap> {
       this.emit('node:modified', { target })
       this.emit('history:update', undefined)
     })
+    // 对象移动，缩放，文字编辑完成
     this.stage.on('object:modified', (options) => {
       if (this.isSilence) {
         console.log('%cobject:modified but silence', 'color: rgba(255, 0, 0); font-weight: bold')
