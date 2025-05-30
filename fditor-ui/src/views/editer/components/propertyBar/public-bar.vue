@@ -2,7 +2,7 @@
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { EditorKey } from '@/constants/injectKey'
   import type { Editor } from '@kditor/core'
-  import { computed, inject, nextTick, reactive } from 'vue'
+  import { computed, inject, reactive } from 'vue'
   import opacityProperty from '@/views/editer/components/propertyBar/opacity-property.vue'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   import { useEditorStore } from '@/stores/editorStore'
@@ -68,7 +68,7 @@
     const removed = editor.stage._removeSelected()
     if (!removed) throw new Error('removeSelected return null')
     //! 避免先触发 删除-修改事件->重新获取属性，后触发选中清理事件，导致获取属性报错
-    await nextTick()
+    // await nextTick()
     editor.emit('node:remove', removed)
   }
 </script>

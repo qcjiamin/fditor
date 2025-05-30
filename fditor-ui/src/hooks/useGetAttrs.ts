@@ -1,5 +1,5 @@
 import { EditorKey } from '@/constants/injectKey'
-import { inject, onBeforeMount, onUnmounted, watch } from 'vue'
+import { inject, onBeforeMount, onMounted, onUnmounted, watch } from 'vue'
 import { useEditorStore } from '@/stores/editorStore'
 
 /**
@@ -25,9 +25,10 @@ export const useGetAttrs = (getAttrs: () => void) => {
   const modifiedHandle = () => {
     getAttrs()
   }
-  editor?.on('node:modified', modifiedHandle)
+  onMounted(() => {
+    editor?.on('node:modified', modifiedHandle)
+  })
   onUnmounted(() => {
-    console.error('销毁修改事件绑定')
     editor?.off('node:modified', modifiedHandle)
   })
 }

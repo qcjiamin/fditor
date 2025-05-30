@@ -77,6 +77,7 @@ class Editor extends EventBus<EditorEventMap> {
         return
       }
       this.emit('node:modified', { target })
+      this.emit('history:update', undefined)
     })
     this.stage.on('object:modified', (options) => {
       if (this.isSilence) {
@@ -84,6 +85,7 @@ class Editor extends EventBus<EditorEventMap> {
         return
       }
       this.emit('node:modified', { target: options.target })
+      this.emit('history:update', undefined)
     })
     this.stage.on('object:added', ({ target }) => {
       if (this.isSilence) {
@@ -92,17 +94,20 @@ class Editor extends EventBus<EditorEventMap> {
       }
       this.emit('node:modified', { target })
     })
-    this.stage.on('object:removed', ({ target }) => {
-      console.error('removed')
-      if (this.isSilence) {
-        console.log('%cobject:removed but silence', 'color: rgba(255, 0, 0); font-weight: bold')
-        return
-      }
-      this.emit('node:modified', { target })
-    })
+    // this.stage.on('object:removed', ({ target }) => {
+    //   console.error('removed')
+    //   if (this.isSilence) {
+    //     console.log('%cobject:removed but silence', 'color: rgba(255, 0, 0); font-weight: bold')
+    //     return
+    //   }
+    //   this.emit('node:modified', { target })
+    //   this.emit('history:update', undefined)
+    // })
     // 最终的删除响应
-    this.on('node:remove', (target) => {
-      this.emit('node:modified', { target })
+    this.on('node:remove', () => {
+      //! 不同于属性修改，删除只需要更新history, 属性条修改会被 selection:clear 处理
+      // this.emit('node:modified', { target })
+      this.emit('history:update', undefined)
     })
 
     window.fab = this.stage

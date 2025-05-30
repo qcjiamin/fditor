@@ -35,8 +35,8 @@ export default class HistoryPlugin implements IPlugin {
     })
 
     //todo: 是否需要再这里就监听修改？ 可以，这个插件属于业务插件
-    this.editor.on('node:modified', (target) => {
-      console.log('node:modified', target)
+    this.editor.on('history:update', (target) => {
+      console.log('history:update', target)
       this.addStep({
         type: 'modify',
         info: JSON.stringify(this.editor.stage.toJSON())

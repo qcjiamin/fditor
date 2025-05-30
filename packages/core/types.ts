@@ -37,6 +37,8 @@ export interface EditorEventMap {
   'plugin:installed': IPlugin
   'layout:change': null
   'canvas:ready': null
+  // 区分修改与历史记录更新
+  'history:update': void
 }
 
 //todo: mainLayer 更具体的定义
