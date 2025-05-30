@@ -67,8 +67,6 @@
 
     const removed = editor.stage._removeSelected()
     if (!removed) throw new Error('removeSelected return null')
-    //! 避免先触发 删除-修改事件->重新获取属性，后触发选中清理事件，导致获取属性报错
-    // await nextTick()
     editor.emit('node:remove', removed)
   }
 </script>

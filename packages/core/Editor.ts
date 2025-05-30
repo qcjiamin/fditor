@@ -87,23 +87,15 @@ class Editor extends EventBus<EditorEventMap> {
       this.emit('node:modified', { target: options.target })
       this.emit('history:update', undefined)
     })
-    this.stage.on('object:added', ({ target }) => {
+    this.stage.on('object:added', () => {
       if (this.isSilence) {
         console.log('%cobject:added but silence', 'color: rgba(255, 0, 0); font-weight: bold')
         return
       }
-      this.emit('node:modified', { target })
+      this.emit('history:update', undefined)
     })
-    // this.stage.on('object:removed', ({ target }) => {
-    //   console.error('removed')
-    //   if (this.isSilence) {
-    //     console.log('%cobject:removed but silence', 'color: rgba(255, 0, 0); font-weight: bold')
-    //     return
-    //   }
-    //   this.emit('node:modified', { target })
-    //   this.emit('history:update', undefined)
-    // })
-    // 最终的删除响应
+
+    // 删除使用自定义的事件
     this.on('node:remove', () => {
       //! 不同于属性修改，删除只需要更新history, 属性条修改会被 selection:clear 处理
       // this.emit('node:modified', { target })
@@ -147,11 +139,20 @@ class Editor extends EventBus<EditorEventMap> {
     )
     return this
   }
-  public add(...nodes: FabricObject[]): this {
-    this._add(...nodes)
-    this.emit('node:add', nodes)
-    return this
+
+  /** 业务逻辑方法，添加并选中元素 */
+  public add(obj: FabricObject) {
+    // 添加
+    this.stage.add(obj)
+    // 选中
+    this.stage.setActiveObject(obj)
   }
+
+  // public add(...nodes: FabricObject[]): this {
+  //   this._add(...nodes)
+  //   this.emit('node:add', nodes)
+  //   return this
+  // }
 
   // public _moveUp(...nodes: KonvaNode[]): this {
   //   nodes.forEach((node) => {
