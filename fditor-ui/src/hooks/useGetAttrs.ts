@@ -10,7 +10,7 @@ export const useGetAttrs = (getAttrs: () => void) => {
   const editorStore = useEditorStore()
 
   const editor = inject(EditorKey)
-  // 组件渲染前
+  // 组件渲染前(因为双向绑定，watch监听属性，不提前获取会触发一次默认值-》当前值的修改事件)
   onBeforeMount(() => {
     getAttrs()
   })

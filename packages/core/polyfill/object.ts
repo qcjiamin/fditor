@@ -36,8 +36,10 @@ FabricObject.prototype.eset = function (
     }
     changed = valOrCheckChange ? changed : true
   }
-  if (changed) {
-    this.canvas?.fire('def:modified', { target: this })
+  if (changed && this.canvas) {
+    //todo: 属性修改了触发重新渲染；这个逻辑该在这还是在外面监听修改事件触发？
+    this.canvas.requestRenderAll()
+    this.canvas.fire('def:modified', { target: this })
   }
 }
 
