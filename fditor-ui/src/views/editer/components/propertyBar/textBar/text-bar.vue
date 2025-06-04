@@ -15,6 +15,7 @@
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   import alignProperty from '@/views/editer/components/propertyBar/textBar/align-property.vue'
   import type { alignType } from '@/views/editer/components/propertyBar/textBar/types'
+  import spacingProperty from '@/views/editer/components/propertyBar/textBar/spacing-property.vue'
 
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
@@ -32,6 +33,8 @@
     fontStyle: FontStyle
     underline: boolean
     align: alignType
+    charSpacing: number
+    lineHeight: number
   }
   const attrs: IFontAttrs = reactive({
     fill: {
@@ -43,7 +46,10 @@
     fontWeight: 'normal',
     fontStyle: 'normal',
     underline: false,
-    align: 'left'
+    align: 'left',
+    // 1/1000 em
+    charSpacing: 0,
+    lineHeight: 1
   })
   const isBold = computed(() => {
     return attrs.fontWeight === 'bold'
@@ -64,6 +70,8 @@
     attrs.fontStyle = selected.fontStyle as FontStyle
     attrs.underline = selected.underline
     attrs.align = selected.textAlign as alignType
+    attrs.charSpacing = selected.charSpacing
+    attrs.lineHeight = selected.lineHeight
   }
   useGetAttrs(getAttrs)
 
@@ -137,6 +145,27 @@
     if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
     selected.eset('textAlign', val, false)
   }
+  function updateCharSpacing(val: number, { commit }: updateColorOptions) {
+    if (!selected) throw new Error('get font color but no selected')
+    if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
+    if (commit) {
+      selected.eset('charSpacing', val, false)
+    } else {
+      selected.set('charSpacing', val)
+      editor.render()
+    }
+  }
+  function updateLineHeight(val: number, { commit }: updateColorOptions) {
+    console.log(val)
+    if (!selected) throw new Error('get font color but no selected')
+    if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
+    if (commit) {
+      selected.eset('lineHeight', val, false)
+    } else {
+      selected.set('lineHeight', val)
+      editor.render()
+    }
+  }
 </script>
 
 <template>
@@ -155,8 +184,14 @@
     <property-normal-item :active="attrs.underline" @click="updateUnderline">
       <FontUnderline></FontUnderline>
     </property-normal-item>
-    <align-property :align="attrs.align" @update:align="updateAlign"></align-property>
-    <div>间距</div>
+    <align-property :align="attrs.align" tip="alignment" @update:align="updateAlign"></align-property>
+    <spacing-property
+      tip="spacing"
+      :char-spacing="attrs.charSpacing"
+      :line-height="attrs.lineHeight"
+      @update:char-spacing="updateCharSpacing"
+      @update:line-height="updateLineHeight"
+    ></spacing-property>
   </div>
 </template>
 

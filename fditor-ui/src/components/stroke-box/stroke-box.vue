@@ -61,7 +61,7 @@
     <div class="strokeWidth">
       <div>描边粗细</div>
       <el-slider
-        :model-value="localStrokeWidth"
+        v-model="localStrokeWidth"
         show-input
         :show-input-controls="false"
         size="small"

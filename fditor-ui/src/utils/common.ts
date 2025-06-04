@@ -32,11 +32,15 @@ export function originToMat3(origin: Point) {
 }
 
 export function switchPointFromCoordinateSystemAToB(A: mat3, B: mat3, pointInA: Point) {
+  // B 的逆矩阵
   const invertB = mat3.invert(mat3.create(), B)
+  // B 的逆矩阵 * A 矩阵。 表示 A 坐标系-> 世界坐标系 -> B 坐标系的变化
+  // 矩阵乘法是右乘先执行，所以先 A，再转成 B
   const delta = mat3.multiply(mat3.create(), invertB, A)
   const p = vec2.fromValues(pointInA.x, pointInA.y)
+  // 将点A转换到B坐标系下
   const pInB = vec2.transformMat3(vec2.create(), p, delta)
-  // const pointInB
+
   return { x: pInB[0], y: pInB[1] }
 }
 
