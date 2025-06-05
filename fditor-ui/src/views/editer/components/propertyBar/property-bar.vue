@@ -8,12 +8,13 @@
   import publicBar from '@/views/editer/components/propertyBar/public-bar.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import textBar from '@/views/editer/components/propertyBar/textBar/text-bar.vue'
+  import imageBar from '@/views/editer/components/propertyBar/imageBar/image-bar.vue'
   const editorStore = useEditorStore()
 
   const barComponents: Record<ElementTypes, Component> = {
     bg: bgBar,
     Shape: ShapeBar,
-    image: bgBar,
+    image: imageBar,
     text: textBar,
     activeselection: bgBar
   }

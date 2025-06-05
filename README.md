@@ -44,6 +44,14 @@ TODO
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制
 > 为什么需要静默状态？
    删除 activeSelection(2个元素) 时，会触发2次object:removed, 业务上影响 history 的 step
+裁剪实现方案
+  A 1. group 包 image 实现自定义Image类，裁剪框绑定在group上，宽高，定位设置在group上
+    2. 裁剪时创建一个独立裁剪框
+    3. 如果要做蒙层并凸显当前裁剪区域的话，裁剪时在独立裁剪框下添加蒙层和一个随独立裁剪框缩放实时调整clippath的图片
+    4. 独立裁剪框与实时调整clippath的图片可以合并为一个组件
+  B 1. 自己计算自身响应范围，包装为新类，不用group代理宽高
+      分解任务：先找到计算active范围的方法
+    2. 其他逻辑与group一致
 
 This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
