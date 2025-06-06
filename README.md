@@ -52,6 +52,7 @@ TODO
   B 1. 自己计算自身响应范围，包装为新类，不用group代理宽高
       分解任务：先找到计算active范围的方法
     2. 其他逻辑与group一致
+    !! 需要根据裁剪框重新计算元素定位
 
 This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
