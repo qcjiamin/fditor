@@ -8,4 +8,6 @@ import WorkspacePlugin from './plugins/WorkspacePlugin/WorkspacePlugin'
 export * from './types'
 export * from './helper/index'
 
+export * from './customShape/FImage'
+
 export { Editor, WorkspacePlugin, AlignPlugin, BackgroundPlugin, SelectionPlugin }

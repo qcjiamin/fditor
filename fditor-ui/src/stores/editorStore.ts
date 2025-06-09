@@ -8,7 +8,7 @@ const type2Type: Record<string, ElementTypes> = {
   rect: 'Shape',
   activeselection: 'activeselection',
   textbox: 'text',
-  image: 'image'
+  fimage: 'image'
 }
 
 // 主要用于管理画布的状态

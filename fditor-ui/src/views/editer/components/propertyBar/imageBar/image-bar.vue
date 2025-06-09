@@ -12,20 +12,31 @@
     editor.enterCrop()
   }
   function addClippath() {
+    // const rect = new Rect({
+    //   w: selected?.getScaledWidth(),
+    //   h: selected?.getScaledHeight(),
+    //   left: selected?.left,
+    //   top: selected?.top,
+    //   fill: 'transparent',
+    //   stroke: 'black',
+    //   strokeWidth: 2
+    // })
+
     const circle = new Circle({
       radius: 50,
-      originX: 'center',
-      originY: 'center'
+      left: -50,
+      top: -50
     })
+
     const center = selected!.getCenterPoint()
     selected!.eset({
       clipPath: circle,
       left: center.x - 50,
       top: center.y - 50
-      // width: circle.width,
-      // height: circle.height
     })
     selected!.setCoords()
+    // selected!.width = circle.width
+    // selected!.height = circle.height
   }
 </script>
 

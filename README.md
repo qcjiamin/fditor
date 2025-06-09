@@ -49,10 +49,15 @@ TODO
     2. 裁剪时创建一个独立裁剪框
     3. 如果要做蒙层并凸显当前裁剪区域的话，裁剪时在独立裁剪框下添加蒙层和一个随独立裁剪框缩放实时调整clippath的图片
     4. 独立裁剪框与实时调整clippath的图片可以合并为一个组件
+    !! 与B相比，虽然裁剪框和宽高都设置在group上，但是有原图撑原始宽高
   B 1. 自己计算自身响应范围，包装为新类，不用group代理宽高
       分解任务：先找到计算active范围的方法
-    2. 其他逻辑与group一致
+    1. 其他逻辑与group一致
     !! 需要根据裁剪框重新计算元素定位
+    => 基本否定该方案
+      裁剪框的定位依赖于图片的原始宽高
+      图片的宽高在裁剪后会设置与裁剪框相同
+      这2个条件互斥
 
 This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 

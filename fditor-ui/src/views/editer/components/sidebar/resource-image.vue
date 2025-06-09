@@ -5,8 +5,7 @@
   import type { ImageInfo } from '@/types'
   import { EditorKey } from '@/constants/injectKey'
   import { loadImage } from '@/utils/common'
-  import { FabricImage } from 'fabric'
-  import type { Editor } from '@kditor/core'
+  import { FImage, type Editor } from '@kditor/core'
 
   const editor = inject(EditorKey) as Editor
   onMounted(async () => {})
@@ -29,7 +28,9 @@
   async function addImage(src: string) {
     console.log(src)
     const imgEl = await loadImage(src)
-    const image = new FabricImage(imgEl, {})
+    const image = new FImage(imgEl)
+
+    // const image = new FabricImage(imgEl, {})
     image.scaleToWidth(300)
     editor.add(image)
   }

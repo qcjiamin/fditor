@@ -4,7 +4,7 @@ export type Selected = FabricObject | undefined
 export enum ElementType {
   bg = 'bg',
   shape = 'shape',
-  image = 'image',
+  image = 'fimage',
   text = 'text'
 }
 
