@@ -2,17 +2,7 @@
 // 限制移动范围
 
 import { FImage } from '@kditor/core'
-import {
-  classRegistry,
-  FabricObject,
-  FabricObjectProps,
-  iMatrix,
-  Path,
-  Point,
-  TComplexPathData,
-  TMat2D,
-  util
-} from 'fabric'
+import { classRegistry, FabricObjectProps, iMatrix, Path, Point, TComplexPathData, TMat2D } from 'fabric'
 import { switchPointFromContainerToLocal, switchPointFromLocalToContainer } from '../utils/mat'
 
 // 添加一些对象自己需要的属性
@@ -28,6 +18,7 @@ export class ClipFrame extends Path {
     super(path, options)
     this.flipX = false
     this.flipY = false
+    this.strokeWidth = 0
     this.belong = options.belong
     this.setControlsVisibility({
       mtr: false
@@ -203,10 +194,51 @@ export class ClipFrame extends Path {
     }
 
     // 重写control拖拽逻辑
+    //todo: 不从事件，从移动方法中hook
     this.on('moving', () => {
-      if (this.left < 100) {
-        this.set('left', 100)
+      // 获取底图范围
+      const originImg = this.belong._objects[0]
+      const originImgMat = originImg.calcTransformMatrix()
+      // 图片center是相对与容器坐标系的
+      const originImgCenter = originImg.getPointByOrigin('center', 'center')
+      const thisCenter = this.getPointByOrigin('center', 'center')
+      const thisCenterInImg = switchPointFromContainerToLocal(originImgMat, thisCenter)
+      //获取原始图片宽高
+      const imgW = originImg.getScaledWidth()
+      const imgH = originImg.getScaledHeight()
+      // 获取裁剪框宽高
+      //! thisW 需要排除 belong.scaleX 的影响，因为原始图片的范围是排除了 belong.scaleX 缩放的
+      //! 因为都基于容器坐标系做计算，因此需要统一缩放情况。this 的缩放是基于canvas的
+      //! 与control 类似，在统一到容器坐标系下计算时要特别注意 scale 的影响
+      const thisW = this.getScaledWidth() / this.belong.scaleX
+      const thisH = this.getScaledHeight() / this.belong.scaleY
+      // 获取最大偏差
+      const offsetX = (imgW - thisW) / 2
+      const offsetY = (imgH - thisH) / 2
+      // 通过比对中心点判断是否越界
+
+      let toCenterX = thisCenterInImg.x
+      let toCenterY = thisCenterInImg.y
+      const centerOffsetX = originImgCenter.x - thisCenterInImg.x
+      if (centerOffsetX > offsetX) {
+        toCenterX = toCenterX + (centerOffsetX - offsetX)
       }
+      if (centerOffsetX < -offsetX) {
+        toCenterX = toCenterX - (Math.abs(centerOffsetX) - offsetX)
+      }
+      const centerOffsetY = originImgCenter.y - thisCenterInImg.y
+      if (centerOffsetY > offsetY) {
+        toCenterY = toCenterY + (centerOffsetY - offsetY)
+      }
+      if (centerOffsetY < -offsetY) {
+        toCenterY = toCenterY - (Math.abs(centerOffsetY) - offsetY)
+      }
+
+      // 将toCenter转回画布坐标系，设置
+      const cvsMat = [...iMatrix] as TMat2D
+      const toPoint = switchPointFromLocalToContainer(originImgMat, cvsMat, new Point(toCenterX, toCenterY))
+      this.setPositionByOrigin(toPoint, 'center', 'center')
+      this.dirty = true
       this.canvas?.renderAll()
     })
   }

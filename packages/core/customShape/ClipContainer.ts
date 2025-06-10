@@ -26,7 +26,6 @@ export class ClipContainer extends Group {
     super([object], options)
   }
   doClip() {
-    console.log('start clip')
     // 创建裁剪框
     const w = this.getScaledWidth()
     const h = this.getScaledHeight()
