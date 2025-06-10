@@ -21,7 +21,6 @@ FabricImage.prototype._getTransformedDimensions = function (options: any = {}): 
     dimOptions.width = this.clipPath.width
     dimOptions.height = this.clipPath.height
   }
-  console.log(dimOptions)
   // stroke is applied before/after transformations are applied according to `strokeUniform`
   const strokeWidth = dimOptions.strokeWidth
   let preScalingStrokeValue = strokeWidth,
