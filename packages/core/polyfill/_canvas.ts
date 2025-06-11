@@ -1,3 +1,7 @@
+/**
+ * 此单元已经废弃，画布对象改用继承
+ */
+
 import { ActiveSelection, Canvas } from 'fabric'
 // import { CanvasEvents } from 'fabric'
 

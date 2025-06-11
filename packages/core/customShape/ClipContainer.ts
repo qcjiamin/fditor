@@ -19,13 +19,25 @@ function createClipShadow() {
   })
 }
 
+type ClipResolve<T> = (value: T | PromiseLike<T>) => void
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ClipReject = (reason?: any) => void
+
 export class ClipContainer extends Group {
   public static type = 'clipContainer'
+  private canClip: boolean = true
   private tempClipPath: ClipFrame | null = null
+  private clipPromise: Promise<null> | null = null
+  private resolveClip: ClipResolve<null> | null = null
+  private rejectClip: ClipReject | null = null
   constructor(object: FabricObject, options: ClipContainerOptions = {}) {
     super([object], options)
   }
   doClip() {
+    this.clipPromise = new Promise((resolve, reject) => {
+      this.resolveClip = resolve
+      this.rejectClip = reject
+    })
     // 创建裁剪框
     const w = this.getScaledWidth()
     const h = this.getScaledHeight()
@@ -38,11 +50,12 @@ export class ClipContainer extends Group {
       angle: this.angle
     })
 
-    if (!this.canvas) return
+    if (!this.canvas) throw Error('Execute the clip, but there is no canvas object.')
     this.tempClipPath.setPositionByOrigin(this.getPointByOrigin('center', 'center'), 'center', 'center')
     this.canvas._add(this.tempClipPath)
     this.canvas._activeObject = this.tempClipPath
     this.canvas.renderAll()
+    return this.clipPromise
   }
   async confirmClip() {
     // 实装裁剪框
@@ -119,9 +132,21 @@ export class ClipContainer extends Group {
     })
     this.canvas._activeObject = this
     this.canvas.renderAll()
+    if (this.resolveClip) {
+      this.resolveClip(null)
+    }
+  }
 
-    // 触发修改事件
-    this.canvas.fire('def:modified', { target: this })
+  cancelClip() {
+    if (!this.canvas) throw Error('no canvas')
+    if (!this.tempClipPath) throw Error('no tempClipPath')
+    this.canvas._remove(this.tempClipPath)
+    this.tempClipPath = null
+    this.canvas._activeObject = this
+    this.canvas.renderAll()
+    if (this.resolveClip) {
+      this.resolveClip(null)
+    }
   }
 }
 

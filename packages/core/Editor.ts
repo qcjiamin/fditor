@@ -7,6 +7,9 @@ import { v4 as uuidv4 } from 'uuid'
 import './polyfill'
 import { Canvas, FabricObject } from 'fabric'
 import { util } from 'fabric'
+import { FCanvas } from './customShape/FCanvas'
+import { FImage } from '@kditor/core'
+import { ClipFrame } from './customShape/ClipFrame'
 interface IRect {
   x: number
   y: number
@@ -23,7 +26,7 @@ declare module 'fabric' {
 // & Record<string, unknown[]> 当需要自定义事件时，可以使用联合类型
 // 当前不使用是因为想要事件名的提示
 class Editor extends EventBus<EditorEventMap> {
-  #stage: Canvas | null = null
+  #stage: FCanvas | null = null
   #pluginMap: Map<string, IPlugin>
   #layout: Layout
   public resizeObserver: ResizeObserver | null = null
@@ -40,7 +43,7 @@ class Editor extends EventBus<EditorEventMap> {
     this.isSilence = false
   }
   get stage() {
-    return <Canvas>this.#stage
+    return <FCanvas>this.#stage
   }
   get pluginMap() {
     return <Map<string, IPlugin>>this.#pluginMap
@@ -65,7 +68,7 @@ class Editor extends EventBus<EditorEventMap> {
   }
 
   public init(element: HTMLCanvasElement) {
-    this.#stage = new Canvas(element, {
+    this.#stage = new FCanvas(element, {
       // 控制点绘制在overlay image 和 clippath 之上
       controlsAboveOverlay: true
     })
@@ -148,6 +151,33 @@ class Editor extends EventBus<EditorEventMap> {
     // 选中
     this.stage.setActiveObject(obj)
   }
+
+  /**------ 裁剪方法 start ----- */
+  // 裁剪理解为业务方法，由于裁剪框会频繁触发修改事件，不大适合放入画布对象中
+  /** 开始裁剪 */
+  public async doClip() {
+    const selected = this.stage.getActiveObject()
+    if (!selected) return
+    if (!(selected instanceof FImage)) return
+    await this.withSilence(() => selected.doClip())
+  }
+  /** 确认裁剪 */
+  public async confirmClip() {
+    const selected = this.stage.getActiveObject()
+    if (!selected) return
+    if (!(selected instanceof ClipFrame)) return
+    await selected.belong.confirmClip()
+    this.emit('node:modified', { target: this.stage })
+    this.emit('history:update', undefined)
+  }
+  /** 取消裁剪 */
+  public async cancelClip() {
+    const selected = this.stage.getActiveObject()
+    if (!selected) return
+    if (!(selected instanceof ClipFrame)) return
+    await selected.belong.cancelClip()
+  }
+  /**------ 裁剪方法 end ----- */
 
   // public add(...nodes: FabricObject[]): this {
   //   this._add(...nodes)
