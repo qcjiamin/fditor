@@ -34,7 +34,10 @@
   async function addImage(src: string) {
     console.log(src)
     const imgEl = await loadImage(src)
+
     const image = new FImage(imgEl)
+
+    // const image = new FImage(imgEl)
 
     // const image = new FabricImage(imgEl, {})
     image.scaleToWidth(300)

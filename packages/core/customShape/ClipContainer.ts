@@ -44,7 +44,6 @@ export class ClipContainer extends Group {
   private rejectClip: ClipReject | null = null
   private lastClipPath: FabricObject | null = null
   constructor(object: FabricObject, options: ClipContainerOptions = {}) {
-    console.log(object)
     super([object], options)
   }
   doClip() {
@@ -52,7 +51,8 @@ export class ClipContainer extends Group {
       this.resolveClip = resolve
       this.rejectClip = reject
     })
-
+    //! 开始时禁用 objectCaching 配置；为了解决取消clippath时底图渲染异常的问题
+    this.objectCaching = false
     // 创建裁剪框
     const w = this.getScaledWidth()
     const h = this.getScaledHeight()
@@ -74,19 +74,10 @@ export class ClipContainer extends Group {
     this.canvas._add(this.tempClipPath)
 
     if (this.clipPath) {
-      // const originImage = this._objects[0]
-      // const toWidth = originImage.getScaledWidth() * this.scaleX
-      // const toHeight = originImage.getScaledHeight() * this.scaleY
-
       this.lastClipPath = this.clipPath as FabricObject
-      this.clipPath.dispose()
-      this.clipPath = undefined
-      this.dirty = true
-      // this.set('clipPath', undefined)
-      this._objects[0].dirty = true
-      this._cacheCanvas = undefined
-      this._removeCacheCanvas()
-      this.setCoords()
+      //! objectCaching = false 重要，不然底图显示不完整
+      // this.objectCaching = false
+      this.set('clipPath', undefined)
     }
 
     this.canvas._activeObject = this.tempClipPath
@@ -169,6 +160,8 @@ export class ClipContainer extends Group {
     //! 裁剪完选中被裁剪的图片，使用事件版本是为了让外部同步状态 点击空白(画布内、外)处 -> confirmClip -> 通知外部选中元素切换
     // this.canvas._activeObject = this
     this.canvas.setActiveObject(this)
+    //! 恢复 objectCaching 配置
+    this.objectCaching = true
     this.canvas.renderAll()
     if (this.resolveClip) {
       this.resolveClip(null)
@@ -191,6 +184,7 @@ export class ClipContainer extends Group {
     // this.canvas._activeObject = this
     this.restoreClipPath()
     this.canvas.setActiveObject(this)
+    this.objectCaching = true
     this.canvas.renderAll()
     if (this.resolveClip) {
       this.resolveClip(null)
@@ -199,7 +193,6 @@ export class ClipContainer extends Group {
 
   static fromObject<T extends TOptions<SerializedObjectProps>>(object: T, options?: Abortable) {
     return super.fromObject(object, options).then((obj) => {
-      console.error(obj)
       return obj
     })
   }

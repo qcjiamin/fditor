@@ -199,6 +199,7 @@ export class ClipFrame extends Path {
     this.on('moving', () => {
       // 获取底图范围
       const originImg = this.belong._objects[0]
+      //! 这里拿到的imgMat是以原图中心点为原点的坐标系
       const originImgMat = originImg.calcTransformMatrix()
       // 图片center是相对与容器坐标系的
       const originImgCenter = originImg.getPointByOrigin('center', 'center')
@@ -215,11 +216,10 @@ export class ClipFrame extends Path {
       const thisH = this.getScaledHeight() / this.belong.scaleY
 
       // this的center移动范围
-      const l = originImgCenter.x - imgW / 2 + thisW / 2
-      const r = originImgCenter.x + imgW / 2 - thisW / 2
-      const t = originImgCenter.y - imgH / 2 + thisH / 2
-      const b = originImgCenter.y + imgH / 2 - thisH / 2
-      console.log(l, r, t, b)
+      const l = originImgCenter.x
+      const r = originImgCenter.x + imgW - thisW
+      const t = originImgCenter.y
+      const b = originImgCenter.y + imgH - thisH
 
       // 通过比对中心点判断是否越界
 
@@ -230,21 +230,6 @@ export class ClipFrame extends Path {
       if (thisCenterInImg.x > r) toCenterX = r
       if (thisCenterInImg.y < t) toCenterY = t
       if (thisCenterInImg.y > b) toCenterY = b
-
-      // const centerOffsetX = originImgCenter.x - thisCenterInImg.x
-      // if (centerOffsetX > offsetX) {
-      //   toCenterX = toCenterX + (centerOffsetX - offsetX)
-      // }
-      // if (centerOffsetX < -offsetX) {
-      //   toCenterX = toCenterX - (Math.abs(centerOffsetX) - offsetX)
-      // }
-      // const centerOffsetY = originImgCenter.y - thisCenterInImg.y
-      // if (centerOffsetY > offsetY) {
-      //   toCenterY = toCenterY + (centerOffsetY - offsetY)
-      // }
-      // if (centerOffsetY < -offsetY) {
-      //   toCenterY = toCenterY - (Math.abs(centerOffsetY) - offsetY)
-      // }
 
       // 将toCenter转回画布坐标系，设置
       const cvsMat = [...iMatrix] as TMat2D
