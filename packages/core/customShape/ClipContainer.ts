@@ -1,5 +1,18 @@
 // import { Abortable, FabricObject, Group, GroupProps, SerializedGroupProps, TOptions } from 'fabric'
-import { classRegistry, FabricObject, Group, GroupProps, iMatrix, Point, Shadow, TMat2D, util } from 'fabric'
+import {
+  Abortable,
+  classRegistry,
+  FabricObject,
+  Group,
+  GroupProps,
+  iMatrix,
+  Point,
+  SerializedObjectProps,
+  Shadow,
+  TMat2D,
+  TOptions,
+  util
+} from 'fabric'
 import { ClipFrame } from './ClipFrame'
 import { switchPointFromContainerToLocal, switchPointFromLocalToContainer } from '../utils/mat'
 
@@ -25,12 +38,13 @@ type ClipReject = (reason?: any) => void
 
 export class ClipContainer extends Group {
   public static type = 'clipContainer'
-  private canClip: boolean = true
   private tempClipPath: ClipFrame | null = null
   private clipPromise: Promise<null> | null = null
   private resolveClip: ClipResolve<null> | null = null
   private rejectClip: ClipReject | null = null
+  private lastClipPath: FabricObject | null = null
   constructor(object: FabricObject, options: ClipContainerOptions = {}) {
+    console.log(object)
     super([object], options)
   }
   doClip() {
@@ -38,6 +52,7 @@ export class ClipContainer extends Group {
       this.resolveClip = resolve
       this.rejectClip = reject
     })
+
     // 创建裁剪框
     const w = this.getScaledWidth()
     const h = this.getScaledHeight()
@@ -50,9 +65,30 @@ export class ClipContainer extends Group {
       angle: this.angle
     })
 
+    this.tempClipPath.on('deselected', () => {
+      this.canvas?.fire('confirm:clip', this.tempClipPath!)
+    })
+
     if (!this.canvas) throw Error('Execute the clip, but there is no canvas object.')
     this.tempClipPath.setPositionByOrigin(this.getPointByOrigin('center', 'center'), 'center', 'center')
     this.canvas._add(this.tempClipPath)
+
+    if (this.clipPath) {
+      // const originImage = this._objects[0]
+      // const toWidth = originImage.getScaledWidth() * this.scaleX
+      // const toHeight = originImage.getScaledHeight() * this.scaleY
+
+      this.lastClipPath = this.clipPath as FabricObject
+      this.clipPath.dispose()
+      this.clipPath = undefined
+      this.dirty = true
+      // this.set('clipPath', undefined)
+      this._objects[0].dirty = true
+      this._cacheCanvas = undefined
+      this._removeCacheCanvas()
+      this.setCoords()
+    }
+
     this.canvas._activeObject = this.tempClipPath
     this.canvas.renderAll()
     return this.clipPromise
@@ -130,10 +166,19 @@ export class ClipContainer extends Group {
       left: _originImageInContainer.x,
       top: _originImageInContainer.y
     })
-    this.canvas._activeObject = this
+    //! 裁剪完选中被裁剪的图片，使用事件版本是为了让外部同步状态 点击空白(画布内、外)处 -> confirmClip -> 通知外部选中元素切换
+    // this.canvas._activeObject = this
+    this.canvas.setActiveObject(this)
     this.canvas.renderAll()
     if (this.resolveClip) {
       this.resolveClip(null)
+    }
+  }
+
+  private restoreClipPath() {
+    if (this.lastClipPath) {
+      this.set('clipPath', this.lastClipPath)
+      this.lastClipPath = null
     }
   }
 
@@ -142,11 +187,21 @@ export class ClipContainer extends Group {
     if (!this.tempClipPath) throw Error('no tempClipPath')
     this.canvas._remove(this.tempClipPath)
     this.tempClipPath = null
-    this.canvas._activeObject = this
+    //? 裁剪完选中被裁剪的图片
+    // this.canvas._activeObject = this
+    this.restoreClipPath()
+    this.canvas.setActiveObject(this)
     this.canvas.renderAll()
     if (this.resolveClip) {
       this.resolveClip(null)
     }
+  }
+
+  static fromObject<T extends TOptions<SerializedObjectProps>>(object: T, options?: Abortable) {
+    return super.fromObject(object, options).then((obj) => {
+      console.error(obj)
+      return obj
+    })
   }
 }
 

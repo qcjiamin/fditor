@@ -10,6 +10,7 @@ import { util } from 'fabric'
 import { FCanvas } from './customShape/FCanvas'
 import { FImage } from '@kditor/core'
 import { ClipFrame } from './customShape/ClipFrame'
+import { ClipContainer } from './customShape/ClipContainer'
 interface IRect {
   x: number
   y: number
@@ -73,6 +74,7 @@ class Editor extends EventBus<EditorEventMap> {
       controlsAboveOverlay: true
     })
 
+    //todo: 多场景的话，切换场景时动态绑定监听事件
     // 将添加、删除、移动、缩放、旋转，统一触发自定义的修改事件
     this.stage.on('def:modified', ({ target }) => {
       if (this.isSilence) {
@@ -97,6 +99,10 @@ class Editor extends EventBus<EditorEventMap> {
         return
       }
       this.emit('history:update', undefined)
+    })
+    this.stage.on('confirm:clip', async (clipFrame: ClipFrame) => {
+      await this.confirmClip(clipFrame)
+      this.emit('confirm:clip', undefined)
     })
 
     // 删除使用自定义的事件
@@ -162,8 +168,8 @@ class Editor extends EventBus<EditorEventMap> {
     await this.withSilence(() => selected.doClip())
   }
   /** 确认裁剪 */
-  public async confirmClip() {
-    const selected = this.stage.getActiveObject()
+  public async confirmClip(clipFrame?: ClipFrame) {
+    const selected = clipFrame ? clipFrame : this.stage.getActiveObject()
     if (!selected) return
     if (!(selected instanceof ClipFrame)) return
     await selected.belong.confirmClip()
@@ -178,50 +184,6 @@ class Editor extends EventBus<EditorEventMap> {
     await selected.belong.cancelClip()
   }
   /**------ 裁剪方法 end ----- */
-
-  // public add(...nodes: FabricObject[]): this {
-  //   this._add(...nodes)
-  //   this.emit('node:add', nodes)
-  //   return this
-  // }
-
-  // public _moveUp(...nodes: KonvaNode[]): this {
-  //   nodes.forEach((node) => {
-  //     node.moveUp()
-  //   })
-  //   return this
-  // }
-  // public moveUp(...nodes: KonvaNode[]): this {
-  //   this._moveUp(...nodes)
-  //   //todo: 事件仅通知哪些元素 zindex 发生了变化，需要时可修改参数为变化前后数据
-  //   this.emit('node:zindex:change', nodes)
-  //   return this
-  // }
-  // public _moveDown(...nodes: KonvaNode[]): this {
-  //   nodes.forEach((node) => {
-  //     node.moveDown()
-  //   })
-  //   return this
-  // }
-  // public moveDown(...nodes: KonvaNode[]): this {
-  //   this._moveDown(...nodes)
-  //   this.emit('node:zindex:change', nodes)
-  //   return this
-  // }
-  // public moveTop(...nodes: KonvaNode[]): this {
-  //   nodes.forEach((node) => {
-  //     node.moveToTop()
-  //   })
-  //   this.emit('node:zindex:change', nodes)
-  //   return this
-  // }
-  // public moveBottom(...nodes: KonvaNode[]): this {
-  //   nodes.forEach((node) => {
-  //     node.moveToBottom()
-  //   })
-  //   this.emit('node:zindex:change', nodes)
-  //   return this
-  // }
 
   public toJSON() {}
 

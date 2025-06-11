@@ -1,8 +1,10 @@
 /**
- * 此单元已经废弃，画布对象改用继承
+ * 功能方法废弃，画布对象改用继承
+ * 事件任然正常使用
  */
 
 import { ActiveSelection, Canvas } from 'fabric'
+import { ClipFrame } from '../customShape/ClipFrame'
 // import { CanvasEvents } from 'fabric'
 
 declare module 'fabric' {
@@ -19,6 +21,7 @@ declare module 'fabric' {
   // 扩展事件
   export interface CanvasEvents {
     'def:modified': { target: FabricObject | Canvas }
+    'confirm:clip': ClipFrame
   }
 }
 

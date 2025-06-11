@@ -20,6 +20,12 @@
         return { src: item.small, title: item.title, width: item.width, height: item.height }
       }
     )
+    newImages.unshift({
+      src: './images/1.png',
+      title: 'test',
+      width: 2160,
+      height: 3840
+    })
     return {
       totalPage: res.data.total_pages,
       images: newImages

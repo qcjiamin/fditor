@@ -8,22 +8,14 @@ export enum ElementType {
   text = 'text'
 }
 
+export const CanvasStateArr = ['normal', 'clip'] as const
+/** 画布状态=>属性条位置显示的类型 */
+export type CanvasStates = (typeof CanvasStateArr)[number]
+
 export const ElementTypeArr = ['bg', 'Shape', 'image', 'text', 'activeselection'] as const
+/** 属性条属性类型 */
 export type ElementTypes = (typeof ElementTypeArr)[number]
 
 export const GradientTypeArr = ['linear90', 'linear180', 'linear135', 'radial50', 'radial0'] as const
+/** 渐变色预定义类型 */
 export type GradientTypes = (typeof GradientTypeArr)[number]
-
-// const test: keyof ElementType  = 'Bg'
-// console.log(test)
-
-// const person = { x: '123', y: 123 }
-// type Point = { x: number; y: number }
-// type keyPoint = keyof Point
-// type typePoint = typeof person
-
-// const a: keyPoint = 'y'
-// const b: typePoint = {}
-
-// type Mapish = { [k: string]: boolean }
-// type M = keyof Mapish

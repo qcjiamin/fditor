@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue'
+  import { onMounted, ref, useTemplateRef, type Component } from 'vue'
   import editerHeader from './components/editer-header.vue'
   import editerSidebar from './components/sidebar/editer-sidebar.vue'
   import workspaceMain from './components/workspace/workspace-main.vue'
@@ -12,11 +12,15 @@
   import { useEditorStore } from '@/stores/editorStore'
   import HistoryPlugin from '@/pluginForEditor/HistoryPlugin/HistoryPlugin.ts'
   import CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
+  import type { CanvasStates } from '@/utils/types'
+  import ClipBar from '@/views/editer/components/propertyBar/clip-bar.vue'
+  import { onClickOutside } from '@vueuse/core'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
   const editorStore = useEditorStore()
 
   const editor = new Editor()
+  // const workspaceRef = ref()
   window.editor = editor
   onMounted(() => {
     editor.init(document.querySelector('#canvas-container canvas')!)
@@ -24,6 +28,10 @@
     editor.on('selected:change', (selected) => {
       console.log('selected:change', selected)
       editorStore.setSelected(selected)
+    })
+
+    editor.on('confirm:clip', () => {
+      editorStore.setCvsState('normal')
     })
 
     editor.use(WorkspacePlugin).use(SelectionPlugin).use(HistoryPlugin).use(CropPlugin)
@@ -34,10 +42,22 @@
       console.log('ready')
       editor.emit('canvas:ready', null)
     }, 0)
-
-    // 历史记录功能
   })
   provide(EditorKey, editor)
+
+  const barTypeComponents: Record<CanvasStates, Component> = {
+    normal: propertyBar,
+    clip: ClipBar
+  }
+
+  const workspaceRef = useTemplateRef<HTMLElement>('workspace')
+  onClickOutside(workspaceRef, () => {
+    console.log('click outside')
+    if (editorStore.cvsState === 'clip') {
+      editor.confirmClip()
+      editorStore.setCvsState('normal')
+    }
+  })
 </script>
 
 <template>
@@ -45,8 +65,9 @@
     <editer-header></editer-header>
     <div class="main">
       <editer-sidebar></editer-sidebar>
-      <div class="workspace">
-        <property-bar type="bg"></property-bar>
+      <div ref="workspace" class="workspace">
+        <component :is="barTypeComponents[editorStore.cvsState]"></component>
+        <!-- <property-bar type="bg"></property-bar> -->
         <workspace-main ref="mainRef" class="workspace-main"></workspace-main>
         <!-- <workspace-timeline></workspace-timeline> -->
       </div>

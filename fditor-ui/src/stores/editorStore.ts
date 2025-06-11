@@ -1,5 +1,5 @@
 import type { sidebarPropertyType } from '@/utils/constants'
-import type { ElementTypes } from '@/utils/types'
+import type { CanvasStates, ElementTypes } from '@/utils/types'
 import type { FabricObject } from 'fabric'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -13,6 +13,11 @@ const type2Type: Record<string, ElementTypes> = {
 
 // 主要用于管理画布的状态
 export const useEditorStore = defineStore('editor', () => {
+  const cvsState = ref<CanvasStates>('normal')
+  function setCvsState(val: CanvasStates) {
+    cvsState.value = val
+  }
+
   const selected = ref<FabricObject | undefined>(undefined)
   function setSelected(val: FabricObject | undefined) {
     selected.value = val
@@ -34,6 +39,8 @@ export const useEditorStore = defineStore('editor', () => {
     sidebarShowProperty.value = val
   }
   return {
+    cvsState,
+    setCvsState,
     selected,
     setSelected,
     selectType,
