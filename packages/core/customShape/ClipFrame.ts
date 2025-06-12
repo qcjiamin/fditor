@@ -199,10 +199,13 @@ export class ClipFrame extends Path {
     this.on('moving', () => {
       // 获取底图范围
       const originImg = this.belong._objects[0]
-      //! 这里拿到的imgMat是以原图中心点为原点的坐标系
+      //! 这里拿到的imgMat是以 [[!!!原图中心点为原点的坐标系]]
       const originImgMat = originImg.calcTransformMatrix()
       // 图片center是相对与容器坐标系的
-      const originImgCenter = originImg.getPointByOrigin('center', 'center')
+      // const originImgCenter = originImg.getPointByOrigin('center', 'center')
+      //? originImg.getPointByOrigin('center', 'center') 在裁剪情况下取的是图片现对于容器范围的定位
+      //? 在以原图坐标系为对比坐标系的情况下，原图的中心点始终是 0，0
+      const originImgCenter = new Point(0, 0)
       const thisCenter = this.getPointByOrigin('center', 'center')
       const thisCenterInImg = switchPointFromContainerToLocal(originImgMat, thisCenter)
       //获取原始图片宽高
@@ -216,10 +219,14 @@ export class ClipFrame extends Path {
       const thisH = this.getScaledHeight() / this.belong.scaleY
 
       // this的center移动范围
-      const l = originImgCenter.x
-      const r = originImgCenter.x + imgW - thisW
-      const t = originImgCenter.y
-      const b = originImgCenter.y + imgH - thisH
+      // const l = originImgCenter.x
+      // const r = originImgCenter.x + imgW - thisW
+      // const t = originImgCenter.y
+      // const b = originImgCenter.y + imgH - thisH
+      const l = originImgCenter.x - (imgW - thisW) / 2
+      const r = originImgCenter.x + (imgW - thisW) / 2
+      const t = originImgCenter.y - (imgH - thisH) / 2
+      const b = originImgCenter.y + (imgH - thisH) / 2
 
       // 通过比对中心点判断是否越界
 
