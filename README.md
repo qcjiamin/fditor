@@ -40,7 +40,7 @@ TODO
 - [x] 区分属性修改事件 和 删除事件   属性修改->history & getattr   删除 -> history
 - [ ] 文字渐变色
 - [ ] 裁剪框对象化；图片支持圆角(基于裁剪)；限制拖拽范围； 不同形状裁剪？
-- [ ] 基于对象的canvas，实现自定义canvas, 不需要再在原型链上添加方法
+- [x] 基于对象的canvas，实现自定义canvas, 不需要再在原型链上添加方法
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制

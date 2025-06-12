@@ -1,8 +1,12 @@
+<!-- todo: 翻转 滤镜 定位 圆角 layer-->
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
   import { useEditorStore } from '@/stores/editorStore'
   import type { Editor } from '@kditor/core'
   import { inject } from 'vue'
+  import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
+  import { Crop } from '@element-plus/icons-vue'
+  import flipProperty from '@/views/editer/components/propertyBar/imageBar/flip-property.vue'
 
   const editor = inject(EditorKey) as Editor
   const editorStore = useEditorStore()
@@ -14,8 +18,13 @@
 </script>
 
 <template>
-  <div>
-    <button @click="addClippath">clip</button>
+  <div class="typeBar">
+    <property-normal-item tip="crop" @click="addClippath">
+      <el-icon size="20">
+        <Crop></Crop>
+      </el-icon>
+    </property-normal-item>
+    <flip-property></flip-property>
   </div>
 </template>
 

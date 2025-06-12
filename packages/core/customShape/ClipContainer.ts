@@ -1,18 +1,5 @@
 // import { Abortable, FabricObject, Group, GroupProps, SerializedGroupProps, TOptions } from 'fabric'
-import {
-  Abortable,
-  classRegistry,
-  FabricObject,
-  Group,
-  GroupProps,
-  iMatrix,
-  Point,
-  SerializedObjectProps,
-  Shadow,
-  TMat2D,
-  TOptions,
-  util
-} from 'fabric'
+import { classRegistry, FabricObject, Group, GroupProps, iMatrix, Point, Shadow, TMat2D, util } from 'fabric'
 import { ClipFrame } from './ClipFrame'
 import { switchPointFromContainerToLocal, switchPointFromLocalToContainer } from '../utils/mat'
 
@@ -35,6 +22,8 @@ function createClipShadow() {
 type ClipResolve<T> = (value: T | PromiseLike<T>) => void
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ClipReject = (reason?: any) => void
+// flip方式
+type FlipDir = 'x' | 'y'
 
 export class ClipContainer extends Group {
   public static type = 'clipContainer'
@@ -191,10 +180,53 @@ export class ClipContainer extends Group {
     }
   }
 
-  static fromObject<T extends TOptions<SerializedObjectProps>>(object: T, options?: Abortable) {
-    return super.fromObject(object, options).then((obj) => {
-      return obj
-    })
+  doFlip(dir: 'x' | 'y') {
+    // 图片是翻转的 CustomImage._objects[0] 的真实图片
+    // 1.5 形状裁剪框宽度的一半
+    //? 这里先不考虑storkeWidth
+    // const offsetBorder = 1.5
+    if (dir === 'x') {
+      if (this.clipPath) {
+        let clippathAndImgLeftOffset = Math.abs(Math.abs(this.clipPath.left) - Math.abs(this._objects[0].left))
+        clippathAndImgLeftOffset = parseFloat(clippathAndImgLeftOffset.toFixed(2))
+        let clippathAndImgRightOffset =
+          this._objects[0].width - this.clipPath.getScaledWidth() - clippathAndImgLeftOffset
+        clippathAndImgRightOffset = parseFloat(clippathAndImgRightOffset.toFixed(2))
+        // 将将实际图片翻转
+        this._objects[0].flipX = !this._objects[0].flipX
+        // 裁剪框的左边界与图片的左边界的差距
+        // 让翻转后的右边距离与翻转前的左边距离相等，通过移动图片来实现
+        if (clippathAndImgLeftOffset < clippathAndImgRightOffset) {
+          // 图片往左移动
+          this._objects[0].left = this._objects[0].left - (clippathAndImgRightOffset - clippathAndImgLeftOffset)
+        } else {
+          // 图片往右移动
+          this._objects[0].left = this._objects[0].left + (clippathAndImgLeftOffset - clippathAndImgRightOffset)
+        }
+      } else {
+        this._objects[0].flipX = !this._objects[0].flipX
+      }
+    } else if (dir === 'y') {
+      if (this.clipPath) {
+        let clippathAndImgTopOffset = Math.abs(Math.abs(this.clipPath.top) - Math.abs(this._objects[0].top))
+        clippathAndImgTopOffset = parseFloat(clippathAndImgTopOffset.toFixed(2))
+        let clippathAndImgBottomOffset =
+          this._objects[0].height - this.clipPath.getScaledHeight() - clippathAndImgTopOffset
+        clippathAndImgBottomOffset = parseFloat(clippathAndImgBottomOffset.toFixed(2))
+        // 将将实际图片翻转
+        this._objects[0].flipY = !this._objects[0].flipY
+        if (clippathAndImgTopOffset < clippathAndImgBottomOffset) {
+          // 图片往上移动
+          this._objects[0].top = this._objects[0].top - (clippathAndImgBottomOffset - clippathAndImgTopOffset)
+        } else {
+          // 图片往下移动
+          this._objects[0].top = this._objects[0].top + (clippathAndImgTopOffset - clippathAndImgBottomOffset)
+        }
+      } else {
+        this._objects[0].flipY = !this._objects[0].flipY
+      }
+    }
+    this.set('dirty', true)
   }
 }
 

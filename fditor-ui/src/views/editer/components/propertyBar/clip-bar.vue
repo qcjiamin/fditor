@@ -4,6 +4,10 @@
   import type { Editor } from '@kditor/core'
   import { EditorKey } from '@/constants/injectKey'
   import { useEditorStore } from '@/stores/editorStore'
+  import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
+  import { Check } from '@element-plus/icons-vue'
+  import { Close } from '@element-plus/icons-vue'
+
   const editor = inject(EditorKey) as Editor
   const editorStore = useEditorStore()
   async function confirmClip() {
@@ -18,8 +22,18 @@
 
 <template>
   <div class="clipBar">
-    <button @click="confirmClip">confirm</button>
-    <button @click="cancelClip">cancel</button>
+    <property-normal-item show-border tip="confirm" @click="confirmClip">
+      <el-icon size="20">
+        <Check></Check>
+      </el-icon>
+    </property-normal-item>
+    <property-normal-item show-border tip="cancel" @click="cancelClip">
+      <el-icon size="20">
+        <Close></Close>
+      </el-icon>
+    </property-normal-item>
+    <!-- <button @click="confirmClip">confirm</button>
+    <button @click="cancelClip">cancel</button> -->
   </div>
 </template>
 
@@ -28,6 +42,8 @@
     height: 40px;
     width: 100%;
     display: flex;
-    column-gap: 5px;
+    column-gap: 10px;
+    align-items: center;
+    justify-content: center;
   }
 </style>
