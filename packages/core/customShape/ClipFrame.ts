@@ -219,10 +219,6 @@ export class ClipFrame extends Path {
       const thisH = this.getScaledHeight() / this.belong.scaleY
 
       // this的center移动范围
-      // const l = originImgCenter.x
-      // const r = originImgCenter.x + imgW - thisW
-      // const t = originImgCenter.y
-      // const b = originImgCenter.y + imgH - thisH
       const l = originImgCenter.x - (imgW - thisW) / 2
       const r = originImgCenter.x + (imgW - thisW) / 2
       const t = originImgCenter.y - (imgH - thisH) / 2
