@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { EditorKey } from '@/constants/injectKey'
-  import type { Editor } from '@kditor/core'
+  import type { Editor, HorizontalAlign, VerticalAlign } from '@kditor/core'
   import { computed, inject, reactive } from 'vue'
   import opacityProperty from '@/views/editer/components/propertyBar/opacity-property.vue'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
@@ -9,23 +9,30 @@
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import { Lock, Unlock, Delete, Orange } from '@element-plus/icons-vue'
   import { ActiveSelection, FabricObject } from 'fabric'
+  import positionProperty from '@/views/editer/components/propertyBar/publicBar/position-property.vue'
   const editorStore = useEditorStore()
-
   const editor = inject(EditorKey) as Editor
 
   interface PublicAttrs {
     opacity: number
     lock: boolean
+    horizontal: HorizontalAlign | ''
+    vertical: VerticalAlign | ''
   }
   const attrs: PublicAttrs = reactive({
     opacity: 1,
-    lock: false
+    lock: false,
+    horizontal: '',
+    vertical: ''
   })
 
   function getAttrs() {
     const shape = editorStore.selected!
     attrs.opacity = shape.opacity
     attrs.lock = shape.lockMovementX
+    const positionInfo = shape.getAlign()
+    attrs.horizontal = positionInfo.h
+    attrs.vertical = positionInfo.v
   }
   useGetAttrs(getAttrs)
 
@@ -69,10 +76,19 @@
     if (!removed) throw new Error('removeSelected return null')
     editor.emit('node:remove', removed)
   }
+  function updateAlign(type: HorizontalAlign | VerticalAlign) {
+    const selected = editorStore.selected!
+    selected.setAlign(type)
+  }
 </script>
 
 <template>
   <div class="historyBox">
+    <position-property
+      :horizontal="attrs.horizontal"
+      :vertical="attrs.vertical"
+      @update:align="updateAlign"
+    ></position-property>
     <opacity-property :opacity="attrs.opacity" tip="opacity" @update:opacity="updateOpacity"></opacity-property>
     <property-normal-item tip="animate" :active="openAni" @click="toggleAnimate">
       <Orange></Orange>

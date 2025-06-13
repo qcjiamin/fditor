@@ -81,6 +81,7 @@ class Editor extends EventBus<EditorEventMap> {
         console.log('%cdef:modified but silence', 'color: rgba(255, 0, 0); font-weight: bold')
         return
       }
+      this.stage.requestRenderAll()
       this.emit('node:modified', { target })
       this.emit('history:update', undefined)
     })

@@ -45,5 +45,6 @@
     column-gap: 10px;
     align-items: center;
     justify-content: center;
+    background-color: rgb(245, 245, 247);
   }
 </style>

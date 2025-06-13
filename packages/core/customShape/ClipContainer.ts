@@ -227,6 +227,12 @@ export class ClipContainer extends Group {
       }
     }
     this.set('dirty', true)
+    // 发送事件通知外部自己修改了
+    if (!this.canvas) {
+      console.warn('execute the flip, but there is no canvas object.')
+      return
+    }
+    this.canvas.fire('def:modified', { target: this })
   }
 }
 

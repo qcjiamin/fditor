@@ -92,6 +92,7 @@
     z-index: 30;
     border-radius: 5px;
     padding: 10px;
-    background-color: antiquewhite;
+    background-color: rgba(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 6px 20px;
   }
 </style>

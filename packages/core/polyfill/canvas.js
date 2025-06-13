@@ -1,4 +1,4 @@
-import { StaticCanvas } from 'fabric'
+import { StaticCanvas, Canvas } from 'fabric'
 StaticCanvas.prototype._renderBackgroundOrOverlay = function (ctx, property) {
   const fill = this[property + 'Color'],
     object = this[property + 'Image'],

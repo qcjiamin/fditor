@@ -56,3 +56,6 @@ export type Config = {
 // export type KditorEventValues = {
 //   [K in keyof KditorEventMap]: KditorEventMap[K] // 提取数组中的第一个元素
 // }
+
+export type HorizontalAlign = 'left' | 'center' | 'right'
+export type VerticalAlign = 'top' | 'middle' | 'bottom'

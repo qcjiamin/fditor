@@ -36,6 +36,7 @@
     width: 100%;
     display: flex;
     column-gap: 5px;
+    background-color: rgb(245, 245, 247);
     .typeBar {
       flex-grow: 1;
       display: flex;

@@ -12,13 +12,7 @@ TODO
 - [x] 事件完善
 - [x] 插件异步功能 tapable
 - [ ] 鼠标移入元素显示边框效果
-- [x] 绘制流程
-- [x] transformer 实现方式
-- [ ] transformer 自定义控制图标
-- [ ] setAttr 内部逻辑
-- [ ] stage.draw 与 batchdraw 区别
-- [ ] tween 动画
-- [ ] undo redo
+- [x] undo redo
 - [x] 瀑布流
 - [ ] 虚拟列表
 - [ ] 瀑布流+虚拟列表
@@ -41,6 +35,7 @@ TODO
 - [ ] 文字渐变色
 - [ ] 裁剪框对象化；图片支持圆角(基于裁剪)；限制拖拽范围； 不同形状裁剪？
 - [x] 基于对象的canvas，实现自定义canvas, 不需要再在原型链上添加方法
+- [ ] 快捷键 删除 移动
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制
@@ -48,9 +43,9 @@ TODO
    删除 activeSelection(2个元素) 时，会触发2次object:removed, 业务上影响 history 的 step
 裁剪实现方案
   A 1. group 包 image 实现自定义Image类，裁剪框绑定在group上，宽高，定位设置在group上
-    2. 裁剪时创建一个独立裁剪框
-    3. 如果要做蒙层并凸显当前裁剪区域的话，裁剪时在独立裁剪框下添加蒙层和一个随独立裁剪框缩放实时调整clippath的图片
-    4. 独立裁剪框与实时调整clippath的图片可以合并为一个组件
+    1. 裁剪时创建一个独立裁剪框
+    2. 如果要做蒙层并凸显当前裁剪区域的话，裁剪时在独立裁剪框下添加蒙层和一个随独立裁剪框缩放实时调整clippath的图片
+    3. 独立裁剪框与实时调整clippath的图片可以合并为一个组件
     !! 与B相比，虽然裁剪框和宽高都设置在group上，但是有原图撑原始宽高
   B 1. 自己计算自身响应范围，包装为新类，不用group代理宽高
       分解任务：先找到计算active范围的方法

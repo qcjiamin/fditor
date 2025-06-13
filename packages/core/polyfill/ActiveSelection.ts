@@ -1,8 +1,12 @@
-import { ActiveSelection, FabricObject, Group } from 'fabric'
+import { HorizontalAlign, VerticalAlign } from '@kditor/core'
+import { ActiveSelection, FabricObject, Group, util } from 'fabric'
 
 declare module 'fabric' {
   export interface ActiveSelection {
     toGorup(): Group
+    setAlign(align: HorizontalAlign | VerticalAlign): void
+    /** 解除多选 */
+    _unGroup(): void
   }
 }
 
@@ -62,4 +66,47 @@ ActiveSelection.prototype.toGorup = function () {
   this.canvas._remove(...tempArr)
   this.canvas._activeObject = newGroup
   return newGroup
+}
+
+ActiveSelection.prototype._unGroup = function () {
+  if (!this.canvas) return
+  const groupMatrix = this.calcOwnMatrix()
+  this._objects.forEach(function (object) {
+    // instead of using _this = this;
+    util.addTransformToObject(object, groupMatrix)
+    delete object.group
+    object.setCoords()
+    object.set('dirty', true)
+  })
+  this.canvas._activeObject = undefined
+  this.canvas.renderAll()
+}
+
+ActiveSelection.prototype.setAlign = function (align) {
+  console.log(align)
+  if (!this.canvas) return
+  const canvas = this.canvas
+  if (align === 'left') {
+    const objs = this._objects
+    const left = this.left
+    // canvas._discardActiveObject()
+    this._unGroup()
+    console.error('left', left)
+    // objs.forEach((obj) => {
+    //   obj.set('left', left)
+    //   obj.setCoords()
+    // })
+
+    // canvas.renderAll()
+    const newSelection = new ActiveSelection(objs, { canvas })
+    // newSelection.multiSelectAdd(...objs)
+
+    // canvas._activeObject = newSelection
+    // newSelection.setCoords()
+    canvas._setActiveObject(newSelection)
+    newSelection.setCoords()
+
+    // canvas.setActiveObject(newSelection)
+    canvas.requestRenderAll()
+  }
 }
