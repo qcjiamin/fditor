@@ -5,7 +5,7 @@
   import type { ImageInfo } from '@/types'
   import { EditorKey } from '@/constants/injectKey'
   import { loadImage } from '@/utils/common'
-  import { FImage, type Editor } from '@kditor/core'
+  import { FImage, type Editor } from '@fditor/core'
 
   const editor = inject(EditorKey) as Editor
   onMounted(async () => {})

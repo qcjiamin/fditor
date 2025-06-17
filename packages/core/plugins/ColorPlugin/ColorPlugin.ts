@@ -1,5 +1,5 @@
 // import Editor from '../../Editor'
-import { Editor } from '@kditor/core'
+import { Editor } from '@fditor/core'
 import type { IPlugin } from '../../types'
 import './methods.ts'
 import Konva from 'konva'

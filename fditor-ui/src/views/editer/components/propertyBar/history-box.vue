@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import type { Editor } from '@kditor/core'
+  import type { Editor } from '@fditor/core'
   import { inject } from 'vue'
 
   const editor = inject(EditorKey) as Editor

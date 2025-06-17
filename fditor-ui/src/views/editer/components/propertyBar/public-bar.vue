@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { EditorKey } from '@/constants/injectKey'
-  import type { Editor, HorizontalAlign, VerticalAlign } from '@kditor/core'
+  import type { Editor, HorizontalAlign, VerticalAlign } from '@fditor/core'
   import { computed, inject, reactive } from 'vue'
   import opacityProperty from '@/views/editer/components/propertyBar/opacity-property.vue'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
@@ -77,7 +77,7 @@
     editor.emit('node:remove', removed)
   }
   function updateAlign(type: HorizontalAlign | VerticalAlign) {
-    const selected = editorStore.selected!
+    const selected = editor.getSelectedObject()
     selected.setAlign(type)
   }
 </script>

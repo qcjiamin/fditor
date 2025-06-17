@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import type { Editor } from '@kditor/core'
+  import type { Editor } from '@fditor/core'
   import { inject } from 'vue'
   import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
   import { Circle, FabricObject, Rect, type CircleProps, type Constructor, type RectProps } from 'fabric'

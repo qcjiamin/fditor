@@ -1,6 +1,6 @@
 import type CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
-import { Editor } from '@kditor/core'
-declare module '@kditor/core' {
+import { Editor } from '@fditor/core'
+declare module '@fditor/core' {
   export interface Editor {
     enterCrop(): void
   }

@@ -1,5 +1,5 @@
 import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
-import { createLinearGradient, createRadialGradient, type colorVal } from '@kditor/core'
+import { createLinearGradient, createRadialGradient, type colorVal } from '@fditor/core'
 import { mat3, vec2 } from 'gl-matrix'
 function add(a: number, b: number) {
   // const aa = 'abc'

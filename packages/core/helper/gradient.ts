@@ -1,4 +1,4 @@
-import { LinearGradient, RadialGradient } from '@kditor/core'
+import { LinearGradient, RadialGradient } from '@fditor/core'
 import { Gradient, GradientUnits } from 'fabric'
 window.Gradient = Gradient
 

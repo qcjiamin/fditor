@@ -1,4 +1,4 @@
-import { Editor, WorkspacePlugin } from '@kditor/core'
+import { Editor, WorkspacePlugin } from '@fditor/core'
 import { computed, provide, ref, type Ref } from 'vue'
 import { EditorKey, selectedKey, SelectTypeKey } from '@/constants/injectKey'
 import type { Selected } from '@/utils/types'

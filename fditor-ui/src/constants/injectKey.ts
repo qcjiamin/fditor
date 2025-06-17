@@ -1,5 +1,5 @@
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
-import { Editor } from '@kditor/core'
+import { Editor } from '@fditor/core'
 import type { ElementTypes, Selected } from '@/utils/types'
 
 export const EditorKey: InjectionKey<Editor> = Symbol('AppKey')

@@ -3,7 +3,7 @@ import { konvaFill } from '../../types'
 import type BackgroundPlugin from './BackgroundPlugin'
 import { Shape } from 'konva/lib/Shape'
 
-declare module '@kditor/core' {
+declare module '@fditor/core' {
   export interface Editor {
     getBgColorShape(): Shape
     updateBgCorlorShape(newShape: Shape): void

@@ -5,7 +5,7 @@
   import { useEditorStore } from '@/stores/editorStore'
   import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
   import { EditorKey } from '@/constants/injectKey'
-  import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@kditor/core'
+  import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
   import { colorInstance2Info } from '@/utils/common'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import { Textbox } from 'fabric'

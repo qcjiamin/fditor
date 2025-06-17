@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HorizontalAlign, VerticalAlign } from '@kditor/core'
-import { FabricObject, Point, TOriginX, TOriginY } from 'fabric'
-import { workerData } from 'worker_threads'
+import { HorizontalAlign, VerticalAlign } from '@fditor/core'
+import { FabricObject, Point } from 'fabric'
 
 declare module 'fabric' {
   export interface FabricObject {
@@ -85,6 +84,7 @@ FabricObject.prototype.getAlign = function () {
 }
 
 FabricObject.prototype.setAlign = function (align) {
+  console.error('align obje')
   if (!this.canvas) return
   const rect = this.getBoundingRect()
   switch (align) {

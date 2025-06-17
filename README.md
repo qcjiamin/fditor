@@ -55,6 +55,8 @@ TODO
       裁剪框的定位依赖于图片的原始宽高
       图片的宽高在裁剪后会设置与裁剪框相同
       这2个条件互斥
+> 放入pinia store 中的属性会被代理
+  使用this=store.selected.canvas 作为 new ActiveSelection(objs, {canvs:使用this}) 时，由于this是代理，在 LayoutManager.layoutObject 中的对比中会出现不匹配（proxy(canvas)!==canvas）,因此修改属性尽量使用 editor.getSelectedObject()
 
 This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 

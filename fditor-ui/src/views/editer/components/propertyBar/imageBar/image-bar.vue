@@ -2,7 +2,7 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
   import { useEditorStore } from '@/stores/editorStore'
-  import type { Editor } from '@kditor/core'
+  import type { Editor } from '@fditor/core'
   import { inject } from 'vue'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   import { Crop } from '@element-plus/icons-vue'

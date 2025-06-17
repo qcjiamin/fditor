@@ -1,4 +1,6 @@
-import { StaticCanvas, Canvas } from 'fabric'
+import { StaticCanvas, Canvas, Point } from 'fabric'
+import { Group, LayoutStrategy, LayoutManager } from 'fabric'
+import { util } from 'fabric'
 StaticCanvas.prototype._renderBackgroundOrOverlay = function (ctx, property) {
   const fill = this[property + 'Color'],
     object = this[property + 'Image'],
@@ -48,20 +50,4 @@ StaticCanvas.prototype._renderBackgroundOrOverlay = function (ctx, property) {
     object.render(ctx)
     ctx.restore()
   }
-}
-
-StaticCanvas.prototype._onTest = function (obj) {
-  console.log('1!!')
-  // if (obj.canvas && obj.canvas !== this) {
-  //   log(
-  //     'warn',
-  //     'Canvas is trying to add an object that belongs to a different canvas.\n' +
-  //       'Resulting to default behavior: removing object from previous canvas and adding to new canvas'
-  //   )
-  //   obj.canvas.remove(obj)
-  // }
-  obj._set('canvas', this)
-  obj.setCoords()
-  // this.fire('object:added', { target: obj })
-  // obj.fire('added', { target: this })
 }

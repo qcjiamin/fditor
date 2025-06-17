@@ -4,7 +4,7 @@
   import strokeProperty from '@/views/editer/components/propertyBar/stroke-property.vue'
   import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
-  import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@kditor/core'
+  import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
   // todo 将core中定义的类型导出
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import { colorInstance2Info } from '@/utils/common'

@@ -1,6 +1,6 @@
 // import Editor from '../../Editor'
-import { Editor } from '@kditor/core'
-import type { IPlugin, KonvaNode } from '../../types'
+import { Editor } from '@fditor/core'
+import type { IPlugin } from '../../types'
 import './methods'
 
 export default class AlignPlugin implements IPlugin {
@@ -15,13 +15,6 @@ export default class AlignPlugin implements IPlugin {
     this.editor.emit('plugin:installed', this)
   }
   alignLeft() {
-    const shapes = this.editor.getActiveShapes()
-    if (shapes) {
-      shapes.forEach((shape: KonvaNode) => {
-        // shape.('x', 0 + shape.width() / 2)
-        shape.attrs.x = 0 + shape.width() / 2
-      })
-      this.editor.update(shapes)
-    }
+    console.log('alignLeft')
   }
 }

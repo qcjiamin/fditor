@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { useEditorStore } from '@/stores/editorStore'
-  import type { FImage } from '@kditor/core'
+  import type { FImage } from '@fditor/core'
   import Flipx from '@/assets/icons/imgbar/flipx.svg'
   import Flipy from '@/assets/icons/imgbar/flipy.svg'
 

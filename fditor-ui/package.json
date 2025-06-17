@@ -1,5 +1,5 @@
 {
-  "name": "kditor",
+  "name": "fditor-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,7 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@floating-ui/vue": "^1.1.6",
-    "@kditor/core": "*",
+    "@fditor/core": "*",
     "@vueuse/core": "^13.3.0",
     "axios": "^1.8.4",
     "element-plus": "^2.9.8",

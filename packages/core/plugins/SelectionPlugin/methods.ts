@@ -1,8 +1,8 @@
-import Editor from '../../Editor'
+import { Editor } from '@fditor/core'
 import type { KonvaNode } from '../../types'
 import SelectionPlugin from './SelectionPlugin'
 
-declare module '@kditor/core' {
+declare module '@fditor/core' {
   export interface Editor {
     getActiveShapes(): KonvaNode[] | null
     getActiveShape(): KonvaNode

@@ -6,7 +6,7 @@
   import MiddleIcon from '@/assets/icons/publicbar/align_middle.svg'
   import BottomIcon from '@/assets/icons/publicbar/align_bottom.svg'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
-  import type { HorizontalAlign, VerticalAlign } from '@kditor/core'
+  import type { HorizontalAlign, VerticalAlign } from '@fditor/core'
   import { ref, watch } from 'vue'
 
   const emit = defineEmits<{

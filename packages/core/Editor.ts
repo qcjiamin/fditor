@@ -5,12 +5,13 @@ import { Layout, layoutDimensions } from './types'
 import { v4 as uuidv4 } from 'uuid'
 // import { BG_COLOR } from './utils/constant'
 import './polyfill'
-import { Canvas, FabricObject } from 'fabric'
+import { Canvas, Object } from 'fabric'
 import { util } from 'fabric'
 import { FCanvas } from './customShape/FCanvas'
-import { FImage } from '@kditor/core'
+import { FImage } from '@fditor/core'
 import { ClipFrame } from './customShape/ClipFrame'
 import { ClipContainer } from './customShape/ClipContainer'
+import { ControlRenderParams } from './plugins/LockPlugin/type'
 interface IRect {
   x: number
   y: number
@@ -135,8 +136,39 @@ class Editor extends EventBus<EditorEventMap> {
   }
   // todo: 插件的禁用，启用和卸载
 
+  public async initControlInfo() {
+    // 加载图片？
+  }
+  public static setControlInfo(key: string, info: { img: HTMLImageElement; w: number; h: number }) {
+    const { img, w, h } = info
+    FabricObject.prototype.controls[key].render = function (
+      ctx: ControlRenderParams[0],
+      left: ControlRenderParams[1],
+      top: ControlRenderParams[2],
+      styleOverride: ControlRenderParams[3],
+      fabricObject: ControlRenderParams[4]
+    ) {
+      // const size = 30
+      ctx.save()
+      ctx.translate(left, top)
+      ctx.rotate(util.degreesToRadians(fabricObject.angle))
+      ctx.drawImage(img, -w / 2, -h / 2, 40, 40)
+      ctx.restore()
+    }
+  }
+
   public getPlugin<T extends IPlugin>(pluginName: string): T | undefined {
     return this.pluginMap.get(pluginName) as T
+  }
+
+  public getActiveObject() {
+    return this.stage.getActiveObject()
+  }
+  /** 提供给修改对象的属性使用，所以必须有一个选中对象 */
+  public getSelectedObject() {
+    const obj = this.getActiveObject()
+    if (!obj) throw new Error('getSelectedObject but there is no object that is selected')
+    return obj
   }
 
   public _add(...nodes: FabricObject[]): this {

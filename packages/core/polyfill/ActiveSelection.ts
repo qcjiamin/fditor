@@ -1,5 +1,6 @@
-import { HorizontalAlign, VerticalAlign } from '@kditor/core'
-import { ActiveSelection, FabricObject, Group, util } from 'fabric'
+import { HorizontalAlign, VerticalAlign } from '@fditor/core'
+import { ActiveSelection, FabricObject, Group, Point, util } from 'fabric'
+import { FCanvas } from '../customShape/FCanvas'
 
 declare module 'fabric' {
   export interface ActiveSelection {
@@ -83,30 +84,61 @@ ActiveSelection.prototype._unGroup = function () {
 }
 
 ActiveSelection.prototype.setAlign = function (align) {
-  console.log(align)
   if (!this.canvas) return
   const canvas = this.canvas
+  if (!(canvas instanceof FCanvas)) return
+  let newSelection = null
+  const objs = this._objects
   if (align === 'left') {
-    const objs = this._objects
     const left = this.left
     // canvas._discardActiveObject()
     this._unGroup()
-    console.error('left', left)
-    // objs.forEach((obj) => {
-    //   obj.set('left', left)
-    //   obj.setCoords()
-    // })
-
-    // canvas.renderAll()
-    const newSelection = new ActiveSelection(objs, { canvas })
-    // newSelection.multiSelectAdd(...objs)
-
-    // canvas._activeObject = newSelection
-    // newSelection.setCoords()
-    canvas._setActiveObject(newSelection)
-    newSelection.setCoords()
-
-    // canvas.setActiveObject(newSelection)
-    canvas.requestRenderAll()
+    objs.forEach((obj) => {
+      obj.set('left', left)
+      obj.setCoords()
+    })
+  } else if (align === 'right') {
+    const right = this.left + this.getScaledWidth()
+    this._unGroup()
+    objs.forEach((obj) => {
+      obj.set('left', right - obj.getScaledWidth())
+      obj.setCoords()
+    })
+  } else if (align === 'center') {
+    const center = this.getCenterPoint()
+    this._unGroup()
+    objs.forEach((obj) => {
+      const selfCenter = obj.getCenterPoint()
+      obj.setPositionByOrigin(new Point(center.x, selfCenter.y), 'center', 'center')
+      obj.setCoords()
+    })
+  } else if (align === 'top') {
+    const top = this.top
+    this._unGroup()
+    objs.forEach((obj) => {
+      obj.set('top', top)
+      obj.setCoords()
+    })
+  } else if (align === 'bottom') {
+    const bottom = this.top + this.getScaledHeight()
+    this._unGroup()
+    objs.forEach((obj) => {
+      obj.set('top', bottom - obj.getScaledHeight())
+      obj.setCoords()
+    })
+  } else if (align === 'middle') {
+    const center = this.getCenterPoint()
+    this._unGroup()
+    objs.forEach((obj) => {
+      const selfCenter = obj.getCenterPoint()
+      obj.setPositionByOrigin(new Point(selfCenter.x, center.y), 'center', 'center')
+      obj.setCoords()
+    })
   }
+
+  newSelection = new ActiveSelection(objs, { canvas })
+  canvas.setActiveObject(newSelection)
+  canvas.requestRenderAll()
+
+  this.canvas.fire('def:modified', { target: newSelection! })
 }

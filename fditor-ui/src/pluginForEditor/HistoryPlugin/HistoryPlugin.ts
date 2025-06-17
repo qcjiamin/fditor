@@ -1,6 +1,6 @@
 // import Editor from '../../Editor'
-import { Editor } from '@kditor/core'
-import type { IPlugin } from '@kditor/core'
+import { Editor } from '@fditor/core'
+import type { IPlugin } from '@fditor/core'
 import type { IStepInfo } from '@/pluginForEditor/HistoryPlugin/type.ts'
 import './methods.ts'
 

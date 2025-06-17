@@ -1,8 +1,8 @@
-import { Editor } from '@kditor/core'
+import { Editor } from '@fditor/core'
 import type { IStepInfo } from '@/pluginForEditor/HistoryPlugin/type'
 import type HistoryPlugin from '@/pluginForEditor/HistoryPlugin/HistoryPlugin'
 
-declare module '@kditor/core' {
+declare module '@fditor/core' {
   export interface Editor {
     undo(): void
     redo(): void

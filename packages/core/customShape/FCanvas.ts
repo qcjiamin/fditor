@@ -1,4 +1,17 @@
-import { ActiveSelection, Canvas, FabricObject } from 'fabric'
+import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util } from 'fabric'
+import { ControlRenderParams } from '../plugins/LockPlugin/type'
+
+type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> | 'lock'
+type ControlOptions = Partial<Control>
+type defControlOptions = Pick<ControlOptions, 'x' | 'y' | 'offsetX' | 'offsetY'> & { img: string }
+// Partial<Record<ControlNames, ControlOptions>>
+type ResetControlParams = Partial<Record<ControlNames, defControlOptions>>
+
+//! 这样可以明确是否为对象属性，obj[k]时可以推断出该属性的类型
+function isKeyInObj<T extends object>(obj: T, k: PropertyKey): k is keyof T {
+  return k in obj
+}
+
 /**
  * 自定义画布对象。挂载一些额外的功能，原则上不添加额外状态，状态由外层控制
  */
@@ -104,5 +117,43 @@ export class FCanvas extends Canvas {
       this.set(key, val)
       this.fire('def:modified', { target: this })
     }
+  }
+
+  static resetControls(options: ResetControlParams) {
+    for (const key in options) {
+      // 加载图片
+    }
+    const defaultCtls = controlsUtils.createObjectDefaultControls()
+    for (const key in defaultCtls) {
+      if (!isKeyInObj(defaultCtls, key)) continue
+      if (!options[key]) continue
+      if (options[key].x) defaultCtls[key].x = options[key].x
+      if (options[key].y) defaultCtls[key].y = options[key].y
+      if (options[key].offsetX) defaultCtls[key].offsetX = options[key].offsetX
+      if (options[key].offsetY) defaultCtls[key].offsetY = options[key].offsetY
+      if (options[key].img) {
+        defaultCtls[key].render = function (
+          ctx: ControlRenderParams[0],
+          left: ControlRenderParams[1],
+          top: ControlRenderParams[2],
+          styleOverride: ControlRenderParams[3],
+          fabricObject: ControlRenderParams[4]
+        ) {
+          ctx.save()
+          ctx.translate(left, top)
+          ctx.rotate(util.degreesToRadians(fabricObject.angle))
+          const img = document.querySelector('#lockimg')
+          ctx.drawImage(img, -size / 2, -size / 2, 40, 40)
+          ctx.restore()
+        }
+      }
+    }
+  }
+
+  static resetDefaultControl() {
+    const defaultCtls = controlsUtils.createObjectDefaultControls()
+
+    defaultCtls.bl.render = function () {}
+    new Control()
   }
 }

@@ -1,7 +1,7 @@
-import { Editor } from '@kditor/core'
+import { Editor } from '@fditor/core'
 import ColorPlugin from './ColorPlugin'
 
-declare module '@kditor/core' {
+declare module '@fditor/core' {
   export interface Editor {
     getFill(): void
     setFill(val: string): void
