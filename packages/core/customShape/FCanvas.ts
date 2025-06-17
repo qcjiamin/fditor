@@ -1,11 +1,15 @@
 import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util } from 'fabric'
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
-
+// 排除 undefined 的 Partial
 type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> | 'lock'
 type ControlOptions = Partial<Control>
-type defControlOptions = Pick<ControlOptions, 'x' | 'y' | 'offsetX' | 'offsetY'> & { img: string }
+type defControlOptions = Pick<ControlOptions, 'x' | 'y' | 'offsetX' | 'offsetY' | 'sizeX' | 'sizeY'> & {
+  imgurl: string
+}
+type defControlRenderOptions = Omit<defControlOptions, 'imgurl'> & { imgEl: HTMLImageElement | undefined }
 // Partial<Record<ControlNames, ControlOptions>>
 type ResetControlParams = Partial<Record<ControlNames, defControlOptions>>
+type ResetControlRenderParams = Partial<Record<ControlNames, defControlRenderOptions>>
 
 //! 这样可以明确是否为对象属性，obj[k]时可以推断出该属性的类型
 function isKeyInObj<T extends object>(obj: T, k: PropertyKey): k is keyof T {
@@ -119,33 +123,55 @@ export class FCanvas extends Canvas {
     }
   }
 
-  static resetControls(options: ResetControlParams) {
+  static async resetControls(options: ResetControlParams) {
+    if (Object.keys(options).length === 0) return
+
+    // 加载完图片
+    const params: ResetControlRenderParams = {}
     for (const key in options) {
-      // 加载图片
+      let imgEl = undefined
+      if (!isKeyInObj(options, key)) continue
+      if (options[key] && options[key].imgurl) {
+        imgEl = await util.loadImage(options[key].imgurl)
+      }
+      params[key] = {
+        ...options[key],
+        imgEl
+      }
     }
-    const defaultCtls = controlsUtils.createObjectDefaultControls()
-    for (const key in defaultCtls) {
-      if (!isKeyInObj(defaultCtls, key)) continue
-      if (!options[key]) continue
-      if (options[key].x) defaultCtls[key].x = options[key].x
-      if (options[key].y) defaultCtls[key].y = options[key].y
-      if (options[key].offsetX) defaultCtls[key].offsetX = options[key].offsetX
-      if (options[key].offsetY) defaultCtls[key].offsetY = options[key].offsetY
-      if (options[key].img) {
-        defaultCtls[key].render = function (
-          ctx: ControlRenderParams[0],
-          left: ControlRenderParams[1],
-          top: ControlRenderParams[2],
-          styleOverride: ControlRenderParams[3],
-          fabricObject: ControlRenderParams[4]
-        ) {
-          ctx.save()
-          ctx.translate(left, top)
-          ctx.rotate(util.degreesToRadians(fabricObject.angle))
-          const img = document.querySelector('#lockimg')
-          ctx.drawImage(img, -size / 2, -size / 2, 40, 40)
-          ctx.restore()
+
+    FabricObject.createControls = function () {
+      const defaultCtls = controlsUtils.createObjectDefaultControls()
+      for (const key in params) {
+        if (!isKeyInObj(defaultCtls, key)) continue
+        if (!params[key]) continue
+        if (params[key].x) defaultCtls[key].x = params[key].x
+        if (params[key].y) defaultCtls[key].y = params[key].y
+        if (params[key].offsetX) defaultCtls[key].offsetX = params[key].offsetX
+        if (params[key].offsetY) defaultCtls[key].offsetY = params[key].offsetY
+        if (params[key].sizeX) defaultCtls[key].sizeX = params[key].sizeX
+        if (params[key].sizeY) defaultCtls[key].sizeY = params[key].sizeY
+        if (params[key].imgEl) {
+          const imgEl = params[key].imgEl
+          defaultCtls[key].render = function (
+            ctx: ControlRenderParams[0],
+            left: ControlRenderParams[1],
+            top: ControlRenderParams[2],
+            styleOverride: ControlRenderParams[3],
+            fabricObject: ControlRenderParams[4]
+          ) {
+            const xSize = this.sizeX || styleOverride?.cornerSize || fabricObject.cornerSize
+            const ySize = this.sizeY || styleOverride?.cornerSize || fabricObject.cornerSize
+            ctx.save()
+            ctx.translate(left, top)
+            ctx.rotate(util.degreesToRadians(fabricObject.angle))
+            ctx.drawImage(imgEl, -xSize / 2, -ySize / 2, xSize, ySize)
+            ctx.restore()
+          }
         }
+      }
+      return {
+        controls: defaultCtls
       }
     }
   }
