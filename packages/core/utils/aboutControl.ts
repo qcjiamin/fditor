@@ -69,36 +69,20 @@ export const predefineOptions = {
     y: 0.5,
     sizeX: 20,
     sizeY: 20
-  },
-  lock: {
-    visible: false,
-    x: 0.5,
-    y: 0.5,
-    sizeX: 20,
-    sizeY: 20,
-    imgurl: lockIcon,
-    cursorStyle: 'pointer',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mouseUpHandler: (_eventData: TPointerEvent, transform: Transform, _x: number, _y: number) => {
-      const target = transform.target
-      target.unlock()
-    }
   }
 }
 
 export const predefineLock = {
-  lock: {
-    visible: false,
-    x: 0.5,
-    y: 0.5,
-    sizeX: 20,
-    sizeY: 20,
-    imgurl: lockIcon,
-    cursorStyle: 'pointer',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mouseUpHandler: (_eventData: TPointerEvent, transform: Transform, _x: number, _y: number) => {
-      const target = transform.target
-      target.unlock()
-    }
+  visible: false,
+  x: 0.5,
+  y: 0.5,
+  sizeX: 20,
+  sizeY: 20,
+  imgurl: lockIcon,
+  cursorStyle: 'pointer',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  mouseUpHandler: (_eventData: TPointerEvent, transform: Transform, _x: number, _y: number) => {
+    const target = transform.target
+    target.unlock()
   }
 }

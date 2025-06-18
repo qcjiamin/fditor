@@ -34,7 +34,12 @@
       editorStore.setCvsState('normal')
     })
 
-    editor.use(WorkspacePlugin).use(SelectionPlugin).use(HistoryPlugin).use(CropPlugin).use(LockPlugin)
+    await editor.use(WorkspacePlugin)
+    await editor.use(SelectionPlugin)
+    await editor.use(HistoryPlugin)
+    await editor.use(CropPlugin)
+    //TODO: 放到实例化以前处理
+    await editor.use(LockPlugin) // LockPlugin 的init 为异步（加载图片）
 
     // 此时再通知属性条获取属性？ 因为默认选中背景条，但是画布初始化是在组件渲染之后 !! 需优化
     // historyPlugin 添加第一条记录也用到此消息

@@ -122,10 +122,10 @@ class Editor extends EventBus<EditorEventMap> {
     this.resizeObserver.observe(this.container)
   }
 
-  public use(plugin: { new (): IPlugin }) {
+  public async use(plugin: { new (): IPlugin }) {
     const plugnInstance = new plugin()
     if (!this.pluginMap.has(plugnInstance.name)) {
-      plugnInstance.init(this)
+      await plugnInstance.init(this)
       this.pluginMap.set(plugnInstance.name, plugnInstance)
     } else {
       console.error(`${plugnInstance.name} has installed`)

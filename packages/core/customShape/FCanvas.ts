@@ -2,7 +2,7 @@ import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util } f
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineOptions } from '../utils/aboutControl'
 // 排除 undefined 的 Partial
-type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> | 'lock'
+type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls>
 type ControlOptions = Partial<Control>
 type defControlOptions = ControlOptions & {
   imgurl?: string
@@ -12,7 +12,6 @@ type defControlRenderOptions = Omit<defControlOptions, 'imgurl'> & { imgEl?: HTM
 type ResetControlParams = Partial<Record<ControlNames, defControlOptions>>
 // type Tes = Partial<{ a: { a: string }; b: { a: string } }>
 type ResetControlRenderParams = Partial<Record<ControlNames, defControlRenderOptions>>
-type InsertControlParam = { name: string; options: defControlOptions }
 
 type Controls = ReturnType<typeof controlsUtils.createObjectDefaultControls> & {
   [key: string]: Control
@@ -188,7 +187,9 @@ export class FCanvas extends Canvas {
         // 确保 key 属于 options 的键值
         if (!isKeyInObj(options, key) || !options[key]) continue
         if (!isKeyInObj(defaultCtls, key)) {
-          defaultCtls[key] = new Control()
+          continue
+          // 采用 addControl 的方式，不用默认写死的方式
+          // defaultCtls[key] = new Control()
         }
         if (!params[key]) continue
         that.resetControlStyleAndAction(defaultCtls[key], params[key])
@@ -203,8 +204,7 @@ export class FCanvas extends Canvas {
     this.resetControls(predefineOptions)
   }
 
-  static async addControl(option: InsertControlParam) {
-    const { name, options } = option
+  static async addControl(name: string, options: defControlOptions) {
     const { controls } = FabricObject.createControls()
     if (isKeyInObj(controls, name)) throw new Error('already exists' + name)
     let params: defControlRenderOptions = {}

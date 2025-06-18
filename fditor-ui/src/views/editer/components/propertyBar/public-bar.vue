@@ -25,6 +25,9 @@
     horizontal: '',
     vertical: ''
   })
+  const showLockIcon = computed(() => {
+    return editorStore.selectType !== 'activeselection'
+  })
 
   function getAttrs() {
     const shape = editorStore.selected!
@@ -98,7 +101,12 @@
     <property-normal-item tip="animate" :active="openAni" @click="toggleAnimate">
       <Orange></Orange>
     </property-normal-item>
-    <property-normal-item :active="attrs.lock" :tip="attrs.lock ? 'unlock' : 'lock'" @click="toggleLock">
+    <property-normal-item
+      v-if="showLockIcon"
+      :active="attrs.lock"
+      :tip="attrs.lock ? 'unlock' : 'lock'"
+      @click="toggleLock"
+    >
       <el-icon v-if="attrs.lock" size="20" color="#409EFF">
         <Lock></Lock>
       </el-icon>
