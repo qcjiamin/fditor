@@ -4,6 +4,7 @@ import { FabricObject, Point } from 'fabric'
 
 declare module 'fabric' {
   export interface FabricObject {
+    cornerStyle: 'rect' | 'circle' | 'img'
     eset(key: string, val: any, checkChange?: boolean): void
     eset(props: Record<string, any>, checkChnage?: boolean): void
     getZIndex(): number

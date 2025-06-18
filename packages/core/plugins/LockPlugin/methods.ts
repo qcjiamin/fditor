@@ -1,4 +1,4 @@
-import { FabricObject } from 'fabric'
+import { FabricObject, Canvas } from 'fabric'
 
 declare module 'fabric' {
   export interface FabricObject {
@@ -9,30 +9,64 @@ declare module 'fabric' {
 }
 
 FabricObject.prototype.lock = function () {
-  this.lockMovementX = false
-  this.lockMovementY = false
-  this.lockRotation = false
-  this.lockScalingFlip = false
-  this.lockScalingX = false
-  this.lockScalingY = false
-  this.setControlsVisibility({})
-  // setControlsByObj(that)
+  const controlNames = Object.keys(this.controls)
+  const result = controlNames.reduce(
+    (acc, key) => {
+      acc[key] = false // 第一个为 true，其余为 false
+      return acc
+    },
+    {} as Record<(typeof controlNames)[number], boolean>
+  )
+
+  this.setControlsVisibility({
+    ...result,
+    lock: true
+  })
+
+  this.eset(
+    {
+      lockMovementX: true,
+      lockMovementY: true,
+      lockRotation: true,
+      lockScalingFlip: true,
+      lockScalingX: true,
+      lockScalingY: true
+    },
+    false
+  )
 }
 FabricObject.prototype.unlock = function () {
-  this.lockMovementX = true
-  this.lockMovementY = true
-  this.lockRotation = true
-  this.lockScalingFlip = true
-  this.lockScalingX = true
-  this.lockScalingY = true
+  const controlNames = Object.keys(this.controls)
+  const result = controlNames.reduce(
+    (acc, key) => {
+      acc[key] = true // 第一个为 true，其余为 false
+      return acc
+    },
+    {} as Record<(typeof controlNames)[number], boolean>
+  )
+
+  this.setControlsVisibility({
+    ...result,
+    lock: false
+  })
+  this.eset(
+    {
+      lockMovementX: false,
+      lockMovementY: false,
+      lockRotation: false,
+      lockScalingFlip: false,
+      lockScalingX: false,
+      lockScalingY: false
+    },
+    false
+  )
 }
 FabricObject.prototype.isLock = function () {
-  return this.lockMovementX === false
+  return this.lockMovementX === true
 }
 
-// Editor.prototype.alignLeft = function () {
-//   const alignPlugin = this.getPlugin<AlignPlugin>('AlignPlugin') as AlignPlugin
-//   if (alignPlugin) {
-//     alignPlugin.alignLeft()
-//   }
-// }
+declare module 'fabric' {
+  export interface Cnavas {
+    handleSelection(): boolean
+  }
+}

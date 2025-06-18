@@ -29,7 +29,7 @@
   function getAttrs() {
     const shape = editorStore.selected!
     attrs.opacity = shape.opacity
-    attrs.lock = shape.lockMovementX
+    attrs.lock = shape.isLock()
     const positionInfo = shape.getAlign()
     attrs.horizontal = positionInfo.h
     attrs.vertical = positionInfo.v
@@ -55,11 +55,16 @@
     }
   }
   function toggleLock() {
-    if (!editorStore.selected) {
+    const selected = editorStore.selected
+    if (!selected) {
       throw new Error('testLeft, but no object was selected ')
     }
-    editorStore.selected.eset('lockMovementX', !editorStore.selected.lockMovementX)
-    editor.render()
+    if (selected.isLock()) {
+      selected.unlock()
+    } else {
+      selected.lock()
+    }
+    // editor.render()
   }
   async function deleteObj() {
     console.log('delete')

@@ -1,4 +1,23 @@
-<svg data-v-d2e47025=""
-  xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="20" height="20">
-  <path fill="currentColor" d="M771.776 794.88A384 384 0 0 1 128 512h64a320 320 0 0 0 555.712 216.448H654.72a32 32 0 1 1 0-64h149.056a32 32 0 0 1 32 32v148.928a32 32 0 1 1-64 0v-50.56zM276.288 295.616h92.992a32 32 0 0 1 0 64H220.16a32 32 0 0 1-32-32V178.56a32 32 0 0 1 64 0v50.56A384 384 0 0 1 896.128 512h-64a320 320 0 0 0-555.776-216.384z"></path>
-</svg>
+<svg xmlns='http://www.w3.org/2000/svg'
+  xmlns:xlink='http://www.w3.org/1999/xlink' width='52' height='52' viewBox='0 0 52 52'>
+  <defs>
+    <filter id='336' x='0' y='0' width='52' height='52' filterUnits='userSpaceOnUse'>
+      <feOffset input='SourceAlpha'/>
+      <feGaussianBlur stdDeviation='5' result='blur'/>
+      <feFlood flood-opacity='0.333'/>
+      <feComposite operator='in' in2='blur'/>
+      <feComposite in='SourceGraphic'/>
+    </filter>
+    <clipPath id='clip-path'>
+      <rect id='1954' data-name='1954' width='20' height='20' transform='translate(0.33)' fill='#fff' stroke='#1e1e2e' stroke-width='1.5'/>
+    </clipPath>
+  </defs>
+  <g id='rotate' transform='translate(-173 -32)'>
+    <g transform='matrix(1, 0, 0, 1, 173, 32)' filter='url(#336)'>
+      <circle id='336-2' data-name='336' cx='11' cy='11' r='11' transform='translate(15 15)' fill='#fff'/>
+    </g>
+    <g id='820' data-name='820' transform='translate(188.67 48)' clip-path='url(#clip-path)'>
+      <path id='178888' data-name='178888' d='M4.07,2.5a4,4,0,0,1,4.761.675l.011.011L10.24,4.5H8.5a.5.5,0,0,0,0,1h3A.5.5,0,0,0,12,5V2a.5.5,0,0,0-1,0V3.842L9.533,2.462a5,5,0,1,0,1.183,5.2.5.5,0,1,0-.942-.334A4,4,0,1,1,4.07,2.5' transform='translate(4.328 3.999)' fill='#1e1f22' stroke='#1e1f22' stroke-width='0.5' fill-rule='evenodd'/>
+    </g>
+  </g>
+</svg> 

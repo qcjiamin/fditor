@@ -1,15 +1,22 @@
 import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util } from 'fabric'
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
+import { predefineOptions } from '../utils/aboutControl'
 // 排除 undefined 的 Partial
 type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> | 'lock'
 type ControlOptions = Partial<Control>
-type defControlOptions = Pick<ControlOptions, 'x' | 'y' | 'offsetX' | 'offsetY' | 'sizeX' | 'sizeY'> & {
-  imgurl: string
+type defControlOptions = ControlOptions & {
+  imgurl?: string
 }
-type defControlRenderOptions = Omit<defControlOptions, 'imgurl'> & { imgEl: HTMLImageElement | undefined }
+type defControlRenderOptions = Omit<defControlOptions, 'imgurl'> & { imgEl?: HTMLImageElement | undefined }
 // Partial<Record<ControlNames, ControlOptions>>
 type ResetControlParams = Partial<Record<ControlNames, defControlOptions>>
+// type Tes = Partial<{ a: { a: string }; b: { a: string } }>
 type ResetControlRenderParams = Partial<Record<ControlNames, defControlRenderOptions>>
+type InsertControlParam = { name: string; options: defControlOptions }
+
+type Controls = ReturnType<typeof controlsUtils.createObjectDefaultControls> & {
+  [key: string]: Control
+}
 
 //! 这样可以明确是否为对象属性，obj[k]时可以推断出该属性的类型
 function isKeyInObj<T extends object>(obj: T, k: PropertyKey): k is keyof T {
@@ -123,6 +130,40 @@ export class FCanvas extends Canvas {
     }
   }
 
+  static resetControlStyleAndAction(control: Control, options: defControlRenderOptions) {
+    if (options.x) control.x = options.x
+    if (options.y) control.y = options.y
+    if (options.offsetX) control.offsetX = options.offsetX
+    if (options.offsetY) control.offsetY = options.offsetY
+    if (options.sizeX) control.sizeX = options.sizeX
+    if (options.sizeY) control.sizeY = options.sizeY
+    if (options.cursorStyle) control.cursorStyle = options.cursorStyle
+    if (options.visible !== undefined) {
+      control.visible = options.visible
+    }
+    if (options.imgEl) {
+      const imgEl = options.imgEl
+      control.render = function (
+        ctx: ControlRenderParams[0],
+        left: ControlRenderParams[1],
+        top: ControlRenderParams[2],
+        styleOverride: ControlRenderParams[3],
+        fabricObject: ControlRenderParams[4]
+      ) {
+        const xSize = this.sizeX || styleOverride?.cornerSize || fabricObject.cornerSize
+        const ySize = this.sizeY || styleOverride?.cornerSize || fabricObject.cornerSize
+        ctx.save()
+        ctx.translate(left, top)
+        ctx.rotate(util.degreesToRadians(fabricObject.angle))
+        ctx.drawImage(imgEl, -xSize / 2, -ySize / 2, xSize, ySize)
+        ctx.restore()
+      }
+    }
+    if (options.mouseUpHandler) {
+      control.mouseUpHandler = options.mouseUpHandler
+    }
+  }
+
   static async resetControls(options: ResetControlParams) {
     if (Object.keys(options).length === 0) return
 
@@ -139,36 +180,18 @@ export class FCanvas extends Canvas {
         imgEl
       }
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this
     FabricObject.createControls = function () {
-      const defaultCtls = controlsUtils.createObjectDefaultControls()
+      const defaultCtls: Controls = controlsUtils.createObjectDefaultControls()
       for (const key in params) {
-        if (!isKeyInObj(defaultCtls, key)) continue
-        if (!params[key]) continue
-        if (params[key].x) defaultCtls[key].x = params[key].x
-        if (params[key].y) defaultCtls[key].y = params[key].y
-        if (params[key].offsetX) defaultCtls[key].offsetX = params[key].offsetX
-        if (params[key].offsetY) defaultCtls[key].offsetY = params[key].offsetY
-        if (params[key].sizeX) defaultCtls[key].sizeX = params[key].sizeX
-        if (params[key].sizeY) defaultCtls[key].sizeY = params[key].sizeY
-        if (params[key].imgEl) {
-          const imgEl = params[key].imgEl
-          defaultCtls[key].render = function (
-            ctx: ControlRenderParams[0],
-            left: ControlRenderParams[1],
-            top: ControlRenderParams[2],
-            styleOverride: ControlRenderParams[3],
-            fabricObject: ControlRenderParams[4]
-          ) {
-            const xSize = this.sizeX || styleOverride?.cornerSize || fabricObject.cornerSize
-            const ySize = this.sizeY || styleOverride?.cornerSize || fabricObject.cornerSize
-            ctx.save()
-            ctx.translate(left, top)
-            ctx.rotate(util.degreesToRadians(fabricObject.angle))
-            ctx.drawImage(imgEl, -xSize / 2, -ySize / 2, xSize, ySize)
-            ctx.restore()
-          }
+        // 确保 key 属于 options 的键值
+        if (!isKeyInObj(options, key) || !options[key]) continue
+        if (!isKeyInObj(defaultCtls, key)) {
+          defaultCtls[key] = new Control()
         }
+        if (!params[key]) continue
+        that.resetControlStyleAndAction(defaultCtls[key], params[key])
       }
       return {
         controls: defaultCtls
@@ -176,10 +199,32 @@ export class FCanvas extends Canvas {
     }
   }
 
-  static resetDefaultControl() {
-    const defaultCtls = controlsUtils.createObjectDefaultControls()
+  static setPredefineControls() {
+    this.resetControls(predefineOptions)
+  }
 
-    defaultCtls.bl.render = function () {}
-    new Control()
+  static async addControl(option: InsertControlParam) {
+    const { name, options } = option
+    const { controls } = FabricObject.createControls()
+    if (isKeyInObj(controls, name)) throw new Error('already exists' + name)
+    let params: defControlRenderOptions = {}
+    let imgEl: HTMLImageElement | undefined = undefined
+    // 加载图片
+    if (options.imgurl) {
+      imgEl = await util.loadImage(options.imgurl)
+    }
+    params = {
+      ...options,
+      imgEl
+    }
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this
+    FabricObject.createControls = function () {
+      controls[name] = new Control()
+      that.resetControlStyleAndAction(controls[name], params)
+      return {
+        controls
+      }
+    }
   }
 }
