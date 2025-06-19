@@ -1,13 +1,16 @@
 import './methods'
-import type { IPlugin } from '../../types'
+// import type { IPlugin } from '../../types'
 import Editor from '../../Editor'
 import { Rect } from 'fabric'
+import BasePlugin from '../BasePlugin'
 
-export default class WorkspacePlugin implements IPlugin {
+export default class WorkspacePlugin extends BasePlugin {
   #name: string = 'WorkspacePlugin'
   public editor!: Editor
   public clipBox!: Rect
-  constructor() {}
+  constructor() {
+    super()
+  }
   get name() {
     return this.#name
   }

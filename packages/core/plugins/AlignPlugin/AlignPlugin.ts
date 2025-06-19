@@ -1,12 +1,14 @@
 // import Editor from '../../Editor'
 import { Editor } from '@fditor/core'
-import type { IPlugin } from '../../types'
 import './methods'
+import BasePlugin from '../BasePlugin'
 
-export default class AlignPlugin implements IPlugin {
+export default class AlignPlugin extends BasePlugin {
   #name: string = 'AlignPlugin'
   public editor!: Editor
-  constructor() {}
+  constructor() {
+    super()
+  }
   get name() {
     return this.#name
   }

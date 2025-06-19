@@ -10,12 +10,15 @@ import { util } from 'fabric'
 import { FCanvas } from './customShape/FCanvas'
 import { FImage } from '@fditor/core'
 import { ClipFrame } from './customShape/ClipFrame'
+import BasePlugin from './plugins/BasePlugin'
 interface IRect {
   x: number
   y: number
   width: number
   height: number
 }
+
+type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
 
 declare module 'fabric' {
   interface FabricObject {
@@ -122,7 +125,7 @@ class Editor extends EventBus<EditorEventMap> {
     this.resizeObserver.observe(this.container)
   }
 
-  public async use(plugin: { new (): IPlugin }) {
+  public async use(plugin: PluginConstructor) {
     const plugnInstance = new plugin()
     if (!this.pluginMap.has(plugnInstance.name)) {
       await plugnInstance.init(this)
@@ -133,6 +136,14 @@ class Editor extends EventBus<EditorEventMap> {
     return this
   }
   // todo: 插件的禁用，启用和卸载
+
+  public async useAll(...plugins: PluginConstructor[]) {
+    await Promise.all(
+      plugins.map((plugin) => {
+        return this.use(plugin)
+      })
+    )
+  }
 
   public async initControlInfo() {
     // 加载图片？

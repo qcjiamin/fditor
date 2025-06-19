@@ -1,13 +1,14 @@
-import type { IPlugin } from '../../interface'
 import type Editor from '../../Editor'
 import './methods'
 import { FabricObject } from 'fabric'
+import BasePlugin from '../BasePlugin'
 
-export default class SelectionPlugin implements IPlugin {
+export default class SelectionPlugin extends BasePlugin {
   #name: string = 'SelectionPlugin'
   public editor!: Editor
   public selectedMap: Map<string, FabricObject>
   constructor() {
+    super()
     this.selectedMap = new Map()
   }
   get name() {
