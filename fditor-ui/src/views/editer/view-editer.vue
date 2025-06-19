@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onMounted, ref, useTemplateRef, type Component } from 'vue'
+  import { onMounted, onUnmounted, ref, useTemplateRef, type Component } from 'vue'
   import editerHeader from './components/editer-header.vue'
   import editerSidebar from './components/sidebar/editer-sidebar.vue'
   import workspaceMain from './components/workspace/workspace-main.vue'
@@ -15,6 +15,7 @@
   import type { CanvasStates } from '@/utils/types'
   import ClipBar from '@/views/editer/components/propertyBar/clip-bar.vue'
   import { onClickOutside } from '@vueuse/core'
+  import hotkeys from 'hotkeys-js'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
   const editorStore = useEditorStore()
@@ -23,7 +24,7 @@
   // const workspaceRef = ref()
   window.editor = editor
   onMounted(async () => {
-    editor.init(document.querySelector('#canvas-container canvas')!)
+    await editor.init(document.querySelector('#canvas-container canvas')!)
     // 选择事件
     editor.on('selected:change', (selected) => {
       console.log('selected:change', selected)
@@ -42,6 +43,31 @@
       console.log('ready')
       editor.emit('canvas:ready', null)
     }, 0)
+
+    hotkeys('left, right, up, down', function (e, handler) {
+      console.log(handler)
+      const selected = editor.getActiveObject()
+      if (!selected) return
+      switch (handler.key) {
+        case 'left':
+          selected.eset('left', selected.left - 1)
+          break
+        case 'right':
+          selected.eset('left', selected.left + 1)
+          break
+        case 'up':
+          selected.eset('top', selected.top - 1)
+          break
+        case 'down':
+          selected.eset('top', selected.top + 1)
+          break
+        default:
+          break
+      }
+    })
+  })
+  onUnmounted(() => {
+    hotkeys.unbind('left, right, up, down')
   })
   provide(EditorKey, editor)
 

@@ -1,6 +1,6 @@
-import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util } from 'fabric'
+import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util, InteractiveFabricObject } from 'fabric'
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
-import { predefineOptions } from '../utils/aboutControl'
+import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
 // 排除 undefined 的 Partial
 type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls>
 type ControlOptions = Partial<Control>
@@ -153,7 +153,14 @@ export class FCanvas extends Canvas {
         const ySize = this.sizeY || styleOverride?.cornerSize || fabricObject.cornerSize
         ctx.save()
         ctx.translate(left, top)
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+        ctx.shadowBlur = Math.max(xSize, ySize)
+        ctx.shadowOffsetX = 0
+        ctx.shadowOffsetY = 0
+
         ctx.rotate(util.degreesToRadians(fabricObject.angle))
+        document.body.appendChild(imgEl)
         ctx.drawImage(imgEl, -xSize / 2, -ySize / 2, xSize, ySize)
         ctx.restore()
       }
@@ -200,8 +207,13 @@ export class FCanvas extends Canvas {
     }
   }
 
-  static setPredefineControls() {
-    this.resetControls(predefineOptions)
+  static async setPredefineControls() {
+    await this.resetControls(predefineOptions)
+    // 设置样式
+    InteractiveFabricObject.ownDefaults = {
+      ...InteractiveFabricObject.ownDefaults,
+      ...predefineControlStyle
+    }
   }
 
   static async addControl(name: string, options: defControlOptions) {

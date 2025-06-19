@@ -2,14 +2,15 @@
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { EditorKey } from '@/constants/injectKey'
   import type { Editor, HorizontalAlign, VerticalAlign } from '@fditor/core'
-  import { computed, inject, reactive } from 'vue'
+  import { computed, inject, onMounted, onUnmounted, reactive } from 'vue'
   import opacityProperty from '@/views/editer/components/propertyBar/opacity-property.vue'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import { Lock, Unlock, Delete, Orange } from '@element-plus/icons-vue'
-  import { ActiveSelection, FabricObject } from 'fabric'
   import positionProperty from '@/views/editer/components/propertyBar/publicBar/position-property.vue'
+  import hotkeys from 'hotkeys-js'
+
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
 
@@ -73,21 +74,25 @@
     console.log('delete')
     const activeObj = editor.stage.getActiveObject()
     if (!activeObj) throw new Error('delete, but no object was selected ')
-    let objs: FabricObject[] = []
-    if (activeObj instanceof ActiveSelection) {
-      objs = [...activeObj._objects]
-    } else {
-      objs.push(activeObj)
-    }
 
     const removed = editor.stage._removeSelected()
     if (!removed) throw new Error('removeSelected return null')
     editor.emit('node:remove', removed)
   }
+
   function updateAlign(type: HorizontalAlign | VerticalAlign) {
     const selected = editor.getSelectedObject()
     selected.setAlign(type)
   }
+
+  onMounted(() => {
+    hotkeys('del', function () {
+      deleteObj()
+    })
+  })
+  onUnmounted(() => {
+    hotkeys.unbind('del')
+  })
 </script>
 
 <template>

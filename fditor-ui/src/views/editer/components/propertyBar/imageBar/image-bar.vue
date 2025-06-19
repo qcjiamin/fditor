@@ -1,4 +1,4 @@
-<!-- todo: 翻转 滤镜 定位 圆角 layer-->
+<!-- todo: 翻转 滤镜 圆角 layer-->
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
   import { useEditorStore } from '@/stores/editorStore'

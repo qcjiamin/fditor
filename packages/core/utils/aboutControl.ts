@@ -1,4 +1,4 @@
-import { TPointerEvent, Transform } from 'fabric'
+import { InteractiveFabricObject, TClassProperties, TPointerEvent, Transform } from 'fabric'
 
 export const rotateIcon =
   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnCiAgeG1sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnIHdpZHRoPSc1MicgaGVpZ2h0PSc1Micgdmlld0JveD0nMCAwIDUyIDUyJz4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9JzMzNicgeD0nMCcgeT0nMCcgd2lkdGg9JzUyJyBoZWlnaHQ9JzUyJyBmaWx0ZXJVbml0cz0ndXNlclNwYWNlT25Vc2UnPgogICAgICA8ZmVPZmZzZXQgaW5wdXQ9J1NvdXJjZUFscGhhJy8+CiAgICAgIDxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249JzUnIHJlc3VsdD0nYmx1cicvPgogICAgICA8ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PScwLjMzMycvPgogICAgICA8ZmVDb21wb3NpdGUgb3BlcmF0b3I9J2luJyBpbjI9J2JsdXInLz4KICAgICAgPGZlQ29tcG9zaXRlIGluPSdTb3VyY2VHcmFwaGljJy8+CiAgICA8L2ZpbHRlcj4KICAgIDxjbGlwUGF0aCBpZD0nY2xpcC1wYXRoJz4KICAgICAgPHJlY3QgaWQ9JzE5NTQnIGRhdGEtbmFtZT0nMTk1NCcgd2lkdGg9JzIwJyBoZWlnaHQ9JzIwJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgwLjMzKScgZmlsbD0nI2ZmZicgc3Ryb2tlPScjMWUxZTJlJyBzdHJva2Utd2lkdGg9JzEuNScvPgogICAgPC9jbGlwUGF0aD4KICA8L2RlZnM+CiAgPGcgaWQ9J3JvdGF0ZScgdHJhbnNmb3JtPSd0cmFuc2xhdGUoLTE3MyAtMzIpJz4KICAgIDxnIHRyYW5zZm9ybT0nbWF0cml4KDEsIDAsIDAsIDEsIDE3MywgMzIpJyBmaWx0ZXI9J3VybCgjMzM2KSc+CiAgICAgIDxjaXJjbGUgaWQ9JzMzNi0yJyBkYXRhLW5hbWU9JzMzNicgY3g9JzExJyBjeT0nMTEnIHI9JzExJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgxNSAxNSknIGZpbGw9JyNmZmYnLz4KICAgIDwvZz4KICAgIDxnIGlkPSc4MjAnIGRhdGEtbmFtZT0nODIwJyB0cmFuc2Zvcm09J3RyYW5zbGF0ZSgxODguNjcgNDgpJyBjbGlwLXBhdGg9J3VybCgjY2xpcC1wYXRoKSc+CiAgICAgIDxwYXRoIGlkPScxNzg4ODgnIGRhdGEtbmFtZT0nMTc4ODg4JyBkPSdNNC4wNywyLjVhNCw0LDAsMCwxLDQuNzYxLjY3NWwuMDExLjAxMUwxMC4yNCw0LjVIOC41YS41LjUsMCwwLDAsMCwxaDNBLjUuNSwwLDAsMCwxMiw1VjJhLjUuNSwwLDAsMC0xLDBWMy44NDJMOS41MzMsMi40NjJhNSw1LDAsMSwwLDEuMTgzLDUuMi41LjUsMCwxLDAtLjk0Mi0uMzM0QTQsNCwwLDEsMSw0LjA3LDIuNScgdHJhbnNmb3JtPSd0cmFuc2xhdGUoNC4zMjggMy45OTkpJyBmaWxsPScjMWUxZjIyJyBzdHJva2U9JyMxZTFmMjInIHN0cm9rZS13aWR0aD0nMC41JyBmaWxsLXJ1bGU9J2V2ZW5vZGQnLz4KICAgIDwvZz4KICA8L2c+Cjwvc3ZnPg=='
@@ -11,73 +11,82 @@ export const predefineOptions = {
     y: -0.5,
     offsetX: 0,
     offsetY: 0,
-    sizeX: 20,
-    sizeY: 20
+    imgurl: rotateIcon,
+    sizeX: 24,
+    sizeY: 24
   },
   ml: {
     visible: true,
     x: -0.5,
     y: 0,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   },
   mr: {
     visible: true,
     x: 0.5,
     y: 0,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   },
   mt: {
     visible: true,
     x: 0,
     y: -0.5,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   },
   mb: {
     visible: true,
     x: 0,
     y: 0.5,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   },
   tl: {
     visible: true,
     x: -0.5,
     y: -0.5,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   },
   tr: {
     visible: true,
     x: 0.5,
     y: -0.5,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   },
   bl: {
     visible: true,
     x: -0.5,
     y: 0.5,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   },
   br: {
     visible: true,
     x: 0.5,
     y: 0.5,
-    sizeX: 20,
-    sizeY: 20
+    sizeX: 12,
+    sizeY: 12
   }
+}
+export const predefineControlStyle: Partial<TClassProperties<InteractiveFabricObject>> = {
+  cornerStyle: 'rect',
+  transparentCorners: false,
+  cornerColor: 'rgb(255,255,255)',
+  cornerStrokeColor: 'rgb(117, 89, 255)',
+  borderColor: 'rgb(117, 89, 255)'
+  // borderScaleFactor: 2.5
 }
 
 export const predefineLock = {
   visible: false,
   x: 0.5,
   y: 0.5,
-  sizeX: 20,
-  sizeY: 20,
+  sizeX: 15,
+  sizeY: 15,
   imgurl: lockIcon,
   cursorStyle: 'pointer',
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

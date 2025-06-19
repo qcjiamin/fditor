@@ -71,13 +71,14 @@ class Editor extends EventBus<EditorEventMap> {
     }
   }
 
-  public init(element: HTMLCanvasElement) {
+  public async init(element: HTMLCanvasElement) {
+    await FCanvas.setPredefineControls()
     this.#stage = new FCanvas(element, {
       // 控制点绘制在overlay image 和 clippath 之上
       controlsAboveOverlay: true
     })
 
-    //todo: 多场景的话，切换场景时动态绑定监听事件
+    //todo: 多场景的话，切换场景时动态绑定监听事件; 事件的绑定统一到方法中
     // 将添加、删除、移动、缩放、旋转，统一触发自定义的修改事件
     this.stage.on('def:modified', ({ target }) => {
       if (this.isSilence) {
@@ -144,10 +145,6 @@ class Editor extends EventBus<EditorEventMap> {
         return this.use(plugin)
       })
     )
-  }
-
-  public async initControlInfo() {
-    // 加载图片？
   }
 
   public getPlugin<T extends IPlugin>(pluginName: string): T | undefined {
