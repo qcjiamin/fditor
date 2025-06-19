@@ -18,6 +18,7 @@ interface IRect {
   height: number
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
 
 declare module 'fabric' {
