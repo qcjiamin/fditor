@@ -137,4 +137,91 @@ export function createCssRadialGradient(percent: number, ...colors: string[]) {
   return `radial-gradient(circle at ${percent * 100}% ${percent * 100}% ,${colors.toString()})`
 }
 
+/**
+ * 加载指定字体
+ * @param {string} family - 字体族名
+ * @param {boolean} bold
+ *  * @param {boolean} italic
+ * @returns
+ */
+async function loadFont(family, bold, italic) {
+  // const href = 'https://static.vidnoz.com/web/fonts/'
+  const href = 'https://static-alter1.vidnoz.com/web/fonts/'
+  let loadResolve = null
+  let loadReject = null
+  // console.log(family)
+  const realFamily = formartFont(family)
+  let fileName = getFontName(realFamily, bold, italic)
+  if (!fileName) {
+    // 当加载不到带效果字体时，直接加载普通字体
+    fileName = getFontName(realFamily, false, false)
+  }
+  console.log(realFamily, fileName)
+  if (!fileName) {
+    setTimeout(() => {
+      if (loadReject) {
+        loadReject(new Error('no font name'))
+        loadReject = null
+      }
+    }, 10)
+    return
+  }
+
+  const url = `${href}${fileName}`
+
+  let needload = true
+  document.fonts.forEach((value) => {
+    if (value.family === realFamily) {
+      const tempBold = value.weight === 'bold'
+      const tempItalic = value.style === 'italic'
+      if (tempBold === bold && tempItalic === italic) {
+        needload = false
+      }
+    }
+  })
+
+  if (!needload) {
+    if (loadResolve) {
+      loadResolve()
+      loadResolve = null
+    }
+  }
+
+  let _realFamily = realFamily
+  if (
+    (realFamily === 'Fraunces 72pt' || realFamily === '851CHIKARA-DZUYOKU-KANA-A') &&
+    navigator.userAgent.indexOf('Firefox') > -1
+  ) {
+    _realFamily = `'${realFamily}'`
+  }
+  const font = new FontFace(_realFamily, `url(${url})`, {
+    weight: bold ? 'bold' : 'normal',
+    style: italic ? 'italic' : 'normal'
+  })
+
+  document.fonts.add(font)
+
+  font
+    .load()
+    .then(() => {
+      if (loadResolve) {
+        console.log(fileName, '字体加载完成')
+        loadResolve()
+        loadResolve = null
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+      console.log(family + ' 加载失败')
+      if (loadReject) {
+        loadReject(err)
+        loadReject = null
+      }
+    })
+  return new Promise((resolve, reject) => {
+    loadResolve = resolve
+    loadReject = reject
+  })
+}
+
 export { add }
