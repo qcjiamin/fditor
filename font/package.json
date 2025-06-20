@@ -1,0 +1,13 @@
+{
+  "name": "font",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "qc",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "fontkit": "^2.0.4"
+  }
+}

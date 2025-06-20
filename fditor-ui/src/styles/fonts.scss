@@ -1,0 +1,74 @@
+// font-weight https://developer.mozilla.org/zh-CN/docs/Web/CSS/font-weight
+// 多语音环境使用，在多语言环境时，加载什么字体
+// $font-src: (
+//   kr: url(''),
+// );
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Thin.ttf');
+  // 多语言使用，根据语言选择不同的字体文件
+  // src: map-get($font-src, $app-lang);
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-ExtraLight.ttf');
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Light.ttf');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Regular.ttf');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Medium.ttf');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-SemiBold.ttf');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/NotoSans-ExtraBold.ttf');
+}
+
+@font-face {
+  font-family: 'Noto Sans';
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+  src: url('./fonts/NotoSans-Italic.ttf');
+  // src: map-get($font-src, $app-lang);
+}

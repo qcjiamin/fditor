@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import '@/styles/reset.scss'
+  import '@/styles/global.scss'
   import viewEditer from './views/editer/view-editer.vue'
   // import { FCanvas } from '@fditor/core'
   import { onMounted, ref } from 'vue'
@@ -17,11 +18,6 @@
 <template>
   <div v-if="preload">inloading</div>
   <view-editer v-else />
-  <img src="./images/rotate.svg" alt="" />
 </template>
 
-<style scoped lang="scss">
-  * {
-    font-family: $GLOBAL_FONTFAMILY;
-  }
-</style>
+<style scoped lang="scss"></style>
