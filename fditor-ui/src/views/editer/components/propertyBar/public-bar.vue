@@ -50,12 +50,12 @@
     editor.render()
   }
 
-  const openAni = computed(() => editorStore.sidebarShowProperty === 'animate')
+  const openAni = computed(() => editorStore.sidebarShowTab === 'animation')
   function toggleAnimate() {
-    if (editorStore.sidebarShowProperty === 'animate') {
-      editorStore.setSidebarShowProperty('')
+    if (editorStore.sidebarShowTab === 'animation') {
+      editorStore.setSidebarShowTab('resource')
     } else {
-      editorStore.setSidebarShowProperty('animate')
+      editorStore.setSidebarShowTab('animation')
     }
   }
   function toggleLock() {

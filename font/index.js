@@ -41,7 +41,7 @@ function readFontFile(dir) {
       const { fullName } = fkfont
       const splits = fullName.split(' ')
       if (splits.length <= 1) throw new Error(`${fullName} err`)
-      const subfamilyName = splits[splits.length - 1]
+      const subfamilyName = splits[splits.length - 1].toLowerCase()
       splits.length = splits.length - 1
       const familyName = splits.join(' ')
       if (!Object.keys(structure).includes(familyName)) {
@@ -57,7 +57,7 @@ readFontFile(dir)
 console.log(structure)
 
 const formatJson = JSON.stringify(structure, null, '\t')
-const fontinfo = path.join(out, 'fontinfo.js')
+const fontinfo = path.join(out, 'fontinfo.ts')
 writeContent(fontinfo, 'export const fontInfo = ', false)
 writeContent(fontinfo, formatJson)
 

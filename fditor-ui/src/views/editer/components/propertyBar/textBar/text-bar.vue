@@ -20,7 +20,7 @@
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
   const selected = editorStore.selected
-  const fontFamilyList = ['abc', 'def', 'hik', 'era']
+  // const fontFamilyList = ['abc', 'def', 'hik', 'era']
 
   type FontWeight = 'normal' | 'bold'
   type FontStyle = 'normal' | 'italic'
@@ -57,13 +57,16 @@
   const isItalic = computed(() => {
     return attrs.fontStyle === 'italic'
   })
+  const openFontsTab = computed(() => {
+    return editorStore.sidebarShowTab === 'fonts'
+  })
 
   function getAttrs() {
     console.log('get font attr')
     if (!selected) throw new Error('get font color but no selected')
     if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
     attrs.fill = colorInstance2Info(selected.fill as colorVal)
-    attrs.fontfamily = 'abc'
+    attrs.fontfamily = selected.fontFamily
     console.error(selected.fontSize)
     attrs.fontsize = selected.fontSize
     attrs.fontWeight = selected.fontWeight as FontWeight
@@ -74,6 +77,15 @@
     attrs.lineHeight = selected.lineHeight
   }
   useGetAttrs(getAttrs)
+
+  /** 切换字体侧边栏开关状态 */
+  function toggleFontsTab() {
+    if (editorStore.sidebarShowTab !== 'resource') {
+      editorStore.setSidebarShowTab('resource')
+    } else {
+      editorStore.setSidebarShowTab('fonts')
+    }
+  }
 
   function updateFill(info: ColorInfo, { commit }: updateColorOptions) {
     if (!selected) throw new Error('update font color but no selected')
@@ -170,9 +182,12 @@
 
 <template>
   <div class="typeBar">
-    <el-select :model-value="attrs.fontfamily" placeholder="" size="default" style="width: 240px">
+    <!-- <el-select :model-value="attrs.fontfamily" placeholder="" size="default" style="width: 240px">
       <el-option v-for="item in fontFamilyList" :key="item" :label="item" :value="item" />
-    </el-select>
+    </el-select> -->
+    <property-normal-item tip="fontfamily" :active="openFontsTab" @click="toggleFontsTab">
+      {{ attrs.fontfamily }}
+    </property-normal-item>
     <el-input-number :model-value="attrs.fontsize" :min="10" size="small" @change="updateFontsize" />
     <fill-property :color="attrs.fill" tip="font color" @update:color="updateFill"></fill-property>
     <property-normal-item :active="isBold" @click="updateFontWeight">

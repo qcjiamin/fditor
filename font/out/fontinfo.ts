@@ -1,101 +1,101 @@
 export const fontInfo = {
 	"Noto Sans SC": {
-		"Bold": {
+		"bold": {
 			"fileName": "NotoSansSC-Bold.ttf"
 		},
-		"Black": {
+		"black": {
 			"fileName": "NotoSansSC-Black.ttf"
 		},
-		"ExtraBold": {
+		"extrabold": {
 			"fileName": "NotoSansSC-ExtraBold.ttf"
 		},
-		"ExtraLight": {
+		"extralight": {
 			"fileName": "NotoSansSC-ExtraLight.ttf"
 		},
-		"Light": {
+		"light": {
 			"fileName": "NotoSansSC-Light.ttf"
 		},
-		"Medium": {
+		"medium": {
 			"fileName": "NotoSansSC-Medium.ttf"
 		},
-		"Regular": {
+		"regular": {
 			"fileName": "NotoSansSC-Regular.ttf"
 		},
-		"SemiBold": {
+		"semibold": {
 			"fileName": "NotoSansSC-SemiBold.ttf"
 		},
-		"Thin": {
+		"thin": {
 			"fileName": "NotoSansSC-VariableFont_wght.ttf"
 		}
 	},
 	"Noto Sans": {
-		"Black": {
+		"black": {
 			"fileName": "NotoSans-Black.ttf"
 		},
-		"Bold": {
+		"bold": {
 			"fileName": "NotoSans-Bold.ttf"
 		},
-		"ExtraBold": {
+		"extrabold": {
 			"fileName": "NotoSans-ExtraBold.ttf"
 		},
-		"ExtraLight": {
+		"extralight": {
 			"fileName": "NotoSans-ExtraLight.ttf"
 		},
-		"Italic": {
+		"italic": {
 			"fileName": "NotoSans-Italic.ttf"
 		},
-		"Light": {
+		"light": {
 			"fileName": "NotoSans-Light.ttf"
 		},
-		"Medium": {
+		"medium": {
 			"fileName": "NotoSans-Medium.ttf"
 		},
-		"Regular": {
+		"regular": {
 			"fileName": "NotoSans-Regular.ttf"
 		},
-		"SemiBold": {
+		"semibold": {
 			"fileName": "NotoSans-SemiBold.ttf"
 		},
-		"Thin": {
+		"thin": {
 			"fileName": "NotoSans-Thin.ttf"
 		}
 	},
 	"Noto Sans ExtraBold": {
-		"Italic": {
+		"italic": {
 			"fileName": "NotoSans-ExtraBoldItalic.ttf"
 		}
 	},
 	"Noto Sans Medium": {
-		"Italic": {
+		"italic": {
 			"fileName": "NotoSans-MediumItalic.ttf"
 		}
 	},
 	"Noto Sans JP": {
-		"Black": {
+		"black": {
 			"fileName": "NotoSansJP-Black.ttf"
 		},
-		"Bold": {
+		"bold": {
 			"fileName": "NotoSansJP-Bold.ttf"
 		},
-		"ExtraBold": {
+		"extrabold": {
 			"fileName": "NotoSansJP-ExtraBold.ttf"
 		},
-		"ExtraLight": {
+		"extralight": {
 			"fileName": "NotoSansJP-ExtraLight.ttf"
 		},
-		"Light": {
+		"light": {
 			"fileName": "NotoSansJP-Light.ttf"
 		},
-		"Medium": {
+		"medium": {
 			"fileName": "NotoSansJP-Medium.ttf"
 		},
-		"Regular": {
+		"regular": {
 			"fileName": "NotoSansJP-Regular.ttf"
 		},
-		"SemiBold": {
+		"semibold": {
 			"fileName": "NotoSansJP-SemiBold.ttf"
 		},
-		"Thin": {
+		"thin": {
 			"fileName": "NotoSansJP-VariableFont_wght.ttf"
 		}
 	}

@@ -1,5 +1,5 @@
-import type { sidebarPropertyType } from '@/utils/constants'
 import type { CanvasStates, ElementTypes } from '@/utils/types'
+import type { TabName } from '@/views/editer/components/sidebar/types'
 import type { FabricObject } from 'fabric'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -34,9 +34,9 @@ export const useEditorStore = defineStore('editor', () => {
     inContinueModity.value = val
   }
   /** 侧边栏显示的属性页 */
-  const sidebarShowProperty = ref<sidebarPropertyType>('')
-  const setSidebarShowProperty = function (val: sidebarPropertyType) {
-    sidebarShowProperty.value = val
+  const sidebarShowTab = ref<TabName>('resource')
+  const setSidebarShowTab = function (val: TabName) {
+    sidebarShowTab.value = val
   }
   return {
     cvsState,
@@ -46,7 +46,7 @@ export const useEditorStore = defineStore('editor', () => {
     selectType,
     inContinueModity,
     setinContinueModity,
-    sidebarShowProperty,
-    setSidebarShowProperty
+    sidebarShowTab,
+    setSidebarShowTab
   }
 })

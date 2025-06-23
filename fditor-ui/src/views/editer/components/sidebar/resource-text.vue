@@ -7,7 +7,7 @@
   const editor = inject(EditorKey) as Editor
   function addText() {
     const text = new Textbox('TEXT', {
-      fontFamily: 'Noto sans',
+      fontFamily: 'Noto Sans',
       fontSize: 100
     })
     editor.add(text as FabricObject)

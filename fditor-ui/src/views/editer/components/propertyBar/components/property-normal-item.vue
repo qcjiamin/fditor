@@ -26,7 +26,7 @@
 
 <style scoped lang="scss">
   .anchorBox {
-    width: 30px;
+    min-width: 30px;
     height: 30px;
     padding: 5px;
     display: flex;

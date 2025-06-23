@@ -1,16 +1,16 @@
 <script lang="ts" setup>
   import menuItem from './menu-item.vue'
-  import { tabNames, type TabName } from '@/utils/constants'
+  import { resourceNames, type ResourceName } from '@/utils/constants'
   const emit = defineEmits(['tabChange'])
 
-  function selectResource(tabName: TabName) {
+  function selectResource(tabName: ResourceName) {
     emit('tabChange', tabName)
   }
 </script>
 
 <template>
   <div class="menu-box">
-    <menu-item v-for="item of tabNames" :key="item" :text="item" @click="selectResource(item)"></menu-item>
+    <menu-item v-for="item of resourceNames" :key="item" :text="item" @click="selectResource(item)"></menu-item>
   </div>
 </template>
 

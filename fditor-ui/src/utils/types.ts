@@ -1,3 +1,5 @@
+import { fontWeightMap } from '@/utils/constants'
+import { fontInfo } from '@/utils/fontinfo'
 import { FabricObject } from 'fabric'
 
 export type Selected = FabricObject | undefined
@@ -19,3 +21,12 @@ export type ElementTypes = (typeof ElementTypeArr)[number]
 export const GradientTypeArr = ['linear90', 'linear180', 'linear135', 'radial50', 'radial0'] as const
 /** 渐变色预定义类型 */
 export type GradientTypes = (typeof GradientTypeArr)[number]
+
+export type FontFamilyName = keyof typeof fontInfo
+export type FontWeight = keyof typeof fontWeightMap
+export type SubFontFamilyInfo = {
+  fileName: string
+}
+export type FontInfo = {
+  [name in FontFamilyName]: { [subname in FontWeight]: SubFontFamilyInfo }
+}
