@@ -24,7 +24,7 @@
     openSubRef.value = !openSubRef.value
     e.stopPropagation()
   }
-  function selectFontFamily(fontName: FontFamilyName) {
+  function selectFontFamily() {
     // 选中自身
     if (selected) return
     // 通知外部修改
@@ -33,12 +33,13 @@
   function selectSub(subType: FontWeightKey) {
     if (selected && subType === weight) return
     // 通知外部修改
+    emit('update:fontfamily', fontName, subType)
   }
 </script>
 
 <template>
   <div>
-    <div class="fontFamily" @click="selectFontFamily(fontName)">
+    <div class="fontFamily" @click="selectFontFamily()">
       <div @click="toggleOpen"><Arrow /></div>
       <div class="fontName">{{ fontName }}</div>
       <div v-if="!openSubRef && selected"><FontSelected></FontSelected></div>

@@ -6,9 +6,10 @@
   import fontItem from '@/views/editer/components/sidebar/tabs/font-item.vue'
   import { fontInfo } from '@/utils/fontinfo'
   import { fontWeightMap, FontWeightReverseMap, type FontWeightKey } from '@/utils/constants'
-  import type { FontFamilyName } from '@/utils/types'
+  import { typedFontInfo, type FontFamilyName, type FontStyle } from '@/utils/types'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
-  //todo: 确定 props 改变，是否会影响 openRef 的值
+  import { loadFont } from '@/utils/common'
+  //todo: 确定 props 改变，是否会影响 openRef 的值 结论: 不会
 
   const editorStore = useEditorStore()
   const selected = editorStore.selected
@@ -34,11 +35,20 @@
   }
   useGetAttrs(getFontData)
 
-  function updateFontFamily(name: FontFamilyName, weight: FontWeightKey) {
+  async function updateFontFamily(name: FontFamilyName, weight: FontWeightKey) {
+    //todo: 等待加载状态，外部点击可以取消当次修改
     if (!selected) throw new Error('mounted fontsTab')
     if (!(selected instanceof Textbox)) throw new Error('mounted fontsTab, selected is not textbox')
+    // 获取当前text的style
+    const style = selected.fontStyle
+
     const weightNum = fontWeightMap[weight]
     // 加载字体
+    // 找到对应的字体文件
+    const fontfileName = typedFontInfo[name][weight]?.fileName
+    if (!fontfileName) throw new Error(`${name}, ${weight}, there is no file`)
+    await loadFont(name, fontfileName, weight, style as FontStyle)
+
     selected.eset({
       fontFamily: name,
       fontWeight: weightNum
