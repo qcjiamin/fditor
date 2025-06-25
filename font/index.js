@@ -93,12 +93,13 @@ function readFontFile(dir) {
       const { fontFamily, weight, style } = extractFontInfo(fullName)
       console.log(fontFamily, weight, style)
       if (!Object.keys(structure).includes(fontFamily)) {
-        structure[fontFamily] = {}
+        structure[fontFamily] = []
       }
-      if (!structure[fontFamily][weight]) {
-        structure[fontFamily][weight] = {}
-      }
-      structure[fontFamily][weight][style] = { fileName: file }
+      structure[fontFamily].push({
+        weight,
+        style,
+        fileName: file
+      })
     } else if (stat.isDirectory()) {
       readFontFile(filePath)
     }

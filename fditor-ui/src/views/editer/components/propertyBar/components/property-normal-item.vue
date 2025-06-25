@@ -2,11 +2,13 @@
   const {
     tip = '',
     showBorder = false,
-    active = false
+    active = false,
+    disable = false
   } = defineProps<{
     tip?: string
     showBorder?: boolean
     active?: boolean
+    disable?: boolean
   }>()
   const emit = defineEmits(['click'])
   function clickHandle() {
@@ -17,7 +19,7 @@
 <template>
   <div>
     <el-tooltip :content="tip" :disabled="tip === ''">
-      <div ref="anchor" class="anchorBox" :class="{ active, showBorder: showBorder }" @click="clickHandle">
+      <div ref="anchor" class="anchorBox" :class="{ active, disable, showBorder: showBorder }" @click="clickHandle">
         <slot></slot>
       </div>
     </el-tooltip>
@@ -42,6 +44,10 @@
     }
     &.active {
       background-color: rgba(57, 76, 96, 0.15);
+    }
+    &.disable {
+      pointer-events: none;
+      color: gray;
     }
   }
 </style>

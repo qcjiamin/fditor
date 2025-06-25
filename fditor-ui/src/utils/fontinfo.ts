@@ -1,152 +1,173 @@
 export const fontInfo = {
-	"Noto Sans SC": {
-		"bold": {
-			"normal": {
-				"fileName": "NotoSansSC-Bold.ttf"
-			}
+	"Noto Sans": [
+		{
+			"weight": "black",
+			"style": "normal",
+			"fileName": "NotoSans-Black.ttf"
 		},
-		"black": {
-			"normal": {
-				"fileName": "NotoSansSC-Black.ttf"
-			}
+		{
+			"weight": "bold",
+			"style": "normal",
+			"fileName": "NotoSans-Bold.ttf"
 		},
-		"extrabold": {
-			"normal": {
-				"fileName": "NotoSansSC-ExtraBold.ttf"
-			}
+		{
+			"weight": "extrabold",
+			"style": "normal",
+			"fileName": "NotoSans-ExtraBold.ttf"
 		},
-		"extralight": {
-			"normal": {
-				"fileName": "NotoSansSC-ExtraLight.ttf"
-			}
+		{
+			"weight": "extrabold",
+			"style": "italic",
+			"fileName": "NotoSans-ExtraBoldItalic.ttf"
 		},
-		"light": {
-			"normal": {
-				"fileName": "NotoSansSC-Light.ttf"
-			}
+		{
+			"weight": "extralight",
+			"style": "normal",
+			"fileName": "NotoSans-ExtraLight.ttf"
 		},
-		"medium": {
-			"normal": {
-				"fileName": "NotoSansSC-Medium.ttf"
-			}
+		{
+			"weight": "regular",
+			"style": "italic",
+			"fileName": "NotoSans-Italic-VariableFont_wdth,wght.ttf"
 		},
-		"regular": {
-			"normal": {
-				"fileName": "NotoSansSC-Regular.ttf"
-			}
+		{
+			"weight": "regular",
+			"style": "italic",
+			"fileName": "NotoSans-Italic.ttf"
 		},
-		"semibold": {
-			"normal": {
-				"fileName": "NotoSansSC-SemiBold.ttf"
-			}
+		{
+			"weight": "light",
+			"style": "normal",
+			"fileName": "NotoSans-Light.ttf"
 		},
-		"thin": {
-			"normal": {
-				"fileName": "NotoSansSC-VariableFont_wght.ttf"
-			}
+		{
+			"weight": "medium",
+			"style": "normal",
+			"fileName": "NotoSans-Medium.ttf"
+		},
+		{
+			"weight": "medium",
+			"style": "italic",
+			"fileName": "NotoSans-MediumItalic.ttf"
+		},
+		{
+			"weight": "regular",
+			"style": "normal",
+			"fileName": "NotoSans-Regular.ttf"
+		},
+		{
+			"weight": "semibold",
+			"style": "normal",
+			"fileName": "NotoSans-SemiBold.ttf"
+		},
+		{
+			"weight": "thin",
+			"style": "normal",
+			"fileName": "NotoSans-Thin.ttf"
 		}
-	},
-	"Noto Sans": {
-		"black": {
-			"normal": {
-				"fileName": "NotoSans-Black.ttf"
-			}
+	],
+	"Noto Sans JP": [
+		{
+			"weight": "black",
+			"style": "normal",
+			"fileName": "NotoSansJP-Black.ttf"
 		},
-		"bold": {
-			"normal": {
-				"fileName": "NotoSans-Bold.ttf"
-			}
+		{
+			"weight": "bold",
+			"style": "normal",
+			"fileName": "NotoSansJP-Bold.ttf"
 		},
-		"extrabold": {
-			"normal": {
-				"fileName": "NotoSans-ExtraBold.ttf"
-			},
-			"italic": {
-				"fileName": "NotoSans-ExtraBoldItalic.ttf"
-			}
+		{
+			"weight": "extrabold",
+			"style": "normal",
+			"fileName": "NotoSansJP-ExtraBold.ttf"
 		},
-		"extralight": {
-			"normal": {
-				"fileName": "NotoSans-ExtraLight.ttf"
-			}
+		{
+			"weight": "extralight",
+			"style": "normal",
+			"fileName": "NotoSansJP-ExtraLight.ttf"
 		},
-		"regular": {
-			"italic": {
-				"fileName": "NotoSans-Italic.ttf"
-			},
-			"normal": {
-				"fileName": "NotoSans-Regular.ttf"
-			}
+		{
+			"weight": "light",
+			"style": "normal",
+			"fileName": "NotoSansJP-Light.ttf"
 		},
-		"light": {
-			"normal": {
-				"fileName": "NotoSans-Light.ttf"
-			}
+		{
+			"weight": "medium",
+			"style": "normal",
+			"fileName": "NotoSansJP-Medium.ttf"
 		},
-		"medium": {
-			"normal": {
-				"fileName": "NotoSans-Medium.ttf"
-			},
-			"italic": {
-				"fileName": "NotoSans-MediumItalic.ttf"
-			}
+		{
+			"weight": "regular",
+			"style": "normal",
+			"fileName": "NotoSansJP-Regular.ttf"
 		},
-		"semibold": {
-			"normal": {
-				"fileName": "NotoSans-SemiBold.ttf"
-			}
+		{
+			"weight": "semibold",
+			"style": "normal",
+			"fileName": "NotoSansJP-SemiBold.ttf"
 		},
-		"thin": {
-			"normal": {
-				"fileName": "NotoSans-Thin.ttf"
-			}
+		{
+			"weight": "thin",
+			"style": "normal",
+			"fileName": "NotoSansJP-Thin.ttf"
+		},
+		{
+			"weight": "thin",
+			"style": "normal",
+			"fileName": "NotoSansJP-VariableFont_wght.ttf"
 		}
-	},
-	"Noto Sans JP": {
-		"black": {
-			"normal": {
-				"fileName": "NotoSansJP-Black.ttf"
-			}
+	],
+	"Noto Sans SC": [
+		{
+			"weight": "black",
+			"style": "normal",
+			"fileName": "NotoSansSC-Black.ttf"
 		},
-		"bold": {
-			"normal": {
-				"fileName": "NotoSansJP-Bold.ttf"
-			}
+		{
+			"weight": "bold",
+			"style": "normal",
+			"fileName": "NotoSansSC-Bold.ttf"
 		},
-		"extrabold": {
-			"normal": {
-				"fileName": "NotoSansJP-ExtraBold.ttf"
-			}
+		{
+			"weight": "extrabold",
+			"style": "normal",
+			"fileName": "NotoSansSC-ExtraBold.ttf"
 		},
-		"extralight": {
-			"normal": {
-				"fileName": "NotoSansJP-ExtraLight.ttf"
-			}
+		{
+			"weight": "extralight",
+			"style": "normal",
+			"fileName": "NotoSansSC-ExtraLight.ttf"
 		},
-		"light": {
-			"normal": {
-				"fileName": "NotoSansJP-Light.ttf"
-			}
+		{
+			"weight": "light",
+			"style": "normal",
+			"fileName": "NotoSansSC-Light.ttf"
 		},
-		"medium": {
-			"normal": {
-				"fileName": "NotoSansJP-Medium.ttf"
-			}
+		{
+			"weight": "medium",
+			"style": "normal",
+			"fileName": "NotoSansSC-Medium.ttf"
 		},
-		"regular": {
-			"normal": {
-				"fileName": "NotoSansJP-Regular.ttf"
-			}
+		{
+			"weight": "regular",
+			"style": "normal",
+			"fileName": "NotoSansSC-Regular.ttf"
 		},
-		"semibold": {
-			"normal": {
-				"fileName": "NotoSansJP-SemiBold.ttf"
-			}
+		{
+			"weight": "semibold",
+			"style": "normal",
+			"fileName": "NotoSansSC-SemiBold.ttf"
 		},
-		"thin": {
-			"normal": {
-				"fileName": "NotoSansJP-VariableFont_wght.ttf"
-			}
+		{
+			"weight": "thin",
+			"style": "normal",
+			"fileName": "NotoSansSC-Thin.ttf"
+		},
+		{
+			"weight": "thin",
+			"style": "normal",
+			"fileName": "NotoSansSC-VariableFont_wght.ttf"
 		}
-	}
+	]
 }

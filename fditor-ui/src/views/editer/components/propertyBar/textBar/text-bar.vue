@@ -6,7 +6,7 @@
   import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
   import { EditorKey } from '@/constants/injectKey'
   import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
-  import { colorInstance2Info } from '@/utils/common'
+  import { colorInstance2Info, loadFont } from '@/utils/common'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import { Textbox } from 'fabric'
   import FontBold from '@/assets/icons/fontbar/font_bold.svg'
@@ -16,20 +16,19 @@
   import alignProperty from '@/views/editer/components/propertyBar/textBar/align-property.vue'
   import type { alignType } from '@/views/editer/components/propertyBar/textBar/types'
   import spacingProperty from '@/views/editer/components/propertyBar/textBar/spacing-property.vue'
+  import type { FontFamilyName, FontStyle, SubFontFamilyInfo } from '@/utils/types'
+  import { canFontBeBold, canFontBeItalic, getBoldFont, getRegularFont } from '@/utils/fontFamilyHelper'
+  import { fontWeightMap, FontWeightReverseMap } from '@/utils/constants'
 
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
   const selected = editorStore.selected
-  // const fontFamilyList = ['abc', 'def', 'hik', 'era']
-
-  type FontWeight = 'normal' | 'bold'
-  type FontStyle = 'normal' | 'italic'
 
   interface IFontAttrs {
     fill: ColorInfo
     fontfamily: string
     fontsize: number
-    fontWeight: FontWeight
+    fontWeight: number
     fontStyle: FontStyle
     underline: boolean
     align: alignType
@@ -43,7 +42,7 @@
     },
     fontfamily: '',
     fontsize: 10,
-    fontWeight: 'normal',
+    fontWeight: 400,
     fontStyle: 'normal',
     underline: false,
     align: 'left',
@@ -52,10 +51,16 @@
     lineHeight: 1
   })
   const isBold = computed(() => {
-    return attrs.fontWeight === 'bold'
+    return attrs.fontWeight > 400
+  })
+  const canBold = computed(() => {
+    return canFontBeBold(attrs.fontfamily as FontFamilyName, attrs.fontStyle)
   })
   const isItalic = computed(() => {
     return attrs.fontStyle === 'italic'
+  })
+  const canItalic = computed(() => {
+    return canFontBeItalic(attrs.fontfamily as FontFamilyName, FontWeightReverseMap[attrs.fontWeight])
   })
   const openFontsTab = computed(() => {
     return editorStore.sidebarShowTab === 'fonts'
@@ -67,9 +72,8 @@
     if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
     attrs.fill = colorInstance2Info(selected.fill as colorVal)
     attrs.fontfamily = selected.fontFamily
-    console.error(selected.fontSize)
     attrs.fontsize = selected.fontSize
-    attrs.fontWeight = selected.fontWeight as FontWeight
+    attrs.fontWeight = selected.fontWeight as number
     attrs.fontStyle = selected.fontStyle as FontStyle
     attrs.underline = selected.underline
     attrs.align = selected.textAlign as alignType
@@ -134,16 +138,31 @@
     selected.eset('fontSize', val, false)
     editor.render()
   }
-  function updateFontWeight() {
+  async function updateFontWeight() {
     //todo: 封装检查选中元素的逻辑，抛出错误
     if (!selected) throw new Error('get font color but no selected')
     if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
-    selected.eset('fontWeight', selected.fontWeight === 'normal' ? 'bold' : 'normal', false)
+    // 通知切换字体
+    // 加载字体
+    let loadInfo: SubFontFamilyInfo | null = null
+    if (attrs.fontWeight > 400) {
+      loadInfo = getRegularFont(attrs.fontfamily as FontFamilyName, attrs.fontStyle)
+    } else {
+      loadInfo = getBoldFont(attrs.fontfamily as FontFamilyName, attrs.fontStyle)
+    }
+    if (!loadInfo) return
+    await loadFont(attrs.fontfamily, loadInfo.fileName, loadInfo.weight, loadInfo.style)
+
+    // 设置weight
+    selected.eset('fontWeight', fontWeightMap[loadInfo.weight], false)
   }
   function updateFontStyle() {
     //todo: 封装检查选中元素的逻辑，抛出错误
     if (!selected) throw new Error('get font color but no selected')
     if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
+    // 通知切换字体
+    // 加载字体
+    // 设置style
     selected.eset('fontStyle', selected.fontStyle === 'normal' ? 'italic' : 'normal', false)
   }
   function updateUnderline() {
@@ -190,10 +209,10 @@
     </property-normal-item>
     <el-input-number :model-value="attrs.fontsize" :min="10" size="small" @change="updateFontsize" />
     <fill-property :color="attrs.fill" tip="font color" @update:color="updateFill"></fill-property>
-    <property-normal-item :active="isBold" @click="updateFontWeight">
+    <property-normal-item :active="isBold" :disable="!canBold" @click="updateFontWeight">
       <FontBold></FontBold>
     </property-normal-item>
-    <property-normal-item :active="isItalic" @click="updateFontStyle">
+    <property-normal-item :active="isItalic" :disable="!canItalic" @click="updateFontStyle">
       <FontItalic></FontItalic>
     </property-normal-item>
     <property-normal-item :active="attrs.underline" @click="updateUnderline">

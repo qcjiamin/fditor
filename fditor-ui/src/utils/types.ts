@@ -27,10 +27,27 @@ export type FontFamilyName = keyof typeof fontInfo
 export type FontWeight = keyof typeof fontWeightMap
 export type FontStyle = 'italic' | 'normal'
 export type SubFontFamilyInfo = {
+  weight: FontWeight
+  style: FontStyle
   fileName: string
 }
 export type FontInfo = {
-  [name in FontFamilyName]: Partial<Record<FontWeight | FontStyle, SubFontFamilyInfo>>
+  [name in FontFamilyName]: SubFontFamilyInfo[]
 }
 
-export const typedFontInfo: FontInfo = fontInfo
+function toTypedFontInfo(raw: typeof fontInfo): FontInfo {
+  const result: Partial<FontInfo> = {}
+
+  for (const key in raw) {
+    result[key as FontFamilyName] = raw[key as FontFamilyName].map((item) => ({
+      weight: item.weight as FontWeight,
+      style: item.style as FontStyle,
+      fileName: item.fileName
+    }))
+  }
+
+  return result as FontInfo
+}
+
+export const typedFontInfo = toTypedFontInfo(fontInfo)
+// export const typedFontInfo: FontInfo = fontInfo

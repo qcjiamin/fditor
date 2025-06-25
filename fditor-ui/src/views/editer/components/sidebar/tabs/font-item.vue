@@ -3,10 +3,11 @@
   import type { FontWeightKey } from '../../../../../utils/constants'
   import Arrow from '@/assets/icons/fontsTab/arrow.svg'
   import FontSelected from '@/assets/icons/fontsTab/font-selected.svg'
-  import type { FontFamilyName, FontWeight } from '@/utils/types'
+  import type { FontFamilyName } from '@/utils/types'
+  import type { updateFontFamilyWeightParam } from '@/views/editer/components/sidebar/types'
 
   const emit = defineEmits<{
-    'update:fontfamily': [value: FontFamilyName, weight: FontWeight] // named tuple syntax
+    'update:fontfamily': [value: FontFamilyName, weight: updateFontFamilyWeightParam] // named tuple syntax
   }>()
   const {
     selected = false,
@@ -28,7 +29,8 @@
     // 选中自身
     if (selected) return
     // 通知外部修改
-    emit('update:fontfamily', fontName, 'regular')
+    // 当前字重？
+    emit('update:fontfamily', fontName, 'inherit')
   }
   function selectSub(subType: FontWeightKey) {
     if (selected && subType === weight) return
