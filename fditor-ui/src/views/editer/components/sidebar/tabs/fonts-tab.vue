@@ -8,9 +8,9 @@
   import { fontWeightMap, FontWeightReverseMap, type FontWeightKey } from '@/utils/constants'
   import { typedFontInfo, type FontFamilyName, type FontStyle, type FontWeight } from '@/utils/types'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
-  import { loadFont } from '@/utils/common'
   import type { updateFontFamilyWeightParam } from '@/views/editer/components/sidebar/types'
-  import { findItemByStyle, findItemByWeight } from '@/utils/fontFamilyHelper'
+  import { findItemByStyle, findItemByWeight, loadFontFamily } from '@/utils/fontFamilyHelper'
+  import { eventBus } from '@/events/eventBus'
   //todo: 确定 props 改变，是否会影响 openRef 的值 结论: 不会
 
   const editorStore = useEditorStore()
@@ -27,6 +27,7 @@
     fontWeight: 'regular'
   })
   const familiesRef = ref(Object.keys(fontInfo) as FontFamilyName[])
+  const loadingRef = ref(false)
 
   function getFontData() {
     if (!selected) throw new Error('mounted fontsTab')
@@ -41,6 +42,8 @@
     //todo: 等待加载状态，外部点击可以取消当次修改
     if (!selected) throw new Error('mounted fontsTab')
     if (!(selected instanceof Textbox)) throw new Error('mounted fontsTab, selected is not textbox')
+    eventBus.emit('fontFamily:load:cancel')
+    // 取消上一次操作
     // 获取当前text的style
     const style = selected.fontStyle as FontStyle
     const curWeight = FontWeightReverseMap[selected.fontWeight as number]
@@ -72,7 +75,30 @@
     const fontfileName = styleArr[0].fileName
     if (!fontfileName) throw new Error(`${name}-${weight}-${style}, not found filename`)
 
-    await loadFont(name, fontfileName, _weight, _style)
+    const controller = new AbortController()
+    const signal = controller.signal
+    const cancleLoad = () => {
+      controller.abort()
+    }
+    // 事件监听？
+    // 如果完成或则取消了，就取消事件监听
+    console.log('开始事件监听')
+    eventBus.on('fontFamily:load:cancel', cancleLoad)
+    loadingRef.value = true
+
+    try {
+      await loadFontFamily(name, signal)
+    } catch (error) {
+      console.error(error)
+      //todo: 弹窗提示
+      return
+    } finally {
+      console.error('取消事件监听')
+      loadingRef.value = false
+      eventBus.off('fontFamily:load:cancel', cancleLoad)
+    }
+
+    // await loadFont(name, fontfileName, _weight, _style)
     const weightNum = fontWeightMap[_weight]
     selected.eset({
       fontFamily: name,
@@ -87,7 +113,7 @@
 
 <template>
   <div class="fontTab">
-    <div class="header">fonts</div>
+    <div class="header">{{ loadingRef ? 'loading' : 'fonts' }}</div>
     <div class="content">
       <font-item
         v-for="familyName in familiesRef"

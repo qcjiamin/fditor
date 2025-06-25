@@ -1,5 +1,3 @@
-import { fontWeightMap } from '@/utils/constants'
-import type { FontStyle, FontWeight } from '@/utils/types'
 import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
 import { createLinearGradient, createRadialGradient, type colorVal } from '@fditor/core'
 import { mat3, vec2 } from 'gl-matrix'
@@ -137,45 +135,6 @@ export function createCssLinearGradient(angle = 0, ...colors: string[]) {
  */
 export function createCssRadialGradient(percent: number, ...colors: string[]) {
   return `radial-gradient(circle at ${percent * 100}% ${percent * 100}% ,${colors.toString()})`
-}
-
-/**
- * 加载指定字体
- * @param {string} family - 字体族名
- * @param {boolean} bold
- *  * @param {boolean} italic
- * @returns
- */
-export async function loadFont(familyName: string, fileName: string, weight: FontWeight, style: FontStyle = 'normal') {
-  // const href = 'https://static.vidnoz.com/web/fonts/'
-
-  const weightNum = fontWeightMap[weight]
-  const url = `http://localhost:7777/resource/ffonts/${fileName}`
-
-  let needload = true
-  document.fonts.forEach((value) => {
-    if (value.family === familyName) {
-      if (value.weight === weightNum.toString() && value.style === style) {
-        needload = false
-      }
-    }
-  })
-
-  if (!needload) return
-  const font = new FontFace(familyName, `url(${url})`, {
-    weight: weightNum.toString(),
-    style: style
-  })
-  document.fonts.add(font)
-  await font
-    .load()
-    .then(() => {
-      console.log(fileName, '字体加载完成')
-    })
-    .catch((err) => {
-      console.log(fileName + ' 加载失败')
-      console.log(err)
-    })
 }
 
 export { add }

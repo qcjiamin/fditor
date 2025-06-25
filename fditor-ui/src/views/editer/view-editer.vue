@@ -16,6 +16,7 @@
   import ClipBar from '@/views/editer/components/propertyBar/clip-bar.vue'
   import { onClickOutside } from '@vueuse/core'
   import hotkeys from 'hotkeys-js'
+  import { eventBus } from '@/events/eventBus'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
   const editorStore = useEditorStore()
@@ -28,6 +29,7 @@
     // 选择事件
     editor.on('selected:change', (selected) => {
       console.log('selected:change', selected)
+      eventBus.emit('fontFamily:load:cancel')
       editorStore.setSelected(selected)
     })
 

@@ -6,7 +6,7 @@
   import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
   import { EditorKey } from '@/constants/injectKey'
   import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
-  import { colorInstance2Info, loadFont } from '@/utils/common'
+  import { colorInstance2Info } from '@/utils/common'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import { Textbox } from 'fabric'
   import FontBold from '@/assets/icons/fontbar/font_bold.svg'
@@ -17,7 +17,7 @@
   import type { alignType } from '@/views/editer/components/propertyBar/textBar/types'
   import spacingProperty from '@/views/editer/components/propertyBar/textBar/spacing-property.vue'
   import type { FontFamilyName, FontStyle, SubFontFamilyInfo } from '@/utils/types'
-  import { canFontBeBold, canFontBeItalic, getBoldFont, getRegularFont } from '@/utils/fontFamilyHelper'
+  import { canFontBeBold, canFontBeItalic, getBoldFont, getRegularFont, loadFont } from '@/utils/fontFamilyHelper'
   import { fontWeightMap, FontWeightReverseMap } from '@/utils/constants'
 
   const editorStore = useEditorStore()
