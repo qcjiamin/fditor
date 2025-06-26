@@ -1,11 +1,11 @@
 <script lang="ts" setup>
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
-  import { computed, inject, reactive } from 'vue'
+  import { computed, inject, onMounted, onUnmounted, reactive } from 'vue'
   import { useEditorStore } from '@/stores/editorStore'
   import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
   import { EditorKey } from '@/constants/injectKey'
-  import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
+  import { createLinearGradient, createRadialGradient, FTextBox, type colorVal, type Editor } from '@fditor/core'
   import { colorInstance2Info } from '@/utils/common'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import { Textbox } from 'fabric'
@@ -70,10 +70,12 @@
   function getAttrs() {
     console.log('get font attr')
     if (!selected) throw new Error('get font color but no selected')
-    if (!(selected instanceof Textbox)) throw new Error('get attr but is not textbox')
+    if (!(selected instanceof FTextBox)) throw new Error('get attr but is not textbox')
+    console.log(selected)
     attrs.fill = colorInstance2Info(selected.fill as colorVal)
     attrs.fontfamily = selected.fontFamily
-    attrs.fontsize = selected.fontSize
+    // attrs.fontsize = selected.fontSize
+    attrs.fontsize = selected.getUiFontSize()
     attrs.fontWeight = selected.fontWeight as number
     attrs.fontStyle = selected.fontStyle as FontStyle
     attrs.underline = selected.underline
@@ -136,8 +138,10 @@
   function updateFontsize(val: number | undefined) {
     if (val === undefined) throw Error('update fontsize but value === undefined')
     if (!selected) throw new Error('update fontsize but no selected')
-    selected.eset('fontSize', val, false)
-    editor.render()
+    if (!(selected instanceof FTextBox)) throw new Error('set fontsize but is not textbox')
+    // selected.eset('fontSize', val, false)
+    selected.setUIFontSize(val)
+    // editor.render()
   }
   async function updateFontWeight() {
     //todo: 封装检查选中元素的逻辑，抛出错误
@@ -198,6 +202,14 @@
       editor.render()
     }
   }
+
+  // 字体实时监听文字大小修改UI
+  onMounted(() => {
+    selected?.on('scaling', getAttrs)
+  })
+  onUnmounted(() => {
+    selected?.off('scaling', getAttrs)
+  })
 </script>
 
 <template>

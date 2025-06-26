@@ -1,12 +1,12 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import { type Editor } from '@fditor/core'
-  import { FabricObject, Textbox } from 'fabric'
+  import { FTextBox, type Editor } from '@fditor/core'
+  import { FabricObject } from 'fabric'
   import { inject } from 'vue'
 
   const editor = inject(EditorKey) as Editor
   function addText() {
-    const text = new Textbox('TEXT', {
+    const text = new FTextBox('TEXT', {
       fontFamily: 'Noto Sans',
       fontSize: 100
     })

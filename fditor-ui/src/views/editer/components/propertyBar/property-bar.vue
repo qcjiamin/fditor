@@ -25,7 +25,7 @@
   <div class="propertyBar">
     <history-box></history-box>
     <!-- 条件渲染当前选中元素, 用key当做重新渲染的条件，因为同类元素切换，bar组件不会变 -->
-    <component :is="barComponents[editorStore.selectType]"></component>
+    <component :is="barComponents[editorStore.selectType]" :key="editorStore.selected"></component>
     <public-bar v-if="showPublicRef"></public-bar>
   </div>
 </template>

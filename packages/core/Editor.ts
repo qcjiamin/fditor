@@ -79,7 +79,7 @@ class Editor extends EventBus<EditorEventMap> {
     })
 
     //todo: 多场景的话，切换场景时动态绑定监听事件; 事件的绑定统一到方法中
-    // 将添加、删除、移动、缩放、旋转，统一触发自定义的修改事件
+    // 将添加、删除、旋转，统一触发自定义的修改事件
     this.stage.on('def:modified', ({ target }) => {
       if (this.isSilence) {
         console.log('%cdef:modified but silence', 'color: rgba(255, 0, 0); font-weight: bold')

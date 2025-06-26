@@ -10,5 +10,6 @@ export * from './helper/index'
 
 export * from './customShape/FImage'
 export * from './customShape/FCanvas'
+export * from './customShape/FTextBox'
 
 export { Editor, WorkspacePlugin, AlignPlugin, SelectionPlugin, LockPlugin }

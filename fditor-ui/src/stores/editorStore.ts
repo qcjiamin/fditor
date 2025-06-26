@@ -7,7 +7,7 @@ const type2Type: Record<string, ElementTypes> = {
   circle: 'Shape',
   rect: 'Shape',
   activeselection: 'activeselection',
-  textbox: 'text',
+  ftextbox: 'text',
   fimage: 'image'
 }
 
