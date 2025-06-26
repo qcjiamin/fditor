@@ -26,3 +26,5 @@ export type FontWeightValue = (typeof fontWeightMap)[FontWeightKey]
 export const FontWeightReverseMap: Record<FontWeightValue, FontWeightKey> = Object.fromEntries(
   Object.entries(fontWeightMap).map(([key, value]) => [value, key])
 ) as Record<FontWeightValue, FontWeightKey>
+
+export const AbortReason = 'abort'

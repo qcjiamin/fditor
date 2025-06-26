@@ -5,11 +5,12 @@
   import { inject, reactive, ref } from 'vue'
   import fontItem from '@/views/editer/components/sidebar/tabs/font-item.vue'
   import { fontInfo } from '@/utils/fontinfo'
-  import { fontWeightMap, FontWeightReverseMap, type FontWeightKey } from '@/utils/constants'
+  import { AbortReason, fontWeightMap, FontWeightReverseMap, type FontWeightKey } from '@/utils/constants'
   import { typedFontInfo, type FontFamilyName, type FontStyle, type FontWeight } from '@/utils/types'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import type { updateFontFamilyWeightParam } from '@/views/editer/components/sidebar/types'
   import { findItemByStyle, findItemByWeight, loadFontFamily } from '@/utils/fontFamilyHelper'
+  import { createAbortableTaskQueueRunner } from '@/utils/common'
   import { eventBus } from '@/events/eventBus'
   //todo: 确定 props 改变，是否会影响 openRef 的值 结论: 不会
 
@@ -28,6 +29,7 @@
   })
   const familiesRef = ref(Object.keys(fontInfo) as FontFamilyName[])
   const loadingRef = ref(false)
+  const beingLoadedRef = ref('')
 
   function getFontData() {
     if (!selected) throw new Error('mounted fontsTab')
@@ -38,17 +40,15 @@
   }
   useGetAttrs(getFontData)
 
-  async function updateFontFamily(name: FontFamilyName, weight: updateFontFamilyWeightParam) {
-    //todo: 等待加载状态，外部点击可以取消当次修改
+  const { enqueue, abortTask } = createAbortableTaskQueueRunner<[FontFamilyName, updateFontFamilyWeightParam], void>()
+  async function updateFontFamily(signal: AbortSignal, name: FontFamilyName, weight: updateFontFamilyWeightParam) {
     if (!selected) throw new Error('mounted fontsTab')
     if (!(selected instanceof Textbox)) throw new Error('mounted fontsTab, selected is not textbox')
-    eventBus.emit('fontFamily:load:cancel')
-    // 取消上一次操作
-    // 获取当前text的style
+    //! 这里才开始设置加载状态，因为前置的有等待上一个任务的可能。上一次任务完结会把加载状态设置false
+    editorStore.setInloadingFontfamily(true)
+
     const style = selected.fontStyle as FontStyle
     const curWeight = FontWeightReverseMap[selected.fontWeight as number]
-    // 加载字体
-    // 找到对应的字体文件
     let _weight: FontWeightKey = 'regular'
     if (weight === 'inherit') {
       _weight = curWeight
@@ -75,39 +75,42 @@
     const fontfileName = styleArr[0].fileName
     if (!fontfileName) throw new Error(`${name}-${weight}-${style}, not found filename`)
 
-    const controller = new AbortController()
-    const signal = controller.signal
-    const cancleLoad = () => {
-      controller.abort()
-    }
-    // 事件监听？
-    // 如果完成或则取消了，就取消事件监听
-    console.log('开始事件监听')
-    eventBus.on('fontFamily:load:cancel', cancleLoad)
     loadingRef.value = true
-
+    let loadend = true
     try {
       await loadFontFamily(name, signal)
     } catch (error) {
-      console.error(error)
-      //todo: 弹窗提示
-      return
+      loadend = false
+      throw error
     } finally {
-      console.error('取消事件监听')
       loadingRef.value = false
-      eventBus.off('fontFamily:load:cancel', cancleLoad)
     }
-
-    // await loadFont(name, fontfileName, _weight, _style)
+    if (!loadend) return
     const weightNum = fontWeightMap[_weight]
     selected.eset({
       fontFamily: name,
       fontWeight: weightNum,
       fontStyle: _style
     })
-    // 1.修改完成后重新获取属性，能自动监听吗？
-    // 2. 如果是异步任务，如何处理？
-    // getFontData()
+  }
+  function updateFontFamilyEqueue(name: FontFamilyName, weight: updateFontFamilyWeightParam) {
+    beingLoadedRef.value = name
+    const abortHandler = () => abortTask('abort by selected change')
+    eventBus.addListener('fontFamily:load:cancel', abortHandler)
+    enqueue(updateFontFamily, name, weight)
+      .then(() => {
+        beingLoadedRef.value = ''
+      })
+      .catch((error: Error) => {
+        // 如果不是中断错误，抛出
+        if (error?.cause !== AbortReason) {
+          throw error
+        }
+      })
+      .finally(() => {
+        editorStore.setInloadingFontfamily(false)
+        eventBus.off('fontFamily:load:cancel', abortHandler)
+      })
   }
 </script>
 
@@ -119,10 +122,11 @@
         v-for="familyName in familiesRef"
         :key="familyName"
         :selected="fontData.fontfamily === familyName"
+        :being-loaded="beingLoadedRef === familyName"
         :weight="fontData.fontWeight"
         :font-name="familyName"
         :weight-list="[...new Set(fontInfo[familyName].map((familyInfo) => familyInfo.weight))] as FontWeight[]"
-        @update:fontfamily="updateFontFamily"
+        @update:fontfamily="updateFontFamilyEqueue"
       ></font-item>
     </div>
   </div>

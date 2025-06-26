@@ -11,11 +11,13 @@
   }>()
   const {
     selected = false,
+    beingLoaded = false,
     weight = 'regular',
     fontName,
     weightList
   } = defineProps<{
     selected: boolean
+    beingLoaded: boolean
     weight: FontWeightKey
     fontName: FontFamilyName
     weightList: FontWeightKey[]
@@ -44,7 +46,8 @@
     <div class="fontFamily" @click="selectFontFamily()">
       <div @click="toggleOpen"><Arrow /></div>
       <div class="fontName">{{ fontName }}</div>
-      <div v-if="!openSubRef && selected"><FontSelected></FontSelected></div>
+      <div v-if="!beingLoaded && !openSubRef && selected"><FontSelected></FontSelected></div>
+      <div v-if="beingLoaded">...</div>
     </div>
     <div v-if="openSubRef" class="subFontFamilyBox">
       <div v-for="item in weightList" :key="item" class="subFontFamily" @click="selectSub(item)">

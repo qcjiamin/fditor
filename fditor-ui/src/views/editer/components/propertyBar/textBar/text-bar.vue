@@ -13,6 +13,7 @@
   import FontItalic from '@/assets/icons/fontbar/font_italic.svg'
   import FontUnderline from '@/assets/icons/fontbar/font_underline.svg'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
+  import propertyFontfamilyItem from '@/views/editer/components/propertyBar/components/property-fontfamily-item.vue'
   import alignProperty from '@/views/editer/components/propertyBar/textBar/align-property.vue'
   import type { alignType } from '@/views/editer/components/propertyBar/textBar/types'
   import spacingProperty from '@/views/editer/components/propertyBar/textBar/spacing-property.vue'
@@ -204,9 +205,14 @@
     <!-- <el-select :model-value="attrs.fontfamily" placeholder="" size="default" style="width: 240px">
       <el-option v-for="item in fontFamilyList" :key="item" :label="item" :value="item" />
     </el-select> -->
-    <property-normal-item tip="fontfamily" :active="openFontsTab" @click="toggleFontsTab">
+    <property-fontfamily-item
+      tip="fontfamily"
+      :active="openFontsTab"
+      :inloading="editorStore.inloadingFontfamily"
+      @click="toggleFontsTab"
+    >
       {{ attrs.fontfamily }}
-    </property-normal-item>
+    </property-fontfamily-item>
     <el-input-number :model-value="attrs.fontsize" :min="10" size="small" @change="updateFontsize" />
     <fill-property :color="attrs.fill" tip="font color" @update:color="updateFill"></fill-property>
     <property-normal-item :active="isBold" :disable="!canBold" @click="updateFontWeight">

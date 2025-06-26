@@ -47,7 +47,10 @@ export default defineConfig({
     /* css 预处理器 */
     preprocessorOptions: {
       scss: {
-        additionalData: `@use '@/styles/variables.scss' as *; @use '@/styles/svg.scss' as *;`
+        additionalData: `
+          @use '@/styles/variables.scss' as *; 
+          @use '@/styles/svg.scss' as *;
+        `
       }
     }
   }

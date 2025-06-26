@@ -1,3 +1,4 @@
+import { AbortReason } from '@/utils/constants'
 import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
 import { createLinearGradient, createRadialGradient, type colorVal } from '@fditor/core'
 import { mat3, vec2 } from 'gl-matrix'
@@ -135,6 +136,60 @@ export function createCssLinearGradient(angle = 0, ...colors: string[]) {
  */
 export function createCssRadialGradient(percent: number, ...colors: string[]) {
   return `radial-gradient(circle at ${percent * 100}% ${percent * 100}% ,${colors.toString()})`
+}
+
+/**
+ * 串行执行异步任务[特别是针对按钮触发的异步任务]，后一个任务执行需要等待前一个任务返回
+ * @returns
+ */
+export function createTaskQueueRunner<T extends unknown[], R = void>() {
+  let lastTask: Promise<R> = Promise.resolve() as Promise<R>
+
+  return function enqueue(task: (...args: T) => Promise<R>, ...args: T) {
+    // 将任务串接到上一个任务之后执行
+    const current = lastTask.then(() => task(...args))
+    // 防止链断（即某个任务失败导致队列中断）
+    lastTask = current.catch(() => Promise.resolve() as Promise<R>)
+    return current
+  }
+}
+
+/**
+ * 串行执行异步任务[特别是针对按钮触发的异步任务]，后一个任务执行时中断前一个任务并等待前一个任务完成。 抛出中断方法，使中断可由外部控制
+ * @returns
+ */
+export function createAbortableTaskQueueRunner<T extends unknown[], R = void>() {
+  let lastTask: Promise<R> = Promise.resolve() as Promise<R>
+  let lastController: AbortController | null = null
+
+  function abortTask(reason = 'cancel externally') {
+    if (lastController && !lastController.signal.aborted) {
+      lastController.abort(
+        new Error(reason, {
+          cause: AbortReason
+        })
+      )
+    }
+  }
+
+  function enqueue(task: (signal: AbortSignal, ...args: T) => Promise<R>, ...args: T) {
+    if (lastController) lastController.abort(new Error('', { cause: AbortReason }))
+
+    // 创建当前任务的 AbortSignal
+    const controller = new AbortController()
+    const signal = controller.signal
+    lastController = controller
+
+    // 将任务串接到上一个任务之后执行
+    const current = lastTask.then(() => task(signal, ...args))
+    // 防止链断（即某个任务失败导致队列中断）
+    lastTask = current.catch(() => Promise.resolve() as Promise<R>)
+    return current
+  }
+  return {
+    enqueue,
+    abortTask
+  }
 }
 
 export { add }

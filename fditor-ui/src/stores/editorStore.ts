@@ -38,6 +38,11 @@ export const useEditorStore = defineStore('editor', () => {
   const setSidebarShowTab = function (val: TabName) {
     sidebarShowTab.value = val
   }
+  /** 是否处于字体族加载状态 */
+  const inloadingFontfamily = ref<boolean>(false)
+  const setInloadingFontfamily = function (val: boolean) {
+    inloadingFontfamily.value = val
+  }
   return {
     cvsState,
     setCvsState,
@@ -47,6 +52,8 @@ export const useEditorStore = defineStore('editor', () => {
     inContinueModity,
     setinContinueModity,
     sidebarShowTab,
-    setSidebarShowTab
+    setSidebarShowTab,
+    inloadingFontfamily,
+    setInloadingFontfamily
   }
 })
