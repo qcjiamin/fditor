@@ -1,6 +1,3 @@
-import { Editor } from '@fditor/core'
-import type AlignPlugin from './AlignPlugin'
-
 // declare module '@fditor/core' {
 //   export interface Editor {
 //     alignLeft(): void

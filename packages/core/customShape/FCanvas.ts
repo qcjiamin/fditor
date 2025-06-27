@@ -160,7 +160,6 @@ export class FCanvas extends Canvas {
         ctx.shadowOffsetY = 0
 
         ctx.rotate(util.degreesToRadians(fabricObject.angle))
-        document.body.appendChild(imgEl)
         ctx.drawImage(imgEl, -xSize / 2, -ySize / 2, xSize, ySize)
         ctx.restore()
       }

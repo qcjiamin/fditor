@@ -1,6 +1,5 @@
 import { LinearGradient, RadialGradient } from '@fditor/core'
 import { Gradient, GradientUnits } from 'fabric'
-window.Gradient = Gradient
 
 /**
  * 从2个点计算旋转角度

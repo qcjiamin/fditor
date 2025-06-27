@@ -1,4 +1,4 @@
-import { FabricObject, Canvas } from 'fabric'
+import { FabricObject } from 'fabric'
 
 declare module 'fabric' {
   export interface FabricObject {
