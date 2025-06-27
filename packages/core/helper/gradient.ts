@@ -2,6 +2,25 @@ import { LinearGradient, RadialGradient } from '@fditor/core'
 import { Gradient, GradientUnits } from 'fabric'
 window.Gradient = Gradient
 
+/**
+ * 从2个点计算旋转角度
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ * @returns
+ */
+export function getAngleFromTwoPoints(x1: number, y1: number, x2: number, y2: number): number {
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const rad = Math.atan2(dy, dx) // 弧度，范围 (-π, π]
+  const deg = rad * (180 / Math.PI) // 转换为角度
+  const deg360 = (deg + 360) % 360
+  //! 渐变下到上为0度，deg360 为左到右为0度
+  const final = deg360 + 90
+  return final
+}
+
 // 百分比点位计算，暂时没有用到,待测试
 export function computeGradientPercentageCoords(angleDeg: number) {
   const angleRad = ((angleDeg % 360) * Math.PI) / 180

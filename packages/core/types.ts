@@ -1,4 +1,4 @@
-import { Canvas, FabricObject, Gradient } from 'fabric'
+import { Canvas, FabricObject, Gradient, TFiller } from 'fabric'
 import type Editer from './Editor'
 
 // export type colorVal = string | TFiller | null
@@ -6,6 +6,7 @@ export type LinearGradient = Gradient<'linear'> & { _degree: number }
 export type RadialGradient = Gradient<'radial'> & { _percent: number }
 export type _Gradient = LinearGradient | RadialGradient
 export type colorVal = string | _Gradient | null
+export type FillType = string | TFiller | null
 
 export interface IPlugin {
   name: string
