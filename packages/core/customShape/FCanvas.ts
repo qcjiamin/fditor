@@ -1,3 +1,4 @@
+// todo: 引导线；旋转角度提示；旋转吸附；界面多余部分半透明蒙版
 import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util, InteractiveFabricObject } from 'fabric'
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'

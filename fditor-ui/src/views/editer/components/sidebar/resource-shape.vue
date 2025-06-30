@@ -1,14 +1,22 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import type { Editor } from '@fditor/core'
+  import { FLine, type Editor } from '@fditor/core'
   import { inject } from 'vue'
   import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
-  import { Circle, FabricObject, Rect, type CircleProps, type Constructor, type RectProps } from 'fabric'
+  import {
+    Circle,
+    FabricObject,
+    Rect,
+    type CircleProps,
+    type Constructor,
+    type RectProps,
+    type SerializedLineProps
+  } from 'fabric'
 
   const editor = inject(EditorKey) as Editor
   console.error(editor)
 
-  type ShapeName = 'Rect' | 'Circle'
+  type ShapeName = 'Rect' | 'Circle' | 'Line'
 
   const shapes = [
     {
@@ -30,21 +38,32 @@
     {
       name: 'five-pointed-star',
       src: './shapes/five-pointed-star.svg'
+    },
+    {
+      name: 'Line',
+      src: './shapes/five-pointed-star.svg'
     }
   ]
 
   const shapeFactory: Record<ShapeName, Constructor<FabricObject>> = {
     Circle: Circle,
-    Rect: Rect
+    Rect: Rect,
+    Line: FLine
   }
 
   function addShape(name: ShapeName) {
-    const config: Partial<CircleProps & RectProps> = {
+    const config: Partial<CircleProps & RectProps & SerializedLineProps> = {
       fill: 'rgba(0, 255, 0, 1)',
-      strokeWidth: 0
+      strokeWidth: 30
     }
     if (name === 'Circle') {
       config.radius = 200
+    }
+    if (name === 'Line') {
+      config.stroke = 'red'
+      const shape = new shapeFactory[name]([0, 300, 300, 300], config)
+      editor.add(shape)
+      return
     } else {
       config.width = 300
       config.height = 300
