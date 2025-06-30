@@ -231,6 +231,8 @@ export class FCanvas extends Canvas {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
     FabricObject.createControls = function () {
+      //! 如果不重新调用创建方法，会导致所有对象共用controls
+      const controls = controlsUtils.createObjectDefaultControls() as Record<string, Control>
       controls[name] = new Control()
       that.resetControlStyleAndAction(controls[name], params)
       return {
