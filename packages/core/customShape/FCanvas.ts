@@ -1,13 +1,4 @@
-import {
-  ActiveSelection,
-  Canvas,
-  controlsUtils,
-  FabricObject,
-  Control,
-  util,
-  InteractiveFabricObject,
-  Textbox
-} from 'fabric'
+import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util, InteractiveFabricObject } from 'fabric'
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
 import { FTextBox } from './FTextBox'

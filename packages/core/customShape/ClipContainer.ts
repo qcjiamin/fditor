@@ -22,8 +22,6 @@ function createClipShadow() {
 type ClipResolve<T> = (value: T | PromiseLike<T>) => void
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ClipReject = (reason?: any) => void
-// flip方式
-type FlipDir = 'x' | 'y'
 
 export class ClipContainer extends Group {
   public static type = 'clipContainer'
