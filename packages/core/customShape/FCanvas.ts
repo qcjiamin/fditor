@@ -2,7 +2,7 @@ import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util, In
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
 // 排除 undefined 的 Partial
-type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls>
+type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> & string
 type ControlOptions = Partial<Control>
 type defControlOptions = ControlOptions & {
   imgurl?: string
@@ -26,6 +26,8 @@ function isKeyInObj<T extends object>(obj: T, k: PropertyKey): k is keyof T {
  * 自定义画布对象。挂载一些额外的功能，原则上不添加额外状态，状态由外层控制
  */
 export class FCanvas extends Canvas {
+  static otherControls: Record<string, defControlRenderOptions> = {}
+
   constructor(el?: ConstructorParameters<typeof Canvas>[0], options?: ConstructorParameters<typeof Canvas>[1]) {
     // 设置默认配置，可以被外部设置的配置覆盖
     const _options = {
@@ -169,7 +171,14 @@ export class FCanvas extends Canvas {
     }
   }
 
-  static async resetControls(options: ResetControlParams) {
+  /**
+   * 重写原生的 CreateControls 方法。默认的控制点可以设置图片替换；
+   * addControl 新增的控制点需要先加载好图片，这里可以自动创建出 Control 对象；
+   * 如果有对象需要独占控制点，在其自身的构建方法中添加
+   * @param options
+   * @returns
+   */
+  static async resetCreateControls(options: ResetControlParams) {
     if (Object.keys(options).length === 0) return
 
     // 加载完图片
@@ -189,6 +198,8 @@ export class FCanvas extends Canvas {
     const that = this
     FabricObject.createControls = function () {
       const defaultCtls: Controls = controlsUtils.createObjectDefaultControls()
+      // const otherCtls = {} as Record<string, defControlRenderOptions>
+      //! 重置默认控制点样式和事件
       for (const key in params) {
         // 确保 key 属于 options 的键值
         if (!isKeyInObj(options, key) || !options[key]) continue
@@ -200,6 +211,11 @@ export class FCanvas extends Canvas {
         if (!params[key]) continue
         that.resetControlStyleAndAction(defaultCtls[key], params[key])
       }
+      //! 创建其他控制点样式并设置事件
+      Object.keys(that.otherControls).forEach((key) => {
+        defaultCtls[key] = new Control()
+        that.resetControlStyleAndAction(defaultCtls[key], that.otherControls[key])
+      })
       return {
         controls: defaultCtls
       }
@@ -207,7 +223,7 @@ export class FCanvas extends Canvas {
   }
 
   static async setPredefineControls() {
-    await this.resetControls(predefineOptions)
+    await this.resetCreateControls(predefineOptions)
     // 设置样式
     InteractiveFabricObject.ownDefaults = {
       ...InteractiveFabricObject.ownDefaults,
@@ -217,7 +233,7 @@ export class FCanvas extends Canvas {
 
   static async addControl(name: string, options: defControlOptions) {
     const { controls } = FabricObject.createControls()
-    if (isKeyInObj(controls, name)) throw new Error('already exists' + name)
+    if (isKeyInObj(controls, name) || isKeyInObj(this.otherControls, name)) throw new Error('already exists' + name)
     let params: defControlRenderOptions = {}
     let imgEl: HTMLImageElement | undefined = undefined
     // 加载图片
@@ -228,16 +244,7 @@ export class FCanvas extends Canvas {
       ...options,
       imgEl
     }
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this
-    FabricObject.createControls = function () {
-      //! 如果不重新调用创建方法，会导致所有对象共用controls
-      const controls = controlsUtils.createObjectDefaultControls() as Record<string, Control>
-      controls[name] = new Control()
-      that.resetControlStyleAndAction(controls[name], params)
-      return {
-        controls
-      }
-    }
+
+    this.otherControls[name] = params
   }
 }
