@@ -1,6 +1,16 @@
-import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util, InteractiveFabricObject } from 'fabric'
+import {
+  ActiveSelection,
+  Canvas,
+  controlsUtils,
+  FabricObject,
+  Control,
+  util,
+  InteractiveFabricObject,
+  Textbox
+} from 'fabric'
 import { ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
+import { FTextBox } from './FTextBox'
 // 排除 undefined 的 Partial
 type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> & string
 type ControlOptions = Partial<Control>
@@ -194,11 +204,7 @@ export class FCanvas extends Canvas {
         imgEl
       }
     }
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const that = this
-    FabricObject.createControls = function () {
-      const defaultCtls: Controls = controlsUtils.createObjectDefaultControls()
-      // const otherCtls = {} as Record<string, defControlRenderOptions>
+    function reset(defaultCtls: Controls) {
       //! 重置默认控制点样式和事件
       for (const key in params) {
         // 确保 key 属于 options 的键值
@@ -209,16 +215,26 @@ export class FCanvas extends Canvas {
           // defaultCtls[key] = new Control()
         }
         if (!params[key]) continue
-        that.resetControlStyleAndAction(defaultCtls[key], params[key])
+        FCanvas.resetControlStyleAndAction(defaultCtls[key], params[key])
       }
       //! 创建其他控制点样式并设置事件
-      Object.keys(that.otherControls).forEach((key) => {
+      Object.keys(FCanvas.otherControls).forEach((key) => {
         defaultCtls[key] = new Control()
-        that.resetControlStyleAndAction(defaultCtls[key], that.otherControls[key])
+        FCanvas.resetControlStyleAndAction(defaultCtls[key], FCanvas.otherControls[key])
       })
       return {
         controls: defaultCtls
       }
+    }
+
+    FabricObject.createControls = function () {
+      const defaultCtls: Controls = controlsUtils.createObjectDefaultControls()
+      return reset(defaultCtls)
+    }
+    // textBox 需要单独处理
+    FTextBox.createControls = function () {
+      const defaultCtls: Controls = controlsUtils.createTextboxDefaultControls()
+      return reset(defaultCtls)
     }
   }
 
