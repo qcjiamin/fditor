@@ -6,7 +6,6 @@
   import {
     Circle,
     FabricObject,
-    Line,
     Rect,
     type CircleProps,
     type Constructor,
@@ -64,19 +63,19 @@
       config.stroke = 'red'
       // const shape = new shapeFactory[name]([0, 300, 300, 300], config)
       const shape = new FLine({
-        stroke: 'red',
-        strokeWidth: 10,
         left: 100,
         top: 100,
-        width: 100
+        width: 100,
+        height: 10,
+        fill: 'red'
       })
       editor.add(shape)
-      const line = new Line([100, 100, 200, 100], {
-        stroke: 'blue',
-        strokeWidth: 10,
-        strokeUniform: true
-      })
-      editor.add(line)
+      // const line = new Line([100, 100, 200, 100], {
+      //   stroke: 'blue',
+      //   strokeWidth: 10,
+      //   strokeUniform: true
+      // })
+      // editor.add(line)
       return
     } else {
       config.width = 300
