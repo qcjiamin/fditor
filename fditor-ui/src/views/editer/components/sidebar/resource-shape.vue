@@ -6,6 +6,7 @@
   import {
     Circle,
     FabricObject,
+    Line,
     Rect,
     type CircleProps,
     type Constructor,
@@ -47,22 +48,35 @@
 
   const shapeFactory: Record<ShapeName, Constructor<FabricObject>> = {
     Circle: Circle,
-    Rect: Rect,
-    Line: FLine
+    Rect: Rect
+    // Line: FPath
   }
 
   function addShape(name: ShapeName) {
     const config: Partial<CircleProps & RectProps & SerializedLineProps> = {
       fill: 'rgba(0, 255, 0, 1)',
-      strokeWidth: 30
+      strokeWidth: 0
     }
     if (name === 'Circle') {
       config.radius = 200
     }
     if (name === 'Line') {
       config.stroke = 'red'
-      const shape = new shapeFactory[name]([0, 300, 300, 300], config)
+      // const shape = new shapeFactory[name]([0, 300, 300, 300], config)
+      const shape = new FLine({
+        stroke: 'red',
+        strokeWidth: 10,
+        left: 100,
+        top: 100,
+        width: 100
+      })
       editor.add(shape)
+      const line = new Line([100, 100, 200, 100], {
+        stroke: 'blue',
+        strokeWidth: 10,
+        strokeUniform: true
+      })
+      editor.add(line)
       return
     } else {
       config.width = 300

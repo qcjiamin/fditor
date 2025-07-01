@@ -1,85 +1,121 @@
-import { classRegistry, Line, TPointerEvent, Transform } from 'fabric'
-import { isFiller } from '../utils/typeAssertions'
+import {
+  classRegistry,
+  FabricObject,
+  FabricObjectProps,
+  Line,
+  ObjectEvents,
+  Point,
+  SerializedObjectProps,
+  TOptions,
+  TPointerEvent,
+  Transform
+} from 'fabric'
+import { wrapWithFixedAnchor } from '../helper'
 
-export type FLineOptions = ConstructorParameters<typeof Line>[1]
-export class FLine extends Line {
-  constructor([x1, y1, x2, y2] = [0, 0, 0, 0], options: FLineOptions = {}) {
-    super([x1, y1, x2, y2], {
+export function getAngleFromTwoPoints(x1: number, y1: number, x2: number, y2: number): number {
+  const dx = x2 - x1
+  const dy = y2 - y1
+  const rad = Math.atan2(dy, dx) // 弧度，范围 (-π, π]
+  const deg = rad * (180 / Math.PI) // 转换为角度
+  // const deg360 = (deg + 360) % 360
+  return deg
+}
+function degToRad(deg: number): number {
+  return deg * (Math.PI / 180)
+}
+
+export class FLine<
+  Props extends TOptions<FabricObjectProps> = Partial<FabricObjectProps>,
+  SProps extends SerializedObjectProps = SerializedObjectProps,
+  EventSpec extends ObjectEvents = ObjectEvents
+> extends FabricObject<Props, SProps, EventSpec> {
+  //! 需要设置 left top width[线长] strokeWidth[线的厚度]
+  constructor(options: Partial<Props> = {}) {
+    // 必须设置strokeWidth
+    // height 设置为0？
+    super()
+    Object.assign(this, Line.ownDefaults)
+    this.setOptions({
       ...options,
-      objectCaching: false,
+      // strokeWidth 不能小于1
+      strokeWidth: options.strokeWidth ? (options.strokeWidth < 1 ? 1 : options.strokeWidth) : 1,
+      // 不跟随缩放，让 _getTransformedDimensions 计算 strokeWidth的值
       strokeUniform: true,
-      hasBorders: false
+      hasBorders: false,
+      noScaleCache: false
     })
     this.setControlsVisibility({
       tl: false,
-      tr: false,
       mt: false,
+      tr: false,
       bl: false,
-      br: false,
-      mb: false
+      mb: false,
+      br: false
     })
-    this.controls.ml.cursorStyle = 'pointer'
-    // const actionHandler = this.controls.ml.actionHandler
-    this.controls.ml.actionHandler = (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
-      // const zoom = this.canvas!.getZoom()
-      this.x1 = x
-      this.y1 = y
-      // console.log(x * zoom, y * zoom)
-      // return actionHandler(eventData, transform, x, y)
+
+    this.controls.ml.actionHandler = wrapWithFixedAnchor(
+      (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+        const target = transform.target
+        const c1 = this.width * this.scaleX
+        const rad = degToRad(this.angle)
+        const a1 = c1 * Math.cos(rad) // 邻边 x
+        const b1 = c1 * Math.sin(rad) // 对边 y
+
+        // 旋转角
+        const end = { x: this.left + a1, y: this.top + b1 }
+        const angle = getAngleFromTwoPoints(x, y, end.x, end.y)
+
+        // 求线的长度
+        const a = end.x - x
+        const b = end.y - y
+        const c = Math.hypot(a, b) / target.scaleX
+
+        this.set({
+          width: c,
+          angle
+        }).setCoords()
+        return true
+      }
+    )
+
+    // 重写左右缩放逻辑
+    this.controls.mr.actionHandler = (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      const target = transform.target
+      // 旋转角
+      const angle = getAngleFromTwoPoints(this.left, this.top, x, y)
+      // 求线的长度
+      const a = x - this.left
+      const b = y - this.top
+      const c = Math.hypot(a, b) / target.scaleX
+
+      this.set({
+        width: c,
+        angle
+      }).setCoords()
+      console.warn(x, y)
       return true
     }
   }
 
-  calcLinePoints() {
-    const { x1: _x1, x2: _x2, y1: _y1, y2: _y2, width, height } = this
-    const xMult = _x1 <= _x2 ? -1 : 1,
-      yMult = _y1 <= _y2 ? -1 : 1,
-      x1 = (xMult * width) / 2,
-      y1 = (yMult * height) / 2,
-      x2 = (xMult * -width) / 2,
-      y2 = (yMult * -height) / 2
-    console.log(xMult, yMult)
-
-    return {
-      x1,
-      x2,
-      y1,
-      y2
-    }
-  }
-
-  /**
-   * @private
-   * @param {CanvasRenderingContext2D} ctx Context to render on
-   */
   _render(ctx: CanvasRenderingContext2D) {
     ctx.beginPath()
-    console.log(this.x1, this.y1, this.x2, this.y2)
-    // const p = this.calcLinePoints()
 
-    ctx.moveTo(this.x1, this.y1)
-    ctx.lineTo(this.x2, this.y2)
+    const start = { x: 0 - this.width / 2, y: 0 } as Point
+    const end = { x: 0 + this.width / 2, y: 0 } as Point
+    console.error(start, end)
+    ctx.moveTo(start.x, start.y)
+    ctx.lineTo(end.x, end.y)
 
     ctx.lineWidth = this.strokeWidth
-
-    // TODO: test this
-    // make sure setting "fill" changes color of a line
-    // (by copying fillStyle to strokeStyle, since line is stroked, not filled)
     const origStrokeStyle = ctx.strokeStyle
-    if (isFiller(this.stroke)) {
-      ctx.strokeStyle = this.stroke.toLive(ctx)!
-    } else {
-      ctx.strokeStyle = this.stroke ?? ctx.fillStyle
-    }
+    ctx.strokeStyle = this.stroke as string
     if (this.stroke) {
       this._renderStroke(ctx)
     }
-    // this.stroke && this._renderStroke(ctx)
+
     ctx.strokeStyle = origStrokeStyle
   }
-
-  startHandler() {}
-  endHandler() {}
+  // setCoords(): void {}
 }
 
 classRegistry.setClass(FLine, 'fline')
