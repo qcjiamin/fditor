@@ -12,5 +12,6 @@ export * from './customShape/FImage'
 export * from './customShape/FCanvas'
 export * from './customShape/FTextBox'
 export * from './customShape/FLine'
+export * from './customShape/FPath'
 
 export { Editor, WorkspacePlugin, AlignPlugin, SelectionPlugin, LockPlugin }

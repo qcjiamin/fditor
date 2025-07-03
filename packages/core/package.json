@@ -11,11 +11,15 @@
   "author": "qc",
   "license": "MIT",
   "dependencies": {
+    "@svgdotjs/svg.js": "^3.2.4",
     "@types/events": "^3.0.3",
     "@types/node": "^22.10.5",
     "@types/uuid": "^10.0.0",
     "events": "^3.3.0",
     "fabric": "^6.6.4",
+    "paper": "^0.12.18",
+    "svg-round-corners": "^0.4.3",
+    "svgpath": "^2.6.0",
     "uuid": "^11.1.0"
   }
 }

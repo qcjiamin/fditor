@@ -14,7 +14,7 @@ import {
 } from 'fabric'
 import { wrapWithFixedAnchor } from '../helper'
 
-export function getAngleFromTwoPoints(x1: number, y1: number, x2: number, y2: number): number {
+function getAngleFromTwoPoints(x1: number, y1: number, x2: number, y2: number): number {
   const dx = x2 - x1
   const dy = y2 - y1
   const rad = Math.atan2(dy, dx) // 弧度，范围 (-π, π]

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import { FLine, type Editor } from '@fditor/core'
+  import { FLine, FPath, type Editor } from '@fditor/core'
   import { inject } from 'vue'
   import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
   import {
@@ -16,7 +16,7 @@
   const editor = inject(EditorKey) as Editor
   console.error(editor)
 
-  type ShapeName = 'Rect' | 'Circle' | 'Line'
+  type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Path'
 
   const shapes = [
     {
@@ -42,12 +42,18 @@
     {
       name: 'Line',
       src: './shapes/five-pointed-star.svg'
+    },
+    {
+      name: 'Path',
+      src: './shapes/five-pointed-star.svg'
     }
   ]
 
   const shapeFactory: Record<ShapeName, Constructor<FabricObject>> = {
     Circle: Circle,
-    Rect: Rect
+    Rect: Rect,
+    Line: FLine,
+    Path: FPath
     // Line: FPath
   }
 
@@ -76,6 +82,15 @@
       //   strokeUniform: true
       // })
       // editor.add(line)
+      return
+    } else if (name === 'Path') {
+      const shape = new FPath('M 0 0 H 300 V 100 H0 Z', {
+        fill: 'red',
+        left: 100,
+        top: 100,
+        cornerRadius: 20
+      })
+      editor.add(shape)
       return
     } else {
       config.width = 300
