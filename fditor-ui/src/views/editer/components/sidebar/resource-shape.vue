@@ -64,8 +64,7 @@
     }
     if (name === 'Circle') {
       config.radius = 200
-    }
-    if (name === 'Line') {
+    } else if (name === 'Line') {
       config.stroke = 'red'
       // const shape = new shapeFactory[name]([0, 300, 300, 300], config)
       const shape = new FLine({
