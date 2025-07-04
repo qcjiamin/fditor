@@ -10,13 +10,16 @@
   import { colorInstance2Info } from '@/utils/common'
   import type { FabricObjectProps } from 'fabric'
   import type { updateColorOptions } from '@/components/colorPicker/types'
-
+  import radiusProperty from '@/views/editer/components/propertyBar/shapeBar/radius-property.vue'
+  import { useEditorStore } from '@/stores/editorStore'
+  import { isShape } from '@/utils/guard'
   // const props = defineProps<{
   //   foo?: string
   // }>()
   // 每次修改都重新选中当前元素，触发onMounted 获取属性
   // or 修改属性后通知当前组件直接更新
   const editor = inject(EditorKey) as Editor
+  const editorStore = useEditorStore()
 
   interface ShapeAttrs {
     fill: ColorInfo
@@ -24,6 +27,7 @@
     strokeWidth: number
     dash: number[]
     width: number
+    radius: number
   }
   const attrs: ShapeAttrs = reactive({
     fill: {
@@ -36,10 +40,19 @@
     },
     strokeWidth: 0,
     dash: [-1],
-    width: 0
+    width: 0,
+    radius: 0
   })
   const showStroke = computed(() => {
     return Boolean(attrs.stroke.value)
+  })
+  const showRadius = computed(() => {
+    if (editorStore.selectType !== 'Shape') return false
+    const selected = editor.getActiveObject()!
+    if (isShape(selected)) {
+      return selected.radiusAble
+    }
+    return false
   })
   function getAttrs() {
     const shape = editor.stage.getActiveObject()!
@@ -49,6 +62,7 @@
     // -1 表示没有stroke
     attrs.dash = shape.strokeDashArray ? (shape.strokeDashArray ?? [-1]) : [-1]
     attrs.width = shape.width
+    attrs.radius = isShape(shape) ? shape.cornerRadius : 0
   }
   // 属性获取目前是在bar上，统一获取，分散到单一组件中，单独获取？
   useGetAttrs(getAttrs)
@@ -181,6 +195,11 @@
     }
     editor.render()
   }
+  function updateRadius(val: number, { commit }: updateColorOptions) {
+    console.log(val, commit)
+    const shape = editor.stage.getActiveObject()!
+    shape.set('cornerRadius', val)
+  }
 </script>
 
 <template>
@@ -200,6 +219,7 @@
       @update:dash="updateDash"
       @update:stroke-width="updateStrokeWidth"
     ></stroke-property>
+    <radius-property v-if="showRadius" :radius="attrs.radius" @update:radius="updateRadius"></radius-property>
   </div>
 </template>
 

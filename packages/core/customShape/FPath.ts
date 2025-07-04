@@ -8,8 +8,7 @@ import {
   // TComplexPathData,
   TMat2D,
   TPointerEvent,
-  Transform,
-  TSimplePathData
+  Transform
 } from 'fabric'
 import { wrapWithFixedAnchor } from '../helper'
 import { switchPointFromLocalToContainer } from '../utils/mat'
@@ -18,9 +17,9 @@ import { roundCorners } from 'svg-round-corners'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
 
-function pathToPathStr(path: TSimplePathData) {
-  return path.toString().replaceAll(',', ' ')
-}
+// function pathToPathStr(path: TSimplePathData) {
+//   return path.toString().replaceAll(',', ' ')
+// }
 /**
  * 获取 pathstr 渲染出的宽度
  * @param pathStr
@@ -72,21 +71,23 @@ function getMaxRadius(pathStr: string) {
 // }
 
 interface UniqueFPathProps {
+  radiusAble: boolean
   cornerRadius: number
-  originPath: string
 }
 export interface FPathProps extends PathProps, UniqueFPathProps {}
 
 export class FPath extends Path {
   public static type = 'fpath'
-  public static customProperties: string[] = ['cornerRadius', 'originPath']
+  public static customProperties: string[] = ['cornerRadius', 'radiusAble', 'originPath']
   public cornerRadius: number = 0
+  public radiusAble: boolean = false
   public originPath: string
   public originWidth: number
   public originHeight: number
   constructor(path: string, options: Partial<FPathProps> = {}) {
     const _path = roundCorners(path, options.cornerRadius ?? 0).path
     super(_path, {
+      radiusAble: false,
       ...options,
       noScaleCache: false,
       flipX: false,
@@ -151,7 +152,6 @@ export class FPath extends Path {
     this.controls.mt.actionHandler = wrapWithFixedAnchor(
       (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
         if (!this.canvas) return false
-        const lastPath = pathToPathStr(this.path)
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
         // 上点在thisMat中的坐标
@@ -174,7 +174,6 @@ export class FPath extends Path {
     this.controls.mb.actionHandler = wrapWithFixedAnchor(
       (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
         if (!this.canvas) return false
-        const lastPath = pathToPathStr(this.path)
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
         // 上点在thisMat中的坐标
@@ -195,6 +194,7 @@ export class FPath extends Path {
       }
     )
   }
+  _set()
 }
 
 classRegistry.setClass(FPath, 'fpath')

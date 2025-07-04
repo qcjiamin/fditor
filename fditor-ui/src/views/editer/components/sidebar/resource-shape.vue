@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import { FLine, FPath, type Editor } from '@fditor/core'
+  import { FLine, FPath, FRect, type Editor } from '@fditor/core'
   import { inject } from 'vue'
   import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
   import {
@@ -16,7 +16,7 @@
   const editor = inject(EditorKey) as Editor
   console.error(editor)
 
-  type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Path'
+  type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Path' | 'FRect'
 
   const shapes = [
     {
@@ -44,7 +44,7 @@
       src: './shapes/five-pointed-star.svg'
     },
     {
-      name: 'Path',
+      name: 'FRect',
       src: './shapes/five-pointed-star.svg'
     }
   ]
@@ -72,7 +72,7 @@
         top: 100,
         width: 100,
         height: 10,
-        fill: 'red'
+        fill: 'rgba(255,0,0,1)'
       })
       editor.add(shape)
       // const line = new Line([100, 100, 200, 100], {
@@ -82,12 +82,14 @@
       // })
       // editor.add(line)
       return
-    } else if (name === 'Path') {
-      const shape = new FPath('M 0 0 H 300 V 100 H0 Z', {
-        fill: 'red',
+    } else if (name === 'FRect') {
+      const shape = new FRect({
+        fill: 'rgba(255,0,0,1)',
         left: 100,
         top: 100,
-        cornerRadius: 20
+        width: 400,
+        height: 200
+        // cornerRadius: 20
       })
       editor.add(shape)
       return

@@ -6,6 +6,8 @@ import { computed, ref } from 'vue'
 const type2Type: Record<string, ElementTypes> = {
   circle: 'Shape',
   rect: 'Shape',
+  fline: 'Shape',
+  frect: 'Shape',
   activeselection: 'activeselection',
   ftextbox: 'text',
   fimage: 'image'
