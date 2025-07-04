@@ -198,7 +198,12 @@
   function updateRadius(val: number, { commit }: updateColorOptions) {
     console.log(val, commit)
     const shape = editor.stage.getActiveObject()!
-    shape.set('cornerRadius', val)
+    if (commit) {
+      shape.eset('cornerRadius', val, false)
+    } else {
+      shape.set('cornerRadius', val)
+    }
+    editor.render()
   }
 </script>
 

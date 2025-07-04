@@ -8,7 +8,9 @@ import {
   // TComplexPathData,
   TMat2D,
   TPointerEvent,
-  Transform
+  Transform,
+  TSimplePathData,
+  util
 } from 'fabric'
 import { wrapWithFixedAnchor } from '../helper'
 import { switchPointFromLocalToContainer } from '../utils/mat'
@@ -17,9 +19,9 @@ import { roundCorners } from 'svg-round-corners'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
 
-// function pathToPathStr(path: TSimplePathData) {
-//   return path.toString().replaceAll(',', ' ')
-// }
+function pathToPathStr(path: TSimplePathData) {
+  return path.toString().replaceAll(',', ' ')
+}
 /**
  * 获取 pathstr 渲染出的宽度
  * @param pathStr
@@ -64,7 +66,8 @@ function getMaxRadius(pathStr: string) {
     maxRadiusList.push(maxR) // 限制最大值（可配置）
   }
   console.log(maxRadiusList)
-  return maxRadiusList.length > 0 ? Math.min(...maxRadiusList) : 0
+  //todo 简单除以2就行了吗？
+  return maxRadiusList.length > 0 ? Math.min(...maxRadiusList) / 2 : 0
 }
 // function isString(path: TComplexPathData | string): path is string {
 //   return typeof path === 'string'
@@ -91,7 +94,9 @@ export class FPath extends Path {
       ...options,
       noScaleCache: false,
       flipX: false,
-      flipY: false
+      flipY: false,
+      //todo rx ry 更新后， isCacheDirty 仍然为false,会导致不重绘，圆角显示不出来。 这里先不要缓存，后面重写 isCacheDirty
+      objectCaching: false
     })
     this.originPath = path
     this.cornerRadius = options.cornerRadius ?? 0
@@ -116,11 +121,10 @@ export class FPath extends Path {
         const toScaleX = (this.width + offsetWidth) / this.originWidth
         const toScaleY = this.height / this.originHeight
         if (toScaleX <= 0) return false
-        let newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
-        const maxRadius = getMaxRadius(newPathStr)
-        console.error(maxRadius)
-        const toRadius = maxRadius * (this.cornerRadius / 100)
-        newPathStr = roundCorners(newPathStr, toRadius).path
+        const newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
+        // const maxRadius = getMaxRadius(newPathStr)
+        // const toRadius = maxRadius * (this.cornerRadius / 100)
+        // newPathStr = roundCorners(newPathStr, toRadius).path
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
@@ -142,8 +146,8 @@ export class FPath extends Path {
         const toScaleX = (this.width + offsetWidth) / this.originWidth
         const toScaleY = this.height / this.originHeight
         if (toScaleX <= 0) return false
-        let newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
-        newPathStr = roundCorners(newPathStr, this.cornerRadius).path
+        const newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
+        // newPathStr = roundCorners(newPathStr, this.cornerRadius).path
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
@@ -164,8 +168,8 @@ export class FPath extends Path {
         const toScaleY = (this.height + offsetHeight) / this.originHeight
         const toScaleX = this.width / this.originWidth
         if (toScaleY <= 0) return false
-        let newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
-        newPathStr = roundCorners(newPathStr, this.cornerRadius).path
+        const newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
+        // newPathStr = roundCorners(newPathStr, this.cornerRadius).path
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
@@ -186,15 +190,66 @@ export class FPath extends Path {
         const toScaleY = (this.height + offsetHeight) / this.originHeight
         const toScaleX = this.width / this.originWidth
         if (toScaleY <= 0) return false
-        let newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
-        newPathStr = roundCorners(newPathStr, this.cornerRadius).path
+        const newPathStr = svgPath(this.originPath).scale(toScaleX, toScaleY).toString()
+        // newPathStr = roundCorners(newPathStr, this.cornerRadius).path
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
       }
     )
   }
-  _set()
+
+  _renderPathCommands(ctx: CanvasRenderingContext2D) {
+    // 绘制前通过圆角重新计算 path
+    const pathStr = pathToPathStr(this.path)
+    const maxRadius = getMaxRadius(pathStr)
+    console.log(maxRadius)
+    const toRadius = maxRadius * (this.cornerRadius / 100)
+    const newPathStr = roundCorners(pathStr, toRadius).path
+    // 解析为 TSimplePathData, 参考 Path._setPath
+    const _path = util.makePathSimpler(util.parsePath(newPathStr))
+    //! setBoundingBox 影响width height pathOffset。 理论上这里只重新计算圆角，不影响bound，先不调用
+    // this.setBoundingBox(adjustPosition);
+
+    const l = -this.pathOffset.x,
+      t = -this.pathOffset.y
+
+    ctx.beginPath()
+
+    // for (const command of this.path) {
+    for (const command of _path) {
+      switch (
+        command[0] // first letter
+      ) {
+        case 'L': // lineto, absolute
+          ctx.lineTo(command[1] + l, command[2] + t)
+          break
+
+        case 'M': // moveTo, absolute
+          ctx.moveTo(command[1] + l, command[2] + t)
+          break
+
+        case 'C': // bezierCurveTo, absolute
+          ctx.bezierCurveTo(
+            command[1] + l,
+            command[2] + t,
+            command[3] + l,
+            command[4] + t,
+            command[5] + l,
+            command[6] + t
+          )
+          break
+
+        case 'Q': // quadraticCurveTo, absolute
+          ctx.quadraticCurveTo(command[1] + l, command[2] + t, command[3] + l, command[4] + t)
+          break
+
+        case 'Z':
+          ctx.closePath()
+          break
+      }
+    }
+  }
 }
 
 classRegistry.setClass(FPath, 'fpath')
