@@ -1,12 +1,11 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import { FLine, FPath, FRect, type Editor } from '@fditor/core'
+  import { FLine, FRect, FTriangle, type Editor } from '@fditor/core'
   import { inject } from 'vue'
   import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
   import {
     Circle,
     FabricObject,
-    Rect,
     type CircleProps,
     type Constructor,
     type RectProps,
@@ -16,7 +15,7 @@
   const editor = inject(EditorKey) as Editor
   console.error(editor)
 
-  type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Path' | 'FRect'
+  type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Triangle'
 
   const shapes = [
     {
@@ -28,7 +27,7 @@
       src: './shapes/rect.svg'
     },
     {
-      name: 'tringle',
+      name: 'Triangle',
       src: './shapes/tringle.svg'
     },
     {
@@ -51,10 +50,9 @@
 
   const shapeFactory: Record<ShapeName, Constructor<FabricObject>> = {
     Circle: Circle,
-    Rect: Rect,
+    Rect: FRect,
     Line: FLine,
-    Path: FPath
-    // Line: FPath
+    Triangle: FTriangle
   }
 
   function addShape(name: ShapeName) {
@@ -82,13 +80,24 @@
       // })
       // editor.add(line)
       return
-    } else if (name === 'FRect') {
+    } else if (name === 'Rect') {
       const shape = new FRect({
         fill: 'rgba(255,0,0,1)',
         left: 100,
         top: 100,
         width: 400,
         height: 200
+        // cornerRadius: 20
+      })
+      editor.add(shape)
+      return
+    } else if (name === 'Triangle') {
+      const shape = new FTriangle({
+        fill: 'rgba(255,0,0,1)',
+        left: 100,
+        top: 100,
+        width: 300,
+        height: 300
         // cornerRadius: 20
       })
       editor.add(shape)

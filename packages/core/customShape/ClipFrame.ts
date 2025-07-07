@@ -1,5 +1,6 @@
 // 继承Path
 // 限制移动范围
+//todo: 裁剪的蒙版状态
 
 import { FImage } from '@fditor/core'
 import { classRegistry, FabricObjectProps, iMatrix, Path, Point, TComplexPathData, TMat2D } from 'fabric'

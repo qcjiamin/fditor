@@ -1,4 +1,5 @@
 // todo 深入了解 wrapWithFixedAnchor
+// 实现策略：path属性始终保持不带圆角的path，绘制时根据圆角设置动态计算出带圆角path再绘制
 
 import {
   classRegistry,
@@ -12,12 +13,14 @@ import {
   TSimplePathData,
   util
 } from 'fabric'
-import { wrapWithFixedAnchor } from '../helper'
+import { createLinearGradient, createRadialGradient, wrapWithFireEvent, wrapWithFixedAnchor } from '../helper'
 import { switchPointFromLocalToContainer } from '../utils/mat'
 import svgPath from 'svgpath'
 import { roundCorners } from 'svg-round-corners'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
+import { isFiller, isPattern } from '../utils/typeAssertions'
+import { LinearGradient, RadialGradient } from '../types'
 
 function pathToPathStr(path: TSimplePathData) {
   return path.toString().replaceAll(',', ' ')
@@ -104,8 +107,9 @@ export class FPath extends Path {
     this.originWidth = box.width
     this.originHeight = box.height
     // 重写上下左右4个点的actionhandler
-    this.controls.ml.actionHandler = wrapWithFixedAnchor(
-      (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+    this.controls.ml.actionHandler = wrapWithFireEvent(
+      'resizing',
+      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -128,11 +132,11 @@ export class FPath extends Path {
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
-      }
+      })
     )
-
-    this.controls.mr.actionHandler = wrapWithFixedAnchor(
-      (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+    this.controls.mr.actionHandler = wrapWithFireEvent(
+      'resizing',
+      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -151,10 +155,11 @@ export class FPath extends Path {
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
-      }
+      })
     )
-    this.controls.mt.actionHandler = wrapWithFixedAnchor(
-      (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+    this.controls.mt.actionHandler = wrapWithFireEvent(
+      'resizing',
+      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -173,10 +178,11 @@ export class FPath extends Path {
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
-      }
+      })
     )
-    this.controls.mb.actionHandler = wrapWithFixedAnchor(
-      (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+    this.controls.mb.actionHandler = wrapWithFireEvent(
+      'resizing',
+      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -195,8 +201,11 @@ export class FPath extends Path {
         this._setPath(newPathStr, true)
         this.setCoords()
         return true
-      }
+      })
     )
+    this.on('resizing', () => {
+      this.resetGradient()
+    })
   }
 
   _renderPathCommands(ctx: CanvasRenderingContext2D) {
@@ -249,6 +258,26 @@ export class FPath extends Path {
           break
       }
     }
+  }
+
+  resetGradient() {
+    if (!isFiller(this.fill)) return
+    if (isPattern(this.fill)) return
+    const colors = this.fill.colorStops.map((stop) => stop.color)
+    if (this.fill.type === 'linear') {
+      const fill = this.fill as LinearGradient
+      // const { x1, y1, x2, y2 } = this.fill.coords
+      // const degree = getAngleFromTwoPoints(x1, y1, x2, y2)
+      const degree = fill._degree
+      const autoGradient = createLinearGradient('pixels', degree, this.width, this.height, ...colors)
+      this.set('fill', autoGradient)
+    } else if (this.fill.type === 'radial') {
+      const fill = this.fill as RadialGradient
+      const percent = fill._percent
+      const autoGradient = createRadialGradient('pixels', percent, this.width, this.height, ...colors)
+      this.set('fill', autoGradient)
+    }
+    if (this.canvas) this.canvas.requestRenderAll()
   }
 }
 
