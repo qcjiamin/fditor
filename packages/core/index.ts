@@ -15,5 +15,6 @@ export * from './customShape/FLine'
 export * from './customShape/FPath'
 export * from './customShape/FRect'
 export * from './customShape/FTriangle'
+export * from './customShape/FHexagon'
 
 export { Editor, WorkspacePlugin, AlignPlugin, SelectionPlugin, LockPlugin }

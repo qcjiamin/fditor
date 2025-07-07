@@ -112,9 +112,9 @@
     const shape = editor.stage.getActiveObject()!
     if (info.type === 'solid') {
       if (commit) {
-        shape.eset('fill', info.value, false)
+        shape.eset('stroke', info.value, false)
       } else {
-        shape.set('fill', info.value)
+        shape.set('stroke', info.value)
       }
     } else if (info.type === 'gradient') {
       // 渐变，获取宽高后，重新设置其coords

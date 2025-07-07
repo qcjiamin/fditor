@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
-  import FontSpacing from '@/assets/icons/fontbar/font-spacing.svg'
+  import RadiusIcon from '@/assets/icons/shapebar/radius.svg'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import radiusBox from '@/views/editer/components/propertyBar/shapeBar/radius-box.vue'
 
@@ -21,7 +21,7 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <FontSpacing></FontSpacing>
+      <RadiusIcon></RadiusIcon>
     </template>
     <template #popup>
       <radius-box :radius="radius" @update:radius="updateRadius"></radius-box>

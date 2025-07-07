@@ -9,6 +9,7 @@ const type2Type: Record<string, ElementTypes> = {
   fline: 'Shape',
   frect: 'Shape',
   ftriangle: 'Shape',
+  fhexagon: 'Shape',
   activeselection: 'activeselection',
   ftextbox: 'text',
   fimage: 'image'

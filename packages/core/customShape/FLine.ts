@@ -1,4 +1,4 @@
-// todo 箭头，虚线； 都是线条的一种类型
+// todo 箭头，虚线；为线条单独设计一个样式设置界面 都是线条的一种类型
 import {
   Canvas,
   classRegistry,
@@ -31,6 +31,7 @@ export class FLine<
   SProps extends SerializedObjectProps = SerializedObjectProps,
   EventSpec extends ObjectEvents = ObjectEvents
 > extends FabricObject<Props, SProps, EventSpec> {
+  public static type = 'fline'
   //! 需要设置 left top width[线长] strokeWidth[线的厚度]
   constructor(options: Partial<Props> = {}) {
     // 必须设置strokeWidth

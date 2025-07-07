@@ -7,6 +7,8 @@ declare module '@fditor/core' {
     undo(): void
     redo(): void
     addStep(stepInfo: IStepInfo): void
+    getHistoryList(): IStepInfo[]
+    getHistoryIndex(): number
   }
 }
 //! 业务逻辑？
@@ -29,4 +31,16 @@ Editor.prototype.addStep = function (stepInfo) {
   if (historyPlugin) {
     historyPlugin.addStep(stepInfo)
   }
+}
+Editor.prototype.getHistoryList = function () {
+  const historyPlugin = this.getPlugin<HistoryPlugin>('HistoryPlugin') as HistoryPlugin
+  if (historyPlugin) {
+    return historyPlugin.getHistoryList()
+  } else return []
+}
+Editor.prototype.getHistoryIndex = function () {
+  const historyPlugin = this.getPlugin<HistoryPlugin>('HistoryPlugin') as HistoryPlugin
+  if (historyPlugin) {
+    return historyPlugin.historyIndex
+  } else return 0
 }

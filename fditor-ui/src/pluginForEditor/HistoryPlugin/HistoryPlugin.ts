@@ -23,6 +23,7 @@ export default class HistoryPlugin implements IPlugin {
   set historyIndex(val) {
     console.log('historyIndex:', val)
     this.#historyIndex = val
+    this.editor.emit('historyIndex:update', undefined)
   }
   init(editor: Editor) {
     this.editor = editor
@@ -70,5 +71,8 @@ export default class HistoryPlugin implements IPlugin {
     }
     this.historyList.push(stepInfo)
     this.historyIndex = this.historyList.length - 1
+  }
+  public getHistoryList() {
+    return this.historyList!
   }
 }

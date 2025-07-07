@@ -40,6 +40,7 @@ export interface EditorEventMap {
   'canvas:ready': null
   // 区分修改与历史记录更新
   'history:update': void
+  'historyIndex:update': void
   'confirm:clip': void
 }
 

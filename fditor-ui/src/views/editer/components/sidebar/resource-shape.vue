@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import { FLine, FRect, FTriangle, type Editor } from '@fditor/core'
+  import { FHexagon, FLine, FRect, FTriangle, type Editor } from '@fditor/core'
   import { inject } from 'vue'
   import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
   import {
@@ -15,7 +15,7 @@
   const editor = inject(EditorKey) as Editor
   console.error(editor)
 
-  type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Triangle'
+  type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Triangle' | 'Hexagon'
 
   const shapes = [
     {
@@ -31,8 +31,8 @@
       src: './shapes/tringle.svg'
     },
     {
-      name: 'pentagon',
-      src: './shapes/pentagon.svg'
+      name: 'Hexagon',
+      src: './shapes/hexagon.svg'
     },
     {
       name: 'five-pointed-star',
@@ -40,11 +40,7 @@
     },
     {
       name: 'Line',
-      src: './shapes/five-pointed-star.svg'
-    },
-    {
-      name: 'FRect',
-      src: './shapes/five-pointed-star.svg'
+      src: './shapes/line.svg'
     }
   ]
 
@@ -52,7 +48,8 @@
     Circle: Circle,
     Rect: FRect,
     Line: FLine,
-    Triangle: FTriangle
+    Triangle: FTriangle,
+    Hexagon: FHexagon
   }
 
   function addShape(name: ShapeName) {
@@ -98,6 +95,15 @@
         top: 100,
         width: 300,
         height: 300
+        // cornerRadius: 20
+      })
+      editor.add(shape)
+      return
+    } else if (name === 'Hexagon') {
+      const shape = new FHexagon({
+        fill: 'rgba(255,0,0,1)',
+        left: 100,
+        top: 100
         // cornerRadius: 20
       })
       editor.add(shape)
