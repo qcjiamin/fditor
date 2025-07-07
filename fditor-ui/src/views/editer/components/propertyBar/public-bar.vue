@@ -98,6 +98,7 @@
 <template>
   <div class="historyBox">
     <position-property
+      tip="change position"
       :horizontal="attrs.horizontal"
       :vertical="attrs.vertical"
       @update:align="updateAlign"
