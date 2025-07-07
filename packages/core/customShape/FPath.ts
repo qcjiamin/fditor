@@ -90,6 +90,13 @@ export class FPath extends Path {
   public originPath: string
   public originWidth: number
   public originHeight: number
+  //todo 参考 textbox, 自己实现初始化默认控制点的方法
+  // static createControls() {
+  //   return {
+  //     controls: createFPathDefaultControls()
+  //   }
+  // }
+
   constructor(path: string, options: Partial<FPathProps> = {}) {
     const _path = roundCorners(path, options.cornerRadius ?? 0).path
     super(_path, {
@@ -134,6 +141,7 @@ export class FPath extends Path {
         return true
       })
     )
+    this.controls.ml.actionName = 'resizing'
     this.controls.mr.actionHandler = wrapWithFireEvent(
       'resizing',
       wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
@@ -157,6 +165,7 @@ export class FPath extends Path {
         return true
       })
     )
+    this.controls.mr.actionName = 'resizing'
     this.controls.mt.actionHandler = wrapWithFireEvent(
       'resizing',
       wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
@@ -180,6 +189,7 @@ export class FPath extends Path {
         return true
       })
     )
+    this.controls.mt.actionName = 'resizing'
     this.controls.mb.actionHandler = wrapWithFireEvent(
       'resizing',
       wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
@@ -203,6 +213,7 @@ export class FPath extends Path {
         return true
       })
     )
+    this.controls.mb.actionName = 'resizing'
     this.on('resizing', () => {
       this.resetGradient()
     })
