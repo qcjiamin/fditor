@@ -1,6 +1,6 @@
 //todo: 裁剪的蒙版状态
-import { classRegistry, FabricImage, ImageSource, util } from 'fabric'
-import { ClipContainer, ClipContainerProps } from './ClipContainer'
+import { classRegistry, FabricImage, type ImageSource, util } from 'fabric'
+import { ClipContainer, type ClipContainerProps } from './ClipContainer'
 
 export type FimagePorps = ClipContainerProps & {}
 export type FimageOptions = Partial<FimagePorps>

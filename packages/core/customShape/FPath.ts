@@ -4,13 +4,13 @@
 import {
   classRegistry,
   Path,
-  PathProps,
+  type PathProps,
   Point,
   // TComplexPathData,
-  TMat2D,
-  TPointerEvent,
-  Transform,
-  TSimplePathData,
+  type TMat2D,
+  type TPointerEvent,
+  type Transform,
+  type TSimplePathData,
   util
 } from 'fabric'
 import { createLinearGradient, createRadialGradient, wrapWithFireEvent, wrapWithFixedAnchor } from '../helper'
@@ -20,7 +20,7 @@ import { roundCorners } from 'svg-round-corners'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
 import { isFiller, isPattern } from '../utils/typeAssertions'
-import { LinearGradient, RadialGradient } from '../types'
+import type { LinearGradient, RadialGradient } from '../types'
 
 function pathToPathStr(path: TSimplePathData) {
   return path.toString().replaceAll(',', ' ')
@@ -116,7 +116,8 @@ export class FPath extends Path {
     // 重写上下左右4个点的actionhandler
     this.controls.ml.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, x: number, _y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -144,7 +145,8 @@ export class FPath extends Path {
     this.controls.ml.actionName = 'resizing'
     this.controls.mr.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, x: number, _y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -168,7 +170,7 @@ export class FPath extends Path {
     this.controls.mr.actionName = 'resizing'
     this.controls.mt.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, _x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -192,7 +194,7 @@ export class FPath extends Path {
     this.controls.mt.actionName = 'resizing'
     this.controls.mb.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, _x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()

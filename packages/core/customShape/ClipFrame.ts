@@ -3,7 +3,7 @@
 //todo: 裁剪的蒙版状态
 
 import { FImage } from '@fditor/core'
-import { classRegistry, FabricObjectProps, iMatrix, Path, Point, TComplexPathData, TMat2D } from 'fabric'
+import { classRegistry, type FabricObjectProps, iMatrix, Path, Point, type TComplexPathData, type TMat2D } from 'fabric'
 import { switchPointFromContainerToLocal, switchPointFromLocalToContainer } from '../utils/mat'
 
 // 添加一些对象自己需要的属性

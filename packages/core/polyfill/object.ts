@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HorizontalAlign, VerticalAlign } from '@fditor/core'
+import type { HorizontalAlign, VerticalAlign } from '@fditor/core'
 import { FabricObject, Point } from 'fabric'
 
 declare module 'fabric' {

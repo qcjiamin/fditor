@@ -1,5 +1,5 @@
-import { classRegistry, Point, TMat2D, TPointerEvent, Transform } from 'fabric'
-import { FPath, FPathProps } from './FPath'
+import { classRegistry, Point, type TMat2D, type TPointerEvent, type Transform } from 'fabric'
+import { FPath, type FPathProps } from './FPath'
 import { wrapWithFireEvent, wrapWithFixedAnchor } from '../helper'
 import { switchPointFromLocalToContainer } from '../utils/mat'
 
@@ -34,7 +34,7 @@ export class FHexagon extends FPath {
     // 重写拉伸逻辑
     this.controls.ml.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, x: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -59,7 +59,7 @@ export class FHexagon extends FPath {
     )
     this.controls.mr.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, x: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -83,7 +83,7 @@ export class FHexagon extends FPath {
     )
     this.controls.mt.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, _x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()
@@ -104,7 +104,7 @@ export class FHexagon extends FPath {
     )
     this.controls.mb.actionHandler = wrapWithFireEvent(
       'resizing',
-      wrapWithFixedAnchor((eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      wrapWithFixedAnchor((_eventData: TPointerEvent, _transform: Transform, _x: number, y: number) => {
         if (!this.canvas) return false
         // 计算真实宽度
         const thisMat = this.calcTransformMatrix()

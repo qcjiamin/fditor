@@ -1,4 +1,5 @@
-import { Point, TMat2D, util } from 'fabric'
+import { Point, util } from 'fabric'
+import type { TMat2D } from 'fabric'
 
 /**
  * 将A坐标系的点转换为B坐标系的点

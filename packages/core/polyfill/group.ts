@@ -1,4 +1,5 @@
 import { ActiveSelection, FabricObject, Group, util } from 'fabric'
+import { FCanvas } from '../customShape/FCanvas'
 
 // 扩展 Group 构造函数的类型（静态方法）
 declare module 'fabric' {
@@ -21,7 +22,7 @@ Group.prototype._unGroup = function () {
   if (!this.canvas) throw new Error('')
   // 解组
   const nextObj = this.getNext()
-  const canvas = this.canvas
+  const canvas = this.canvas as FCanvas
   const groupMatrix = this.calcOwnMatrix()
   canvas._activeObject = undefined
   this._objects.forEach(function (object) {
@@ -31,7 +32,7 @@ Group.prototype._unGroup = function () {
 
     delete object.group
     if (canvas) {
-      canvas.insertBefore(object, nextObj)
+      canvas._insertBefore(object, nextObj)
       object.setCoords()
     }
   })

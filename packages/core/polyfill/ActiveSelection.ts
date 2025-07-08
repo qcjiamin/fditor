@@ -1,6 +1,7 @@
-import { HorizontalAlign, VerticalAlign } from '@fditor/core'
+import type { HorizontalAlign, VerticalAlign } from '@fditor/core'
 import { ActiveSelection, FabricObject, Group, Point, util } from 'fabric'
 import { FCanvas } from '../customShape/FCanvas'
+import { isFCanvas } from '../utils/tsHelper'
 
 declare module 'fabric' {
   export interface ActiveSelection {
@@ -63,7 +64,9 @@ ActiveSelection.prototype.toGorup = function () {
     // canvas: this.canvas
   })
   // !必须先添加再删除，不然zidx不对
-  this.canvas._insertBefore(newGroup, beforeObj)
+  if (isFCanvas(this.canvas)) {
+    this.canvas._insertBefore(newGroup, beforeObj)
+  }
   this.canvas._remove(...tempArr)
   this.canvas._activeObject = newGroup
   return newGroup

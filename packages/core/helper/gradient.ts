@@ -1,5 +1,5 @@
-import { LinearGradient, RadialGradient } from '@fditor/core'
-import { Gradient, GradientUnits } from 'fabric'
+import type { LinearGradient, RadialGradient } from '@fditor/core'
+import { Gradient, type GradientUnits } from 'fabric'
 
 /**
  * 从2个点计算旋转角度

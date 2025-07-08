@@ -22,8 +22,7 @@
   const editorStore = useEditorStore()
 
   const editor = new Editor()
-  // const workspaceRef = ref()
-  window.editor = editor
+  // window.editor = editor
   onMounted(async () => {
     await editor.init(document.querySelector('#canvas-container canvas')!)
     // 选择事件
@@ -46,8 +45,7 @@
       editor.emit('canvas:ready', null)
     }, 0)
 
-    hotkeys('left, right, up, down', function (e, handler) {
-      console.log(handler)
+    hotkeys('left, right, up, down', function (_e, handler) {
       const selected = editor.getActiveObject()
       if (!selected) return
       switch (handler.key) {

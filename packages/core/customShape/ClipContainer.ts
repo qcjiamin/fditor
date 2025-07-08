@@ -1,5 +1,4 @@
-// import { Abortable, FabricObject, Group, GroupProps, SerializedGroupProps, TOptions } from 'fabric'
-import { classRegistry, FabricObject, Group, GroupProps, iMatrix, Point, Shadow, TMat2D, util } from 'fabric'
+import { classRegistry, FabricObject, Group, type GroupProps, iMatrix, Point, Shadow, type TMat2D, util } from 'fabric'
 import { ClipFrame } from './ClipFrame'
 import { switchPointFromContainerToLocal, switchPointFromLocalToContainer } from '../utils/mat'
 
@@ -20,23 +19,23 @@ function createClipShadow() {
 }
 
 type ClipResolve<T> = (value: T | PromiseLike<T>) => void
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ClipReject = (reason?: any) => void
+
+// type ClipReject = (reason?: any) => void
 
 export class ClipContainer extends Group {
   public static type = 'clipContainer'
   private tempClipPath: ClipFrame | null = null
   private clipPromise: Promise<null> | null = null
   private resolveClip: ClipResolve<null> | null = null
-  private rejectClip: ClipReject | null = null
+  // private rejectClip: ClipReject | null = null
   private lastClipPath: FabricObject | null = null
   constructor(object: FabricObject, options: ClipContainerOptions = {}) {
     super([object], options)
   }
   doClip() {
-    this.clipPromise = new Promise((resolve, reject) => {
+    this.clipPromise = new Promise((resolve) => {
       this.resolveClip = resolve
-      this.rejectClip = reject
+      // this.rejectClip = reject
     })
     //! 开始时禁用 objectCaching 配置；为了解决取消clippath时底图渲染异常的问题
     this.objectCaching = false

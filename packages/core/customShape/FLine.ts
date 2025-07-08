@@ -3,14 +3,14 @@ import {
   Canvas,
   classRegistry,
   FabricObject,
-  FabricObjectProps,
+  type FabricObjectProps,
   Line,
-  ObjectEvents,
+  type ObjectEvents,
   Point,
-  SerializedObjectProps,
-  TOptions,
-  TPointerEvent,
-  Transform
+  type SerializedObjectProps,
+  type TOptions,
+  type TPointerEvent,
+  type Transform
 } from 'fabric'
 import { wrapWithFixedAnchor } from '../helper'
 
@@ -58,7 +58,7 @@ export class FLine<
     })
 
     this.controls.ml.actionHandler = wrapWithFixedAnchor(
-      (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+      (_eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
         const target = transform.target
         const c1 = this.width * this.scaleX
         const rad = degToRad(this.angle)
@@ -83,7 +83,7 @@ export class FLine<
     )
 
     // 重写左右缩放逻辑
-    this.controls.mr.actionHandler = (eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
+    this.controls.mr.actionHandler = (_eventData: TPointerEvent, transform: Transform, x: number, y: number) => {
       const target = transform.target
       // 旋转角
       const angle = getAngleFromTwoPoints(this.left, this.top, x, y)

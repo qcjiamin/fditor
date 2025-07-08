@@ -1,11 +1,11 @@
 import {
-  BasicTransformEvent,
-  ObjectModificationEvents,
   Point,
-  TModificationEvents,
-  Transform,
-  TransformAction,
-  TransformActionHandler
+  type BasicTransformEvent,
+  type ObjectModificationEvents,
+  type TModificationEvents,
+  type Transform,
+  type TransformAction,
+  type TransformActionHandler
 } from 'fabric'
 
 //! 包装方法 wrapWithFixedAnchor： 重新定位； wrapWithFireEvent：触发事件；都来自fabric controls

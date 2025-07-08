@@ -117,7 +117,7 @@ class Editor extends EventBus<EditorEventMap> {
       this.emit('history:update', undefined)
     })
 
-    window.fab = this.stage
+    // window.fab = this.stage
     this.#stage.backgroundColor = 'rgba(255,255,255,1)'
     // todo: 这里强制监听了画布容器元素的父元素。不是很严谨，会疑惑为什么是父元素
     // 因为容器元素为相对定位，用父元素来自适应窗口调整，不让容器把窗口撑起来导致observer 无效

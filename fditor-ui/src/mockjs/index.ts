@@ -96,15 +96,21 @@ export const unsplash = Mock.mock(/\/search\/photos/, 'get', (options) => {
           return Mock.Random.size() as string
         },
         width: function () {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           return Number(this.shape.split('x')[0])
         },
         height: function () {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           return Number(this.shape.split('x')[1])
         },
         regular: `@image("1080x1920", "#16d46b", "#fff", "png", @county(true))`,
         // small: `@image("@SIZE", "@color", "#fff", "png", "@integer")`,
         small: function () {
           // Mock.Random.size()
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           return Mock.Random.image(`${this.width}x${this.height}`, Mock.Random.color(), '#fff', 'png', String(this.id))
         },
         thumb: `@image("270x480", "#16d46b", "#fff", "png", @county(true))`

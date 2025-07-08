@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-  import { EditorKey } from '@/constants/injectKey'
   import { useEditorStore } from '@/stores/editorStore'
   import { Textbox } from 'fabric'
-  import { inject, reactive, ref } from 'vue'
+  import { reactive, ref } from 'vue'
   import fontItem from '@/views/editer/components/sidebar/tabs/font-item.vue'
   import { fontInfo } from '@/utils/fontinfo'
   import { AbortReason, fontWeightMap, FontWeightReverseMap, type FontWeightKey } from '@/utils/constants'
@@ -16,9 +15,6 @@
 
   const editorStore = useEditorStore()
   const selected = editorStore.selected
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const editor = inject(EditorKey)
   interface FontData {
     fontfamily: string
     fontWeight: FontWeightKey

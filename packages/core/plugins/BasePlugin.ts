@@ -1,4 +1,4 @@
-import { IPlugin } from '@fditor/core'
+import type { IPlugin } from '@fditor/core'
 import Editor from '../Editor'
 
 export default abstract class BasePlugin implements IPlugin {

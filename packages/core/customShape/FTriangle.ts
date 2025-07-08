@@ -1,5 +1,6 @@
 import { classRegistry } from 'fabric'
-import { FPath, FPathProps } from './FPath'
+import { FPath } from './FPath'
+import type { FPathProps } from './FPath'
 
 /**
  * 获取矩形path字符串

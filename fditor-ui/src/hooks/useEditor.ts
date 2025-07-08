@@ -8,8 +8,7 @@ import type { ElementTypes } from '@/utils/types'
 export const useEditor = () => {
   let editor = null
   editor = new Editor()
-  window.editor = editor
-  const selected = ref<Selected>(null)
+  const selected = ref<Selected>(undefined)
   const selectType = computed<ElementTypes>(() => {
     if (!selected.value) {
       return 'bg'

@@ -2,6 +2,8 @@
 // import Editor from '../../Editor'
 import { Editor, FCanvas } from '@fditor/core'
 import './methods'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { insertLockRule } from '../../polyfill/canvas'
 import { predefineLock } from '../../utils/aboutControl'
 import BasePlugin from '../BasePlugin'

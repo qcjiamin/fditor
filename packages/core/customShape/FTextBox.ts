@@ -1,6 +1,6 @@
 import { classRegistry, Textbox } from 'fabric'
 import { isFiller, isPattern } from '../utils/typeAssertions'
-import { createLinearGradient, createRadialGradient, LinearGradient, RadialGradient } from '@fditor/core'
+import { createLinearGradient, createRadialGradient, type LinearGradient, type RadialGradient } from '@fditor/core'
 
 export class FTextBox extends Textbox {
   public static type = 'ftextbox'

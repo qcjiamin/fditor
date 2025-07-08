@@ -1,4 +1,5 @@
-import { Canvas, FabricObject, Gradient, TFiller } from 'fabric'
+import { Canvas, FabricObject, Gradient } from 'fabric'
+import type { TFiller } from 'fabric'
 import type Editer from './Editor'
 
 // export type colorVal = string | TFiller | null

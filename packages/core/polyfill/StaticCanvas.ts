@@ -4,7 +4,7 @@ import { Canvas, StaticCanvas } from 'fabric'
 declare module 'fabric' {
   export interface StaticCanvas {
     getObjectByZIndex(idx: number): FabricObject | null
-    insertBefore(obj: FabricObject, desObj: FabricObject | null): StaticCanvas
+    // insertBefore(obj: FabricObject, desObj: FabricObject | null): StaticCanvas
     _add(...objs: FabricObject[]): StaticCanvas
     _remove(...objs: FabricObject[]): StaticCanvas
   }
@@ -18,23 +18,23 @@ StaticCanvas.prototype.getObjectByZIndex = function (idx) {
   return this.getObjects().find((obj) => obj.getZIndex() === idx) || null
 }
 
-StaticCanvas.prototype.insertBefore = function (obj, desObj) {
-  const objects = this._objects
-  if (!desObj) {
-    objects.push(obj)
-  } else {
-    const idx = desObj.getZIndex()
-    objects.splice(idx, 0, obj)
-  }
-  obj._set('canvas', this)
-  obj.setCoords()
-  // this._onObjectAdded(obj)
+// StaticCanvas.prototype.insertBefore = function (obj, desObj) {
+//   const objects = this._objects
+//   if (!desObj) {
+//     objects.push(obj)
+//   } else {
+//     const idx = desObj.getZIndex()
+//     objects.splice(idx, 0, obj)
+//   }
+//   obj._set('canvas', this)
+//   obj.setCoords()
+//   // this._onObjectAdded(obj)
 
-  if (this.renderOnAddRemove) {
-    this.requestRenderAll()
-  }
-  return this
-}
+//   if (this.renderOnAddRemove) {
+//     this.requestRenderAll()
+//   }
+//   return this
+// }
 
 // 添加，无事件触发版本
 StaticCanvas.prototype._add = function (...objs) {

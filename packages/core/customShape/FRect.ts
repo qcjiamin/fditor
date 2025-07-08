@@ -1,6 +1,6 @@
 //todo: 裁剪的蒙版状态
 import { classRegistry } from 'fabric'
-import { FPath, FPathProps } from './FPath'
+import { FPath, type FPathProps } from './FPath'
 
 /**
  * 获取矩形path字符串

@@ -1,7 +1,8 @@
 // 来自 fabric 源码。从一些复合类型中判断具体类型
 
-import { LinearGradient, RadialGradient } from '@fditor/core'
-import { ActiveSelection, FabricObject, FabricText, Gradient, Path, Pattern, TFiller } from 'fabric'
+import type { LinearGradient, RadialGradient } from '@fditor/core'
+import { ActiveSelection, FabricObject, FabricText, Gradient, Path, Pattern } from 'fabric'
+import type { TFiller } from 'fabric'
 
 export const isFiller = (filler: TFiller | string | null): filler is TFiller => {
   return !!filler && (filler as TFiller).toLive !== undefined
