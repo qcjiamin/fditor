@@ -8,7 +8,7 @@
   // import { useEditor } from '@/hooks/useEditor'
   import { provide } from 'vue'
   import { EditorKey } from '../../constants/injectKey'
-  import { Editor, LockPlugin, SelectionPlugin, WorkspacePlugin } from '@fditor/core'
+  import { Editor, LockPlugin, SelectionPlugin, SnapPlugin, WorkspacePlugin } from '@fditor/core'
   import { useEditorStore } from '@/stores/editorStore'
   import HistoryPlugin from '@/pluginForEditor/HistoryPlugin/HistoryPlugin.ts'
   import CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
@@ -35,7 +35,7 @@
     editor.on('confirm:clip', () => {
       editorStore.setCvsState('normal')
     })
-    await editor.useAll(WorkspacePlugin, SelectionPlugin, HistoryPlugin, CropPlugin, LockPlugin)
+    await editor.useAll(WorkspacePlugin, SelectionPlugin, HistoryPlugin, CropPlugin, LockPlugin, SnapPlugin)
 
     // 此时再通知属性条获取属性？ 因为默认选中背景条，但是画布初始化是在组件渲染之后 !! 需优化
     // historyPlugin 添加第一条记录也用到此消息
