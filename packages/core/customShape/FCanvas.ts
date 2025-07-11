@@ -1,5 +1,16 @@
 // todo: 引导线；旋转角度提示；旋转吸附；界面多余部分半透明蒙版
-import { ActiveSelection, Canvas, controlsUtils, FabricObject, Control, util, InteractiveFabricObject } from 'fabric'
+import {
+  ActiveSelection,
+  Canvas,
+  controlsUtils,
+  FabricObject,
+  Control,
+  util,
+  InteractiveFabricObject,
+  Point,
+  TPointerEvent,
+  Transform
+} from 'fabric'
 import { type ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
 import { FTextBox } from './FTextBox'
@@ -24,12 +35,21 @@ function isKeyInObj<T extends object>(obj: T, k: PropertyKey): k is keyof T {
   return k in obj
 }
 
+type AngleHitState = {
+  isRotating?: boolean
+  currentAngle?: number
+  cursorPos?: Point
+}
+interface UniqueFCanvsProps {
+  angleHintState: AngleHitState
+}
+
 /**
  * 自定义画布对象。挂载一些额外的功能，原则上不添加额外状态，状态由外层控制
  */
-export class FCanvas extends Canvas {
+export class FCanvas extends Canvas implements UniqueFCanvsProps {
   static otherControls: Record<string, defControlRenderOptions> = {}
-
+  public angleHintState: AngleHitState
   constructor(el?: ConstructorParameters<typeof Canvas>[0], options?: ConstructorParameters<typeof Canvas>[1]) {
     // 设置默认配置，可以被外部设置的配置覆盖
     const _options = {
@@ -40,6 +60,10 @@ export class FCanvas extends Canvas {
       ...options
     } as ConstructorParameters<typeof Canvas>[1]
     super(el, _options)
+    this.angleHintState = {}
+
+    //todo 定义旋转角度hint提示，是否可以将其配置化？
+    this.boundAngleHit()
   }
   /**
    * 添加，无事件触发版本
@@ -131,6 +155,85 @@ export class FCanvas extends Canvas {
       this.set(key, val)
       this.fire('def:modified', { target: this })
     }
+  }
+
+  private renderRotateLabel(ctx: CanvasRenderingContext2D) {
+    const angleText = `${this.angleHintState.currentAngle!.toFixed(0)}°`
+    const borderRadius = 5
+    const rectWidth = 32
+    const rectHeight = 19
+    const textWidth = 6.01 * angleText.length - 2.317
+
+    const { tl, br } = this.vptCoords
+    /** @type {fabric.Point} */
+    const pos = this.angleHintState.cursorPos!.add(new Point(40, 0))
+
+    ctx.save()
+    const viewMat = this.viewportTransform
+    // 数字处于统一的变换中才能用作计算
+    const rectWidthInCvs = rectWidth / viewMat[0]
+    const rectHeightInCvs = rectHeight / viewMat[3]
+    const offsetX = Math.min(Math.max(pos.x, tl.x), br.x - rectWidthInCvs) * viewMat[0]
+    const offsetY = Math.min(Math.max(pos.y, tl.y), br.y - rectHeightInCvs) * viewMat[3]
+    // ctx.translate(Math.min(Math.max(pos.x, tl.x), br.x - rectWidth), Math.min(Math.max(pos.y, tl.y), br.y - rectHeight))
+    ctx.transform(1, viewMat[1], viewMat[2], 1, viewMat[4] + offsetX, viewMat[5] + offsetY)
+    // ctx.translate(Math.min(Math.max(pos.x, tl.x), br.x - rectWidth), Math.min(Math.max(pos.y, tl.y), br.y - rectHeight))
+    ctx.beginPath()
+    ctx.fillStyle = '#1E1E2E'
+    ctx.roundRect(0, 0, rectWidth, rectHeight, borderRadius)
+    ctx.fill()
+    ctx.font = `400 ${13}px serif`
+    ctx.fillStyle = '#FFFFFF'
+    ctx.fillText(angleText, rectWidth / 2 - textWidth / 2, rectHeight / 2 + 4)
+    ctx.restore()
+  }
+
+  //todo 监听事件绑定在canvas上，不适合插件化？那么配置化可行？
+  boundAngleHit() {
+    //todo 使用 originFun 的方式，实现扩展方法，有更清晰的方式吗？
+    const originCreateControls = FabricObject.createControls
+    FabricObject.createControls = () => {
+      const controls = originCreateControls()
+      const originMouseUpHandler = controls.controls['mtr'].mouseUpHandler
+      controls.controls['mtr'].mouseUpHandler = (
+        eventData: TPointerEvent,
+        transform: Transform,
+        x: number,
+        y: number
+      ) => {
+        if (originMouseUpHandler) originMouseUpHandler(eventData, transform, x, y)
+        this.angleHintState.isRotating = false
+      }
+      return controls
+    }
+    const originTextCreateControls = FTextBox.createControls
+    FTextBox.createControls = () => {
+      const controls = originTextCreateControls()
+      const originMouseUpHandler = controls.controls['mtr'].mouseUpHandler
+      controls.controls['mtr'].mouseUpHandler = (
+        eventData: TPointerEvent,
+        transform: Transform,
+        x: number,
+        y: number
+      ) => {
+        if (originMouseUpHandler) originMouseUpHandler(eventData, transform, x, y)
+        this.angleHintState.isRotating = false
+      }
+      return controls
+    }
+
+    this.on('object:rotating', (e) => {
+      const obj = e.target
+      if (!obj) return
+      this.angleHintState.isRotating = true
+      this.angleHintState.currentAngle = obj.angle
+      this.angleHintState.cursorPos = e.pointer
+    })
+    this.on('after:render', (opt) => {
+      // 处于旋转时，绘制
+      if (!this.angleHintState.isRotating) return
+      this.renderRotateLabel(opt.ctx)
+    })
   }
 
   static resetControlStyleAndAction(control: Control, options: defControlRenderOptions) {
