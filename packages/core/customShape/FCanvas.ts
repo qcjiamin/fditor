@@ -8,8 +8,8 @@ import {
   util,
   InteractiveFabricObject,
   Point,
-  TPointerEvent,
-  Transform
+  type TPointerEvent,
+  type Transform
 } from 'fabric'
 import { type ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
