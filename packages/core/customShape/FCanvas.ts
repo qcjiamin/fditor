@@ -14,6 +14,8 @@ import {
 import { type ControlRenderParams } from '../plugins/LockPlugin/type'
 import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
 import { FTextBox } from './FTextBox'
+import { initAligningGuidelines } from '../lib/aligning_guidelines'
+import { initCenteringGuidelines } from '../lib/centering_guidelines'
 // 排除 undefined 的 Partial
 type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> & string
 type ControlOptions = Partial<Control>
@@ -42,6 +44,7 @@ type AngleHitState = {
 }
 interface UniqueFCanvsProps {
   angleHintState: AngleHitState
+  showGuideLine: boolean
 }
 
 /**
@@ -50,7 +53,11 @@ interface UniqueFCanvsProps {
 export class FCanvas extends Canvas implements UniqueFCanvsProps {
   static otherControls: Record<string, defControlRenderOptions> = {}
   public angleHintState: AngleHitState
-  constructor(el?: ConstructorParameters<typeof Canvas>[0], options?: ConstructorParameters<typeof Canvas>[1]) {
+  public showGuideLine: boolean = false
+  constructor(
+    el?: ConstructorParameters<typeof Canvas>[0],
+    options?: TOptions<ConstructorParameters<typeof Canvas>[1] & UniqueFCanvsProps>
+  ) {
     // 设置默认配置，可以被外部设置的配置覆盖
     const _options = {
       // 禁用选中元素置前
@@ -58,12 +65,20 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
       // 禁用右键菜单
       stopContextMenu: true,
       ...options
-    } as ConstructorParameters<typeof Canvas>[1]
+    }
+    // as ConstructorParameters<typeof Canvas>[1]
     super(el, _options)
+    // Object.assign(this, (this.constructor as typeof StaticCanvas).getDefaults())
+    // this.set(_options)
+
     this.angleHintState = {}
+    this.showGuideLine = Boolean(options?.showGuideLine)
 
     //todo 定义旋转角度hint提示，是否可以将其配置化？
     this.boundAngleHit()
+    if (this.showGuideLine) {
+      this.initGuideLine()
+    }
   }
   /**
    * 添加，无事件触发版本
@@ -235,6 +250,15 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
       this.renderRotateLabel(opt.ctx)
     })
   }
+
+  initGuideLine() {
+    initAligningGuidelines(this)
+    initCenteringGuidelines(this)
+  }
+  // initGuideLine() {
+  //   this.off('canvas:resize', this._initGuideLine)
+  //   this.on('canvas:resize', this._initGuideLine)
+  // }
 
   static resetControlStyleAndAction(control: Control, options: defControlRenderOptions) {
     if (options.x) control.x = options.x

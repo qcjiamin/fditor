@@ -68,7 +68,6 @@ function getMaxRadius(pathStr: string) {
     const maxR = Math.abs(minLen * Math.tan(((angle / 2) * Math.PI) / 180))
     maxRadiusList.push(maxR) // 限制最大值（可配置）
   }
-  console.log(maxRadiusList)
   //todo 简单除以2就行了吗？
   return maxRadiusList.length > 0 ? Math.min(...maxRadiusList) / 2 : 0
 }
@@ -225,7 +224,6 @@ export class FPath extends Path {
     // 绘制前通过圆角重新计算 path
     const pathStr = pathToPathStr(this.path)
     const maxRadius = getMaxRadius(pathStr)
-    console.log(maxRadius)
     const toRadius = maxRadius * (this.cornerRadius / 100)
     const newPathStr = roundCorners(pathStr, toRadius).path
     // 解析为 TSimplePathData, 参考 Path._setPath

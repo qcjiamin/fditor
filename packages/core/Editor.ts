@@ -75,7 +75,8 @@ class Editor extends EventBus<EditorEventMap> {
     await FCanvas.setPredefineControls()
     this.#stage = new FCanvas(element, {
       // 控制点绘制在overlay image 和 clippath 之上
-      controlsAboveOverlay: true
+      controlsAboveOverlay: true,
+      showGuideLine: true
     })
 
     //todo: 多场景的话，切换场景时动态绑定监听事件; 事件的绑定统一到方法中
@@ -252,7 +253,6 @@ class Editor extends EventBus<EditorEventMap> {
 
   /** 画布内工作区自适应 */
   public autoSize(width: number, height: number) {
-    console.log('autosize')
     this.stage.setDimensions({
       width: width,
       height: height
@@ -276,10 +276,11 @@ class Editor extends EventBus<EditorEventMap> {
       height: toDimensions.height
     }
     this.emit('workspace:resize', null)
+    // 触发fabric.canvas 的 resize 事件，因为实际改变了宽高；目前已知会监听的功能：guideline
+    this.stage.fire('canvas:resize')
   }
 
   public onContainerResize = (e: ResizeObserverEntry[]): void => {
-    console.log('resize')
     const { width, height } = e[0].contentRect
 
     this.autoSize(width, height)

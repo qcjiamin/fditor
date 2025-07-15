@@ -22,6 +22,8 @@ declare module 'fabric' {
   export interface CanvasEvents {
     'def:modified': { target: FabricObject | Canvas }
     'confirm:clip': ClipFrame
+    // 画布宽高实际变化的事件
+    'canvas:resize': void
   }
 }
 
