@@ -8,7 +8,7 @@ import { Point } from 'fabric'
 export function initAligningGuidelines(canvas) {
   var ctx = canvas.getSelectionContext(),
     aligningLineOffset = 5,
-    aligningLineMargin = 4,
+    aligningLineMargin = 10,
     aligningLineWidth = 2,
     aligningLineColor = 'rgb(0,255,0)',
     viewportTransform,
@@ -186,16 +186,25 @@ export function initAligningGuidelines(canvas) {
       // snap by the horizontal center line
       if (isInRange(objectLeft, activeObjectLeft)) {
         verticalInTheRange = true
+        const objTop = objectTop - objectHeight / 2
+        const objBottom = objectTop + objectHeight / 2
+        const activeObjTop = activeObjectTop - activeObjectHeight / 2
+        const activeObjBottom = activeObjectTop + activeObjectHeight / 2
+        const minTop = Math.min(objTop, activeObjTop)
+        const maxBottom = Math.max(objBottom, activeObjBottom)
+
         verticalLines.push({
           x: objectLeft,
-          y1:
-            objectTop < activeObjectTop
-              ? objectTop - objectHeight / 2 - aligningLineOffset
-              : objectTop + objectHeight / 2 + aligningLineOffset,
-          y2:
-            activeObjectTop > objectTop
-              ? activeObjectTop + activeObjectHeight / 2 + aligningLineOffset
-              : activeObjectTop - activeObjectHeight / 2 - aligningLineOffset
+          y1: minTop - aligningLineOffset,
+          y2: maxBottom + aligningLineOffset
+          // y1:
+          //   objectTop < activeObjectTop
+          //     ? objectTop - objectHeight / 2 - aligningLineOffset
+          //     : objectTop + objectHeight / 2 + aligningLineOffset,
+          // y2:
+          //   activeObjectTop > objectTop
+          //     ? activeObjectTop + activeObjectHeight / 2 + aligningLineOffset
+          //     : activeObjectTop - activeObjectHeight / 2 - aligningLineOffset
         })
         activeObject.setPositionByOrigin(new Point(objectLeft, activeObjectTop), 'center', 'center')
       }
@@ -203,16 +212,16 @@ export function initAligningGuidelines(canvas) {
       // snap by the left edge
       if (isInRange(objectLeft - objectWidth / 2, activeObjectLeft - activeObjectWidth / 2)) {
         verticalInTheRange = true
+        const objTop = objectTop - objectHeight / 2
+        const objBottom = objectTop + objectHeight / 2
+        const activeObjTop = activeObjectTop - activeObjectHeight / 2
+        const activeObjBottom = activeObjectTop + activeObjectHeight / 2
+        const minTop = Math.min(objTop, activeObjTop)
+        const maxBottom = Math.max(objBottom, activeObjBottom)
         verticalLines.push({
           x: objectLeft - objectWidth / 2,
-          y1:
-            objectTop < activeObjectTop
-              ? objectTop - objectHeight / 2 - aligningLineOffset
-              : objectTop + objectHeight / 2 + aligningLineOffset,
-          y2:
-            activeObjectTop > objectTop
-              ? activeObjectTop + activeObjectHeight / 2 + aligningLineOffset
-              : activeObjectTop - activeObjectHeight / 2 - aligningLineOffset
+          y1: minTop - aligningLineOffset,
+          y2: maxBottom + aligningLineOffset
         })
         activeObject.setPositionByOrigin(
           new Point(objectLeft - objectWidth / 2 + activeObjectWidth / 2, activeObjectTop),
@@ -224,16 +233,16 @@ export function initAligningGuidelines(canvas) {
       // snap by the right edge
       if (isInRange(objectLeft + objectWidth / 2, activeObjectLeft + activeObjectWidth / 2)) {
         verticalInTheRange = true
+        const objTop = objectTop - objectHeight / 2
+        const objBottom = objectTop + objectHeight / 2
+        const activeObjTop = activeObjectTop - activeObjectHeight / 2
+        const activeObjBottom = activeObjectTop + activeObjectHeight / 2
+        const minTop = Math.min(objTop, activeObjTop)
+        const maxBottom = Math.max(objBottom, activeObjBottom)
         verticalLines.push({
           x: objectLeft + objectWidth / 2,
-          y1:
-            objectTop < activeObjectTop
-              ? objectTop - objectHeight / 2 - aligningLineOffset
-              : objectTop + objectHeight / 2 + aligningLineOffset,
-          y2:
-            activeObjectTop > objectTop
-              ? activeObjectTop + activeObjectHeight / 2 + aligningLineOffset
-              : activeObjectTop - activeObjectHeight / 2 - aligningLineOffset
+          y1: minTop - aligningLineOffset,
+          y2: maxBottom + aligningLineOffset
         })
         activeObject.setPositionByOrigin(
           new Point(objectLeft + objectWidth / 2 - activeObjectWidth / 2, activeObjectTop),
@@ -245,16 +254,26 @@ export function initAligningGuidelines(canvas) {
       // snap by the vertical center line
       if (isInRange(objectTop, activeObjectTop)) {
         horizontalInTheRange = true
+
+        const objLeft = objectLeft - objectWidth / 2
+        const objRight = objectLeft + objectWidth / 2
+        const activeObjLeft = activeObjectLeft - activeObjectWidth / 2
+        const activeObjRight = activeObjectLeft + activeObjectWidth / 2
+        const minLeft = Math.min(objLeft, activeObjLeft)
+        const maxRight = Math.max(objRight, activeObjRight)
+        console.log(minLeft, maxRight)
         horizontalLines.push({
           y: objectTop,
-          x1:
-            objectLeft < activeObjectLeft
-              ? objectLeft - objectWidth / 2 - aligningLineOffset
-              : objectLeft + objectWidth / 2 + aligningLineOffset,
-          x2:
-            activeObjectLeft > objectLeft
-              ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset
-              : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset
+          x1: minLeft - aligningLineOffset,
+          x2: maxRight + aligningLineOffset
+          // x1:
+          //   objectLeft < activeObjectLeft
+          //     ? objectLeft - objectWidth / 2 - aligningLineOffset
+          //     : objectLeft + objectWidth / 2 + aligningLineOffset,
+          // x2:
+          //   activeObjectLeft > objectLeft
+          //     ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset
+          //     : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset
         })
         activeObject.setPositionByOrigin(new Point(activeObjectLeft, objectTop), 'center', 'center')
       }
@@ -262,16 +281,26 @@ export function initAligningGuidelines(canvas) {
       // snap by the top edge
       if (isInRange(objectTop - objectHeight / 2, activeObjectTop - activeObjectHeight / 2)) {
         horizontalInTheRange = true
+
+        const objLeft = objectLeft - objectWidth / 2
+        const objRight = objectLeft + objectWidth / 2
+        const activeObjLeft = activeObjectLeft - activeObjectWidth / 2
+        const activeObjRight = activeObjectLeft + activeObjectWidth / 2
+        const minLeft = Math.min(objLeft, activeObjLeft)
+        const maxRight = Math.max(objRight, activeObjRight)
+
         horizontalLines.push({
           y: objectTop - objectHeight / 2,
-          x1:
-            objectLeft < activeObjectLeft
-              ? objectLeft - objectWidth / 2 - aligningLineOffset
-              : objectLeft + objectWidth / 2 + aligningLineOffset,
-          x2:
-            activeObjectLeft > objectLeft
-              ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset
-              : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset
+          x1: minLeft - aligningLineOffset,
+          x2: maxRight + aligningLineOffset
+          // x1:
+          //   objectLeft < activeObjectLeft
+          //     ? objectLeft - objectWidth / 2 - aligningLineOffset
+          //     : objectLeft + objectWidth / 2 + aligningLineOffset,
+          // x2:
+          //   activeObjectLeft > objectLeft
+          //     ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset
+          //     : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset
         })
         activeObject.setPositionByOrigin(
           new Point(activeObjectLeft, objectTop - objectHeight / 2 + activeObjectHeight / 2),
@@ -283,16 +312,25 @@ export function initAligningGuidelines(canvas) {
       // snap by the bottom edge
       if (isInRange(objectTop + objectHeight / 2, activeObjectTop + activeObjectHeight / 2)) {
         horizontalInTheRange = true
+        const objLeft = objectLeft - objectWidth / 2
+        const objRight = objectLeft + objectWidth / 2
+        const activeObjLeft = activeObjectLeft - activeObjectWidth / 2
+        const activeObjRight = activeObjectLeft + activeObjectWidth / 2
+        const minLeft = Math.min(objLeft, activeObjLeft)
+        const maxRight = Math.max(objRight, activeObjRight)
+
         horizontalLines.push({
           y: objectTop + objectHeight / 2,
-          x1:
-            objectLeft < activeObjectLeft
-              ? objectLeft - objectWidth / 2 - aligningLineOffset
-              : objectLeft + objectWidth / 2 + aligningLineOffset,
-          x2:
-            activeObjectLeft > objectLeft
-              ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset
-              : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset
+          x1: minLeft - aligningLineOffset,
+          x2: maxRight + aligningLineOffset
+          // x1:
+          //   objectLeft < activeObjectLeft
+          //     ? objectLeft - objectWidth / 2 - aligningLineOffset
+          //     : objectLeft + objectWidth / 2 + aligningLineOffset,
+          // x2:
+          //   activeObjectLeft > objectLeft
+          //     ? activeObjectLeft + activeObjectWidth / 2 + aligningLineOffset
+          //     : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset
         })
         activeObject.setPositionByOrigin(
           new Point(activeObjectLeft, objectTop + objectHeight / 2 - activeObjectHeight / 2),
