@@ -1,4 +1,5 @@
 import { Point } from 'fabric'
+//todo 引导线可配置化 吸附范围、引导线颜色、功能开关
 
 /**
  * Should objects be aligned by a bounding box?
