@@ -7,7 +7,8 @@ import { Point } from 'fabric'
  */
 export function initAligningGuidelines(canvas) {
   var ctx = canvas.getSelectionContext(),
-    aligningLineOffset = 5,
+    // 引导线超出多少
+    aligningLineOffset = 0,
     aligningLineMargin = 10,
     aligningLineWidth = 2,
     aligningLineColor = 'rgb(0,255,0)',
@@ -64,19 +65,30 @@ export function initAligningGuidelines(canvas) {
   })
 
   canvas.on('object:moving', function (e) {
-    var activeObject = e.target,
-      canvasObjects = canvas.getObjects(),
-      activeObjectCenter = activeObject.getCenterPoint(),
-      activeObjectLeft = activeObjectCenter.x,
-      activeObjectTop = activeObjectCenter.y,
-      activeObjectBoundingRect = activeObject.getBoundingRect(),
+    var activeObject = e.target
+    let canvasObjects,
+      activeObjectCenter,
+      activeObjectLeft,
+      activeObjectTop,
+      activeObjectBoundingRect,
+      activeObjectHeight,
+      activeObjectWidth
+    function getInfo() {
+      canvasObjects = canvas.getObjects()
+      activeObjectCenter = activeObject.getCenterPoint()
+      activeObjectLeft = activeObjectCenter.x
+      activeObjectTop = activeObjectCenter.y
+      activeObjectBoundingRect = activeObject.getBoundingRect()
       // activeObjectHeight = activeObjectBoundingRect.height / viewportTransform[3],
       // activeObjectWidth = activeObjectBoundingRect.width / viewportTransform[0],
-      activeObjectHeight = activeObjectBoundingRect.height,
-      activeObjectWidth = activeObjectBoundingRect.width,
-      horizontalInTheRange = false,
-      verticalInTheRange = false,
-      transform = canvas._currentTransform
+      activeObjectHeight = activeObjectBoundingRect.height
+      activeObjectWidth = activeObjectBoundingRect.width
+    }
+    getInfo()
+
+    let horizontalInTheRange = false
+    let verticalInTheRange = false
+    let transform = canvas._currentTransform
 
     if (!transform) return
 
@@ -115,6 +127,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
 
       // snaps if the left side of the active object touches the right side of the object
@@ -137,6 +150,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
 
       // snaps if the bottom of the object touches the top of the active object
@@ -159,6 +173,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
 
       // snaps if the top of the object touches the bottom of the active object
@@ -181,6 +196,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
 
       // snap by the horizontal center line
@@ -207,6 +223,7 @@ export function initAligningGuidelines(canvas) {
           //     : activeObjectTop - activeObjectHeight / 2 - aligningLineOffset
         })
         activeObject.setPositionByOrigin(new Point(objectLeft, activeObjectTop), 'center', 'center')
+        getInfo()
       }
 
       // snap by the left edge
@@ -228,6 +245,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
 
       // snap by the right edge
@@ -249,6 +267,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
 
       // snap by the vertical center line
@@ -276,6 +295,7 @@ export function initAligningGuidelines(canvas) {
           //     : activeObjectLeft - activeObjectWidth / 2 - aligningLineOffset
         })
         activeObject.setPositionByOrigin(new Point(activeObjectLeft, objectTop), 'center', 'center')
+        getInfo()
       }
 
       // snap by the top edge
@@ -307,6 +327,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
 
       // snap by the bottom edge
@@ -337,6 +358,7 @@ export function initAligningGuidelines(canvas) {
           'center',
           'center'
         )
+        getInfo()
       }
     }
 
