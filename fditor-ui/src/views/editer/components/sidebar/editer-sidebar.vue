@@ -11,6 +11,7 @@
   import type { TabName } from '@/views/editer/components/sidebar/types'
   import AnimationTab from '@/views/editer/components/sidebar/tabs/animation-tab.vue'
   import FontsTab from '@/views/editer/components/sidebar/tabs/fonts-tab.vue'
+  import ResourceUpload from '@/views/editer/components/sidebar/resource-upload.vue'
   const resourceRef = ref<ResourceName>('image')
   const openRef = ref(false)
   // todo: 用泛型指明指定的组件？
@@ -18,7 +19,8 @@
     image: ResourceImage,
     shape: ResourceShape,
     video: ResourceVideo,
-    text: ResourceText
+    text: ResourceText,
+    upload: ResourceUpload
   }
   const tabComponents: Partial<Record<TabName, Component>> = {
     animation: AnimationTab,

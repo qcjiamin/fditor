@@ -17,6 +17,7 @@
   import { onClickOutside } from '@vueuse/core'
   import hotkeys from 'hotkeys-js'
   import { eventBus } from '@/events/eventBus'
+  import loginBox from '@/views/editer/login-box.vue'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
   const editorStore = useEditorStore()
@@ -88,6 +89,7 @@
 
 <template>
   <div class="editer">
+    <login-box v-if="editorStore.showLoginBox" class="loginBox"></login-box>
     <editer-header></editer-header>
     <div class="main">
       <editer-sidebar></editer-sidebar>
@@ -121,6 +123,12 @@
           flex-grow: 1;
         }
       }
+    }
+    .loginBox {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 99;
     }
   }
 </style>

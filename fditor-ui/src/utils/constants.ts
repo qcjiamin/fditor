@@ -1,4 +1,4 @@
-export const resourceNames = ['image', 'video', 'text', 'shape'] as const
+export const resourceNames = ['image', 'video', 'text', 'shape', 'upload'] as const
 export type ResourceName = (typeof resourceNames)[number]
 
 export const sidebarPropertyTypes = ['', 'animate', 'effect', 'fonts'] as const

@@ -47,6 +47,10 @@ export const useEditorStore = defineStore('editor', () => {
   const setInloadingFontfamily = function (val: boolean) {
     inloadingFontfamily.value = val
   }
+  const showLoginBox = ref<boolean>(false)
+  const setShowLoginBox = function (val: boolean) {
+    showLoginBox.value = val
+  }
   return {
     cvsState,
     setCvsState,
@@ -58,6 +62,8 @@ export const useEditorStore = defineStore('editor', () => {
     sidebarShowTab,
     setSidebarShowTab,
     inloadingFontfamily,
-    setInloadingFontfamily
+    setInloadingFontfamily,
+    showLoginBox,
+    setShowLoginBox
   }
 })

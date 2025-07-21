@@ -5,5 +5,6 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import { createPinia } from 'pinia'
 
+console.log(VITE_API_URL)
 const pinia = createPinia()
 createApp(App).use(pinia).use(ElementPlus).mount('#app')

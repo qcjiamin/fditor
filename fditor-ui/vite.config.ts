@@ -11,46 +11,54 @@ import svgLoader from 'vite-svg-loader'
 // import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    svgLoader({
-      defaultImport: 'component',
-      //todo 为true时，渐变色类型的图标会全部渲染第一个。类型defs定义在了全局一样
-      svgo: false
-    }),
-    eslint({
-      exclude: ['**/node_modules/**', 'dist/**'], // 排除所有 node_modules 文件夹之外的文件都进行 eslint 检查
-      // 是否自动修复
-      // fix: true,
-      // 是否启用缓存
-      cache: false
-    })
-    // AutoImport({
-    //   resolvers: [ElementPlusResolver()]
-    // }),
-    // Components({
-    //   resolvers: [ElementPlusResolver()]
-    // })
-  ],
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, './src')
-    },
-    // alias: [
-    //   { find: '@', replacement: resolve(__dirname, './src') },
-    // ],
+export default defineConfig(() => {
+  // const env = loadEnv(mode, process.cwd())
+  // 环境常量替换
+  const define = {
+    VITE_API_URL: JSON.stringify('http://localhost:3090')
+  }
+  return {
+    define,
+    plugins: [
+      vue(),
+      svgLoader({
+        defaultImport: 'component',
+        //todo 为true时，渐变色类型的图标会全部渲染第一个。类型defs定义在了全局一样
+        svgo: false
+      }),
+      eslint({
+        exclude: ['**/node_modules/**', 'dist/**'], // 排除所有 node_modules 文件夹之外的文件都进行 eslint 检查
+        // 是否自动修复
+        // fix: true,
+        // 是否启用缓存
+        cache: false
+      })
+      // AutoImport({
+      //   resolvers: [ElementPlusResolver()]
+      // }),
+      // Components({
+      //   resolvers: [ElementPlusResolver()]
+      // })
+    ],
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, './src')
+      },
+      // alias: [
+      //   { find: '@', replacement: resolve(__dirname, './src') },
+      // ],
 
-    extensions: ['.js', '.ts', '.json', '.vue']
-  },
-  css: {
-    /* css 预处理器 */
-    preprocessorOptions: {
-      scss: {
-        additionalData: `
+      extensions: ['.js', '.ts', '.json', '.vue']
+    },
+    css: {
+      /* css 预处理器 */
+      preprocessorOptions: {
+        scss: {
+          additionalData: `
           @use '@/styles/variables.scss' as *; 
           @use '@/styles/svg.scss' as *;
         `
+        }
       }
     }
   }
