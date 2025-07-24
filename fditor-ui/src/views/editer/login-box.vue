@@ -4,7 +4,7 @@
   import closeIcon from '@/assets/icons/normal/popup-close.svg'
   const editorStore = useEditorStore()
 
-  const account = ref('')
+  const username = ref('')
   const password = ref('')
 
   interface loginResponse {
@@ -20,7 +20,7 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        account: account.value,
+        username: username.value,
         password: password.value
       })
     })
@@ -44,7 +44,7 @@
         <div class="closeBtn" @click="closeLoginBox"><closeIcon /></div>
       </div>
       <div class="content">
-        <el-input v-model="account" style="width: 240px" placeholder="Please input account" />
+        <el-input v-model="username" style="width: 240px" placeholder="Please input account" />
         <el-input
           v-model="password"
           style="width: 240px"

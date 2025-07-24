@@ -33,6 +33,7 @@
     // 示例：使用 fetch API 上传文件
     const response = await fetch(`${VITE_API_URL}/upload/file`, {
       method: 'POST',
+      credentials: 'include',
       body: formData
       // 注意：不要设置 Content-Type 头部，让浏览器自动设置为 multipart/form-data
     })
