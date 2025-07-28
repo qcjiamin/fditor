@@ -1,0 +1,123 @@
+import { isFormData } from '@/utils/types'
+
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+interface FetchOptions<T> {
+  method?: HttpMethod
+  headers?: Record<string, string>
+  body?: T
+  queryParams?: ConstructorParameters<typeof URLSearchParams>[0]
+  credentials?: RequestCredentials
+}
+
+/**
+ * api请求方法，请求体和响应体默认为json
+ * @param url
+ * @param options
+ * @returns
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function request<TResponse, TBody = any>(
+  url: string,
+  options: FetchOptions<TBody> = {}
+): Promise<TResponse> {
+  const { method = 'GET', headers = {}, body, queryParams, credentials } = options
+
+  // 处理查询参数
+  const fullUrl = queryParams ? `${url}?${new URLSearchParams(queryParams)}` : url
+
+  // 添加默认 headers
+  let fetchHeaders = {}
+  if (isFormData(body)) {
+    // formdata 自动设置content-type
+    fetchHeaders = {
+      ...headers
+    }
+  } else {
+    fetchHeaders = {
+      'Content-Type': 'application/json',
+      ...headers
+    }
+  }
+
+  // 处理请求体
+  // 如果发送的请求类型是 form-data, 那么body直传
+  let fetchBody = undefined
+  if (isFormData(body)) {
+    fetchBody = body
+  } else {
+    fetchBody = body ? JSON.stringify(body) : undefined
+  }
+
+  const response = await fetch(fullUrl, {
+    method,
+    headers: fetchHeaders,
+    body: fetchBody,
+    credentials
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  return response.json() as Promise<TResponse>
+}
+
+interface GetProjectRes {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  config: Record<string, any>
+}
+export async function getProjectByID(id: number) {
+  return await request<GetProjectRes>(`${VITE_API_URL}/project/get/${id}`, {
+    method: 'GET',
+    credentials: 'include'
+  })
+}
+
+interface AddProjectOptions {
+  project_name: string
+  project_data: string
+  preview_image_url: string
+}
+
+export async function requestAddProject(options: AddProjectOptions) {
+  return await request<void, AddProjectOptions & { status: 1 | 2 }>(`${VITE_API_URL}/project/add`, {
+    method: 'POST',
+    credentials: 'include',
+    body: {
+      ...options,
+      status: 1
+    }
+  })
+}
+
+type SaveProjectOptions = Pick<AddProjectOptions, 'project_data' | 'preview_image_url'>
+export async function requestSaveProject(options: SaveProjectOptions) {
+  return await request<void, SaveProjectOptions>(`${VITE_API_URL}/project/save`, {
+    method: 'POST',
+    credentials: 'include',
+    body: options
+  })
+}
+
+interface uploadFileRes {
+  url: string
+}
+/**
+ * 上传文件
+ * @param file
+ * @param filename
+ * @returns
+ * @
+ */
+export async function uploadFile(file: Blob, filename: string) {
+  // 创建 FormData
+  const formData = new FormData()
+  formData.append('file', file, filename)
+  const res = await request<uploadFileRes, FormData>(`${VITE_API_URL}/upload/file`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData
+  })
+  return res
+}

@@ -209,20 +209,32 @@ class Editor extends EventBus<EditorEventMap> {
   }
   /**------ 裁剪方法 end ----- */
 
-  public toJSON() {}
+  public toJSON() {
+    return JSON.stringify(this.stage.toJSON() as object)
+  }
 
   // interface LayerConfig {
   //   children: Konva.Node[];
   // }
   /** 无事件版本加载配置渲染 */
-  public async _fromJSON(json: string) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async _fromJSON(json: string | Record<string, any>) {
     const cvs = await this.withSilence<Canvas>(() => this.stage.loadFromJSON(json))
     // const cvs = await this.stage.loadFromJSON(json)
     cvs.renderAll()
     return cvs
   }
   public fromJSON(json: string) {
-    console.log(json)
+    this._fromJSON(json)
+  }
+
+  public async getPreviewThum() {
+    const blob = await this.stage.toBlob({
+      quality: 1,
+      multiplier: 0.4
+    })
+    if (!blob) throw new Error('getPreviewThum null')
+    return blob
   }
 
   public render(): void {
@@ -285,23 +297,6 @@ class Editor extends EventBus<EditorEventMap> {
 
     this.autoSize(width, height)
   }
-
-  // public update(nodes: KonvaNode[]): void {
-  //   this.emit('node:update:before', { nodes })
-  //   // nodes.forEach((node) => {
-  //   //   node.setAttrs({ ...node.attrs })
-  //   // })
-  //   // !需要清理缓存后，才能重绘
-  //   nodes.forEach((node) => {
-  //     node._needClearTransformCache = true
-  //     // node.clearCache()
-  //     node._clearCache()
-  //     node.fire('absoluteTransformChange')
-  //     // node._clearSelfAndDescendantCache('absoluteTransform')
-  //   })
-  //   this.render()
-  //   this.emit('node:update:after', { nodes })
-  // }
 }
 
 export default Editor

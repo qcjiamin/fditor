@@ -51,3 +51,12 @@ function toTypedFontInfo(raw: typeof fontInfo): FontInfo {
 
 export const typedFontInfo = toTypedFontInfo(fontInfo)
 // export const typedFontInfo: FontInfo = fontInfo
+
+/**
+ * 检查值是否为 FormData 实例
+ * @param value - 待检查的值
+ * @returns 是否为 FormData
+ */
+export function isFormData(value: unknown): value is FormData {
+  return value instanceof FormData
+}
