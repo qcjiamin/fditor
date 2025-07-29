@@ -74,6 +74,9 @@ export async function getProjectByID(id: number) {
   })
 }
 
+interface AddProjectRes {
+  insertID: number
+}
 interface AddProjectOptions {
   project_name: string
   project_data: string
@@ -81,7 +84,7 @@ interface AddProjectOptions {
 }
 
 export async function requestAddProject(options: AddProjectOptions) {
-  return await request<void, AddProjectOptions & { status: 1 | 2 }>(`${VITE_API_URL}/project/add`, {
+  const res = await request<AddProjectRes, AddProjectOptions & { status: 1 | 2 }>(`${VITE_API_URL}/project/add`, {
     method: 'POST',
     credentials: 'include',
     body: {
@@ -89,9 +92,10 @@ export async function requestAddProject(options: AddProjectOptions) {
       status: 1
     }
   })
+  return res.insertID
 }
 
-type SaveProjectOptions = Pick<AddProjectOptions, 'project_data' | 'preview_image_url'>
+type SaveProjectOptions = Pick<AddProjectOptions, 'project_data' | 'preview_image_url'> & Record<'id', number>
 export async function requestSaveProject(options: SaveProjectOptions) {
   return await request<void, SaveProjectOptions>(`${VITE_API_URL}/project/save`, {
     method: 'POST',

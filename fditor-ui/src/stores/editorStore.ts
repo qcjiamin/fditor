@@ -17,6 +17,11 @@ const type2Type: Record<string, ElementTypes> = {
 
 // 主要用于管理画布的状态
 export const useEditorStore = defineStore('editor', () => {
+  const projectID = ref<number>()
+  function setProjectID(val: number) {
+    projectID.value = val
+  }
+
   const cvsState = ref<CanvasStates>('normal')
   function setCvsState(val: CanvasStates) {
     cvsState.value = val
@@ -51,7 +56,15 @@ export const useEditorStore = defineStore('editor', () => {
   const setShowLoginBox = function (val: boolean) {
     showLoginBox.value = val
   }
+  /** 保存配置状态 */
+  const inSaving = ref<boolean>(false)
+  const setInSaving = function (val: boolean) {
+    inSaving.value = val
+  }
+
   return {
+    projectID,
+    setProjectID,
     cvsState,
     setCvsState,
     selected,
@@ -64,6 +77,8 @@ export const useEditorStore = defineStore('editor', () => {
     inloadingFontfamily,
     setInloadingFontfamily,
     showLoginBox,
-    setShowLoginBox
+    setShowLoginBox,
+    inSaving,
+    setInSaving
   }
 })

@@ -18,12 +18,14 @@
   import hotkeys from 'hotkeys-js'
   import { eventBus } from '@/events/eventBus'
   import loginBox from '@/views/editer/login-box.vue'
-  import { getProjectByID, requestAddProject, uploadFile } from '@/utils/request'
+  import { getProjectByID, requestAddProject, requestSaveProject } from '@/utils/request'
+  import { uploadEditorThumbnail } from '@/utils/workflow'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
   const editorStore = useEditorStore()
 
   const editor = new Editor()
+  let handler: ReturnType<typeof setTimeout>
   // window.editor = editor
   onMounted(async () => {
     await editor.init(document.querySelector('#canvas-container canvas')!)
@@ -37,26 +39,50 @@
     editor.on('confirm:clip', () => {
       editorStore.setCvsState('normal')
     })
+    eventBus.addListener('config:save', (timeout) => {
+      if (handler) {
+        clearTimeout(handler)
+      }
+      handler = setTimeout(async () => {
+        // 拿图片
+        editorStore.setInSaving(true)
+        const url = await uploadEditorThumbnail(editor)
+        if (!editorStore.projectID) throw new Error('save config but do not have projectID')
+        // 保存配置
+        await requestSaveProject({
+          id: editorStore.projectID,
+          project_data: editor.toJSON(),
+          preview_image_url: url
+        })
+        editorStore.setInSaving(false)
+        // 保存完成
+      }, timeout)
+    })
+    // 配置自动保存
+    editor.on('history:update', () => {
+      eventBus.emit('config:save', 2000)
+    })
     await editor.useAll(WorkspacePlugin, SelectionPlugin, HistoryPlugin, CropPlugin, LockPlugin, SnapPlugin)
     // 平台初始化完成，加载工程配置
     // 获取工程配置
     const url = new window.URL(window.location.href)
     const projectID = url.searchParams.get('id')
     if (!projectID) {
-      const thumBlob = await editor.getPreviewThum()
-      const uploadRes = await uploadFile(thumBlob, `${Date.now()}.png`)
+      const url = await uploadEditorThumbnail(editor)
 
       // 保存配置
-      await requestAddProject({
+      const _projectID = await requestAddProject({
         project_name: 'Untitled',
         project_data: editor.toJSON(),
-        preview_image_url: uploadRes.url
+        preview_image_url: url
       })
+      editorStore.setProjectID(_projectID)
     } else {
       // 读取配置加载
       // 请求工程配置
       const res = await getProjectByID(Number(projectID))
       editor._fromJSON(res.config)
+      editorStore.setProjectID(Number(projectID))
     }
 
     // 此时再通知属性条获取属性？ 因为默认选中背景条，但是画布初始化是在组件渲染之后 !! 需优化
