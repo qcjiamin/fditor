@@ -12,7 +12,7 @@
       credentials: 'include'
     })
     const resjson = await res.json()
-    if (resjson.success) {
+    if (resjson.pass) {
       inputRef.value?.click()
       // alert('can upload file')
     } else {

@@ -20,6 +20,7 @@
   import loginBox from '@/views/editer/login-box.vue'
   import { getProjectByID, requestAddProject, requestSaveProject } from '@/utils/request'
   import { uploadEditorThumbnail } from '@/utils/workflow'
+  import { DefaultProjectName } from '@/utils/constants'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
   const editorStore = useEditorStore()
@@ -43,9 +44,10 @@
       if (handler) {
         clearTimeout(handler)
       }
+      editorStore.setSaveState('unsaved')
       handler = setTimeout(async () => {
         // 拿图片
-        editorStore.setInSaving(true)
+        editorStore.setSaveState('saving')
         const url = await uploadEditorThumbnail(editor)
         if (!editorStore.projectID) throw new Error('save config but do not have projectID')
         // 保存配置
@@ -54,7 +56,7 @@
           project_data: editor.toJSON(),
           preview_image_url: url
         })
-        editorStore.setInSaving(false)
+        editorStore.setSaveState('saved')
         // 保存完成
       }, timeout)
     })
@@ -72,17 +74,19 @@
 
       // 保存配置
       const _projectID = await requestAddProject({
-        project_name: 'Untitled',
+        project_name: DefaultProjectName,
         project_data: editor.toJSON(),
         preview_image_url: url
       })
       editorStore.setProjectID(_projectID)
+      editorStore.setProjectName(DefaultProjectName)
     } else {
       // 读取配置加载
       // 请求工程配置
       const res = await getProjectByID(Number(projectID))
-      editor._fromJSON(res.config)
+      editor._fromJSON(res.project_data)
       editorStore.setProjectID(Number(projectID))
+      editorStore.setProjectName(res.project_name)
     }
 
     // 此时再通知属性条获取属性？ 因为默认选中背景条，但是画布初始化是在组件渲染之后 !! 需优化

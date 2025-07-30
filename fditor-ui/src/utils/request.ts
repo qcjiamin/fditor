@@ -65,7 +65,8 @@ export async function request<TResponse, TBody = any>(
 
 interface GetProjectRes {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  config: Record<string, any>
+  project_data: Record<string, any>
+  project_name: string
 }
 export async function getProjectByID(id: number) {
   return await request<GetProjectRes>(`${VITE_API_URL}/project/get/${id}`, {

@@ -1,3 +1,4 @@
+import type { SaveState } from '@/utils/constants'
 import type { CanvasStates, ElementTypes } from '@/utils/types'
 import type { TabName } from '@/views/editer/components/sidebar/types'
 import type { FabricObject } from 'fabric'
@@ -20,6 +21,10 @@ export const useEditorStore = defineStore('editor', () => {
   const projectID = ref<number>()
   function setProjectID(val: number) {
     projectID.value = val
+  }
+  const projectName = ref<string>()
+  function setProjectName(val: string) {
+    projectName.value = val
   }
 
   const cvsState = ref<CanvasStates>('normal')
@@ -57,14 +62,16 @@ export const useEditorStore = defineStore('editor', () => {
     showLoginBox.value = val
   }
   /** 保存配置状态 */
-  const inSaving = ref<boolean>(false)
-  const setInSaving = function (val: boolean) {
-    inSaving.value = val
+  const saveState = ref<SaveState>('saved')
+  const setSaveState = function (val: SaveState) {
+    saveState.value = val
   }
 
   return {
     projectID,
     setProjectID,
+    projectName,
+    setProjectName,
     cvsState,
     setCvsState,
     selected,
@@ -78,7 +85,7 @@ export const useEditorStore = defineStore('editor', () => {
     setInloadingFontfamily,
     showLoginBox,
     setShowLoginBox,
-    inSaving,
-    setInSaving
+    saveState,
+    setSaveState
   }
 })

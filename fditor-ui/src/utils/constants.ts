@@ -28,3 +28,12 @@ export const FontWeightReverseMap: Record<FontWeightValue, FontWeightKey> = Obje
 ) as Record<FontWeightValue, FontWeightKey>
 
 export const AbortReason = 'abort'
+
+export const DefaultProjectName = 'Untitled'
+
+export const SaveState2ShowString = {
+  saved: 'saved',
+  unsaved: 'unsaved',
+  saving: 'saving'
+} as const
+export type SaveState = keyof typeof SaveState2ShowString
