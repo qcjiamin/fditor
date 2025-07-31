@@ -48,7 +48,7 @@
       handler = setTimeout(async () => {
         // 拿图片
         editorStore.setSaveState('saving')
-        const url = await uploadEditorThumbnail(editor)
+        const url = await uploadEditorThumbnail(editor, editorStore.projectID!)
         if (!editorStore.projectID) throw new Error('save config but do not have projectID')
         // 保存配置
         await requestSaveProject({
@@ -70,16 +70,21 @@
     const url = new window.URL(window.location.href)
     const projectID = url.searchParams.get('id')
     if (!projectID) {
-      const url = await uploadEditorThumbnail(editor)
-
       // 保存配置
       const _projectID = await requestAddProject({
         project_name: DefaultProjectName,
-        project_data: editor.toJSON(),
-        preview_image_url: url
+        project_data: editor.toJSON()
+        // preview_image_url: url
       })
       editorStore.setProjectID(_projectID)
       editorStore.setProjectName(DefaultProjectName)
+      // 先创建出工程，再提交封面
+      const url = await uploadEditorThumbnail(editor, editorStore.projectID!)
+      await requestSaveProject({
+        id: editorStore.projectID!,
+        project_data: editor.toJSON(),
+        preview_image_url: url
+      })
     } else {
       // 读取配置加载
       // 请求工程配置

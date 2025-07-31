@@ -1,6 +1,6 @@
 // 可复用的业务流程方法
 
-import { uploadFile } from '@/utils/request'
+import { uploadCover } from '@/utils/request'
 import type { Editor } from '@fditor/core'
 
 /**
@@ -8,8 +8,8 @@ import type { Editor } from '@fditor/core'
  * @param editor
  * @returns
  */
-export async function uploadEditorThumbnail(editor: Editor) {
+export async function uploadEditorThumbnail(editor: Editor, projectID: number) {
   const thumBlob = await editor.getPreviewThum()
-  const uploadRes = await uploadFile(thumBlob, `${Date.now()}.png`)
+  const uploadRes = await uploadCover(thumBlob, `${Date.now()}.png`, projectID)
   return uploadRes.url
 }

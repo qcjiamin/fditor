@@ -81,7 +81,7 @@ interface AddProjectRes {
 interface AddProjectOptions {
   project_name: string
   project_data: string
-  preview_image_url: string
+  // preview_image_url: string
 }
 
 export async function requestAddProject(options: AddProjectOptions) {
@@ -96,7 +96,9 @@ export async function requestAddProject(options: AddProjectOptions) {
   return res.insertID
 }
 
-type SaveProjectOptions = Pick<AddProjectOptions, 'project_data' | 'preview_image_url'> & Record<'id', number>
+type SaveProjectOptions = Pick<AddProjectOptions, 'project_data'> &
+  Record<'id', number> &
+  Record<'preview_image_url', string>
 export async function requestSaveProject(options: SaveProjectOptions) {
   return await request<void, SaveProjectOptions>(`${VITE_API_URL}/project/save`, {
     method: 'POST',
@@ -120,6 +122,20 @@ export async function uploadFile(file: Blob, filename: string) {
   const formData = new FormData()
   formData.append('file', file, filename)
   const res = await request<uploadFileRes, FormData>(`${VITE_API_URL}/upload/file`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData
+  })
+  return res
+}
+
+export async function uploadCover(file: Blob, filename: string, projectID: number) {
+  // 创建 FormData
+  const formData = new FormData()
+  //! 顺序非常重要，字段放在文字之前，不然multer的filename回调时拿不到 projectID
+  formData.append('projectID', projectID.toString())
+  formData.append('file', file, filename)
+  const res = await request<uploadFileRes, FormData>(`${VITE_API_URL}/upload/cover`, {
     method: 'POST',
     credentials: 'include',
     body: formData
