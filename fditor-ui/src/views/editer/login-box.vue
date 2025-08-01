@@ -7,11 +7,6 @@
   const username = ref('')
   const password = ref('')
 
-  interface loginResponse {
-    success: boolean
-    message: string
-  }
-
   async function login() {
     const res = await fetch(`${VITE_API_URL}/user/login`, {
       method: 'POST',
@@ -24,8 +19,7 @@
         password: password.value
       })
     })
-    const resjson = (await res.json()) as loginResponse
-    if (resjson.success) {
+    if (res.ok) {
       editorStore.setShowLoginBox(false)
       console.log('登录成功')
     } else {
