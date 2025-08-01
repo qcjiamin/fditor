@@ -18,9 +18,8 @@
   import hotkeys from 'hotkeys-js'
   import { eventBus } from '@/events/eventBus'
   import loginBox from '@/views/editer/login-box.vue'
-  import { getProjectByID, requestAddProject, requestSaveProject } from '@/utils/request'
-  import { uploadEditorThumbnail } from '@/utils/workflow'
-  import { DefaultProjectName } from '@/utils/constants'
+  import { getProjectByID, requestSaveProject } from '@/utils/request'
+  import { createProject, uploadEditorThumbnail } from '@/utils/workflow'
 
   const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
   const editorStore = useEditorStore()
@@ -48,6 +47,8 @@
       handler = setTimeout(async () => {
         // 拿图片
         editorStore.setSaveState('saving')
+        // 没有id， 未登录状态，不保存
+        if (!editorStore.projectID) return
         const url = await uploadEditorThumbnail(editor, editorStore.projectID!)
         if (!editorStore.projectID) throw new Error('save config but do not have projectID')
         // 保存配置
@@ -70,21 +71,7 @@
     const url = new window.URL(window.location.href)
     const projectID = url.searchParams.get('id')
     if (!projectID) {
-      // 保存配置
-      const _projectID = await requestAddProject({
-        project_name: DefaultProjectName,
-        project_data: editor.toJSON()
-        // preview_image_url: url
-      })
-      editorStore.setProjectID(_projectID)
-      editorStore.setProjectName(DefaultProjectName)
-      // 先创建出工程，再提交封面
-      const url = await uploadEditorThumbnail(editor, editorStore.projectID!)
-      await requestSaveProject({
-        id: editorStore.projectID!,
-        project_data: editor.toJSON(),
-        preview_image_url: url
-      })
+      await createProject(editor, editorStore)
     } else {
       // 读取配置加载
       // 请求工程配置

@@ -1,8 +1,12 @@
 <script lang="ts" setup>
   import { useEditorStore } from '@/stores/editorStore'
-  import { ref } from 'vue'
+  import { inject, ref } from 'vue'
   import closeIcon from '@/assets/icons/normal/popup-close.svg'
+  import { EditorKey } from '@/constants/injectKey'
+  import { createProject } from '@/utils/workflow'
+  import type { Editor } from '@fditor/core'
   const editorStore = useEditorStore()
+  const editor = inject(EditorKey) as Editor
 
   const username = ref('')
   const password = ref('')
@@ -22,6 +26,7 @@
     if (res.ok) {
       editorStore.setShowLoginBox(false)
       console.log('登录成功')
+      await createProject(editor, editorStore)
     } else {
       alert('账号或密码错误')
     }
