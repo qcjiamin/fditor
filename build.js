@@ -120,6 +120,44 @@ const pushToDockerHub = (imageTag, dockerHubUsername, imageName) => {
   }
 }
 
+// 检查Git工作区是否干净
+const checkGitClean = () => {
+  try {
+    // 检查是否有未提交的更改
+    execSync('git diff --quiet', { stdio: 'pipe' })
+    execSync('git diff --cached --quiet', { stdio: 'pipe' })
+  } catch (error) {
+    log(`git工作区有待提交文件`, 'error')
+    process.exit(1)
+  }
+}
+
+// Git提交版本变更并打标签
+const gitCommitAndTag = (newVersion) => {
+  try {
+    // 添加版本文件变更
+    // runCommand('git add fditor-ui/package.json')
+    runCommand('git add .')
+
+    // 提交变更
+    const commitMessage = `chore(release): bump version to ${newVersion}`
+    runCommand(`git commit -m "${commitMessage}"`)
+
+    // 创建标签
+    const tagName = `v${newVersion}` // 标签格式如 v1.0.1
+    runCommand(`git tag -a ${tagName} -m "Release version ${newVersion}"`)
+
+    // 推送提交和标签到远程仓库
+    runCommand('git push origin HEAD')
+    runCommand(`git push origin ${tagName}`)
+
+    log(`已提交版本变更并创建标签: ${tagName}`, 'success')
+  } catch (error) {
+    log('Git提交或标签操作失败', 'error')
+    process.exit(1)
+  }
+}
+
 // 主构建流程
 const main = () => {
   try {
@@ -131,6 +169,8 @@ const main = () => {
 
     // 1. 检查必要文件
     checkRequiredFiles()
+    // 1.1 检查是否有未提交的修改文件
+    checkGitClean()
 
     // 2. 清理fditor-ui的旧构建产物
     const distPath = path.join(process.cwd(), 'fditor-ui', 'dist')
@@ -174,6 +214,9 @@ const main = () => {
 
     // 9. 清理无标签镜像
     runCommand('docker image prune -f')
+
+    // 10. 镜像提交完，提交git，并打tag
+    gitCommitAndTag(newVersion)
 
     log(`构建完成！镜像: ${imageTag}`, 'success')
     if (dockerHubUsername) {
