@@ -161,7 +161,7 @@ const gitCommitAndTag = (newVersion) => {
 // 主构建流程
 const main = () => {
   try {
-    log('开始monorepo项目构建流程...')
+    log('开始项目构建流程...')
     // 获取Docker Hub配置（从环境变量读取敏感信息）
     const dockerHubUsername = process.env.DOCKER_HUB_USERNAME
     const dockerHubPassword = process.env.DOCKER_HUB_PASSWORD
