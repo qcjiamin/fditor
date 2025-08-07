@@ -1,12 +1,13 @@
 {
   "name": "fditor-ui",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.8",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker-build": "set -e && yarn run build && docker build -t fditor-ui:latest ."
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",

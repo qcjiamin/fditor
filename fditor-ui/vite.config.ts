@@ -15,7 +15,7 @@ export default defineConfig(() => {
   // const env = loadEnv(mode, process.cwd())
   // 环境常量替换
   const define = {
-    VITE_API_URL: JSON.stringify('http://localhost:3090')
+    VITE_API_URL: JSON.stringify('http://localhost:4090')
   }
   return {
     define,
