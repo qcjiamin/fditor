@@ -216,7 +216,7 @@ const main = () => {
     // 9. 清理无标签镜像
     runCommand('docker image prune -f')
 
-    // 10. 镜像提交完，提交git，并且打tag
+    // 10. 镜像提交完，提交git，并打tag
     gitCommitAndTag(newVersion)
 
     log(`构建完成！镜像: ${imageTag}`, 'success')
