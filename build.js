@@ -208,6 +208,7 @@ const main = () => {
         dockerLogin(dockerHubUsername, dockerHubPassword)
       }
       pushToDockerHub(imageTag, dockerHubUsername, imageName)
+      log(`已推送至Docker Hub: ${dockerHubUsername}/${imageTag}`, 'success')
     } else {
       log('未提供Docker Hub认证信息，跳过镜像推送', 'warn')
     }
@@ -219,9 +220,6 @@ const main = () => {
     gitCommitAndTag(newVersion)
 
     log(`构建完成！镜像: ${imageTag}`, 'success')
-    if (dockerHubUsername) {
-      log(`已推送至Docker Hub: ${dockerHubUsername}/${imageTag}`, 'success')
-    }
     process.exit(0)
   } catch (error) {
     log(`构建失败: ${error.message}`, 'error')
