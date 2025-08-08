@@ -15,8 +15,17 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           # 服务器上执行的部署命令
           script: |
-            # 拉取最新镜像（若使用Docker Hub）
-            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+            # 从 Git 标签（v1.2.3）中去除 v，得到 1.2.3
+            DOCKER_TAG=$(echo "${{ github.ref_name }}" | sed 's/^v//')
+            echo "Docker 标签: $DOCKER_TAG"
+            # 存入环境变量，供后续步骤使用
+            echo "DOCKER_TAG=$DOCKER_TAG" >> $GITHUB_ENV
+
+            # 登录 Docker Hub（关键步骤）
+            echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+            # 拉取最新镜像（若使用Docker Hub）github.ref_name,标签名
+            docker pull ${{ secrets.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
 
             # 停止并删除旧容器
             if [ $(docker ps -q -f name=${{ secrets.DOCKER_IMAGE_NAME }}) ]; then
@@ -29,7 +38,7 @@ jobs:
               --name ${{ secrets.DOCKER_IMAGE_NAME }} \
               -p 80:80 \
               --restart always \
-              ${{ secrets.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+              ${{ secrets.DOCKER_IMAGE_NAME }}:${{ env.DOCKER_TAG }}
 
             # 清理无用镜像
             docker image prune -f

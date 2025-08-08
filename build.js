@@ -102,6 +102,7 @@ const pushToDockerHub = (imageTag, dockerHubUsername, imageName) => {
 
   try {
     // 为镜像添加Docker Hub仓库标签
+    //! tag 是为了让本地镜像名与远程镜像名相同，这样才能正常推送；如果本身名字相同，直接push name:tag 会隐含tag命令
     runCommand(`docker tag ${imageTag} ${fullImageTag}`)
 
     // 推送镜像
