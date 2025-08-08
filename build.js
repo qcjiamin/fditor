@@ -247,7 +247,7 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
     `docker pull ${imageTag}`,
     `docker stop ${imageName} || true`,
     `docker rm ${imageName} || true`,
-    `docker run -d --name ${imageName} -p 80:80 ${imageTag} --restart always`,
+    `docker run -d --name ${imageName} -p 80:80 --restart always ${imageTag}`,
     `docker image prune -f`,
     `docker logout`
   ]
