@@ -159,6 +159,106 @@ const gitCommitAndTag = (newVersion) => {
   }
 }
 
+// 检查远程部署所需的环境变量
+const checkRemoteEnv = () => {
+  const requiredEnv = ['REMOTE_HOST', 'REMOTE_PORT', 'REMOTE_USER']
+
+  // 检查基础必填项
+  for (const env of requiredEnv) {
+    if (!process.env[env]) {
+      log(`缺少远程部署必要环境变量: ${env}`, 'error')
+      process.exit(1)
+    }
+  }
+
+  // 检查认证方式（二选一）
+  if (!process.env.REMOTE_SSH_KEY && !process.env.REMOTE_PASSWORD) {
+    log('远程部署需要提供SSH密钥路径(REMOTE_SSH_KEY)或密码(REMOTE_PASSWORD)', 'error')
+    process.exit(1)
+  }
+}
+// 修复：执行远程SSH命令，确保正确连接
+const runRemoteCommand = (host, port, user, authMethod, command) => {
+  try {
+    // 构建SSH连接基础命令，添加StrictHostKeyChecking=no避免首次连接确认
+    let sshBase = `ssh -p ${port} -o StrictHostKeyChecking=no ${user}@${host}`
+
+    // 处理认证方式
+    if (authMethod.type === 'key') {
+      // 修复：对密钥路径进行转义，处理空格等特殊字符
+      const escapedKeyPath = authMethod.keyPath.replace(/(\s)/g, '\\$1')
+      sshBase = `ssh -i ${escapedKeyPath} -p ${port} -o StrictHostKeyChecking=no ${user}@${host}`
+    } else if (authMethod.type === 'password') {
+      // 使用sshpass工具处理密码认证
+      sshBase = `sshpass -p '${authMethod.password}' ${sshBase}`
+    }
+
+    // 对命令中的特殊字符进行转义
+    const escapedCommand = command.replace(/"/g, '\\"').replace(/\$/g, '\\$')
+    const fullCommand = `${sshBase} "${escapedCommand}"`
+
+    log(`执行远程命令: ${fullCommand}`)
+    execSync(fullCommand, { stdio: 'inherit' })
+    return true
+  } catch (error) {
+    log(`远程命令执行失败: ${command}`, 'error')
+    log(`错误信息: ${error.message}`, 'error')
+    process.exit(1)
+  }
+}
+// 远程部署主函数
+const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
+  const host = process.env.REMOTE_HOST
+  const port = process.env.REMOTE_PORT || 22
+  const user = process.env.REMOTE_USER
+  const imageTag = `${dockerHubUsername}/${imageName}:${newVersion}`
+
+  // 确定认证方式
+  const authMethod = process.env.REMOTE_SSH_KEY
+    ? { type: 'key', keyPath: process.env.REMOTE_SSH_KEY }
+    : { type: 'password', password: process.env.REMOTE_PASSWORD }
+
+  log(`开始远程部署到 ${user}@${host}:${port}`)
+
+  // 先测试连接
+  try {
+    log('测试远程服务器连接...')
+    runRemoteCommand(host, port, user, authMethod, 'echo "连接测试成功"')
+  } catch (error) {
+    log('远程服务器连接失败，请检查配置', 'error')
+    process.exit(1)
+  }
+
+  // 执行远程部署命令
+  /* docker run 优化方向
+  1. 添加健康检查：确保容器启动后服务可用（如 HTTP 服务）：
+  docker run -d --name ${imageName} -p 80:80 \
+  --health-cmd "curl -f http://localhost:80/ || exit 1" \
+  --health-interval 10s \
+  --health-timeout 5s \
+  --health-retries 3 \
+  ${imageTag}
+  2. 原子性部署：可先启动新容器，确认正常运行后再停止旧容器（避免服务中断）
+  3. 日志输出：添加 --log-driver 和 --log-opt 配置日志（如限制大小），避免磁盘占满。 [网页服务好像不需要]
+  4. 资源限制：通过 -m 512m --cpus 0.5 限制容器资源，防止影响主机。
+  */
+  const deployCommands = [
+    `echo "${process.env.DOCKER_HUB_PASSWORD}" | docker login -u ${dockerHubUsername} --password-stdin`,
+    `docker pull ${imageTag}`,
+    `docker stop ${imageName} || true`,
+    `docker rm ${imageName} || true`,
+    `docker run -d --name ${imageName} -p 80:80 ${imageTag} --restart always`,
+    `docker image prune -f`,
+    `docker logout`
+  ]
+
+  for (const cmd of deployCommands) {
+    runRemoteCommand(host, port, user, authMethod, cmd)
+  }
+
+  log('远程部署完成', 'success')
+}
+
 // 主构建流程
 const main = () => {
   try {
@@ -219,6 +319,14 @@ const main = () => {
 
     // 10. 镜像提交完，提交git，并打tag
     gitCommitAndTag(newVersion)
+
+    // 11. 远程部署
+    if (process.env.REMOTE_HOST) {
+      checkRemoteEnv()
+      remoteDeploy(newVersion, dockerHubUsername, imageName)
+    } else {
+      log('未提供远程服务器信息，跳过自动部署', 'warn')
+    }
 
     log(`构建完成！镜像: ${imageTag}`, 'success')
     process.exit(0)
