@@ -244,12 +244,24 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
   */
   const deployCommands = [
     `echo "${process.env.DOCKER_HUB_PASSWORD}" | docker login -u ${dockerHubUsername} --password-stdin`,
+    // 获取上次运行的镜像的id, 写入临时文件
+    `docker inspect --format='{{.Image}}' ${imageName} 2>/dev/null > /tmp/old_image_id.txt || true`,
     `docker pull ${imageTag}`,
     `docker stop ${imageName} || true`,
     `docker rm ${imageName} || true`,
     `docker run -d --name ${imageName} -p 80:80 --restart always ${imageTag}`,
+    // 读取临时文件中的旧镜像ID，与新镜像ID比较并删除旧镜像
+    `OLD_IMAGE_ID=$(cat /tmp/old_image_id.txt); \
+    NEW_IMAGE_ID=$(docker inspect --format='{{.Image}}' ${imageName}); \
+    if [ -n "$OLD_IMAGE_ID" ] && [ "$OLD_IMAGE_ID" != "$NEW_IMAGE_ID" ]; then \
+      echo "Removing old image: $OLD_IMAGE_ID"; \
+      docker rmi $OLD_IMAGE_ID || true; \
+    fi;`,
+
     // 移除悬空（无标签）镜像 -a 删除未被容器使用的镜像
-    `docker image prune -a -f`,
+    `docker image prune -f`,
+    // 删除临时文件
+    `rm -f /tmp/old_image_id.txt`,
     `docker logout`
   ]
 
