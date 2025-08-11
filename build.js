@@ -252,9 +252,9 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
     `docker run -d --name ${imageName} -p 80:80 --restart always ${imageTag}`,
     // 如果存在旧镜像且与新镜像不同，则删除旧镜像
     `OLD_IMAGE_ID=$(cat /tmp/old_image_id.txt);
-    if [ -n "${OLD_IMAGE_ID}" ] && [ "${OLD_IMAGE_ID}" != "$(docker inspect --format='{{.Image}}' ${imageName})" ]; then
-      echo "Removing old image: ${OLD_IMAGE_ID}"
-      docker rmi ${OLD_IMAGE_ID} || true
+    if [ -n "\$OLD_IMAGE_ID" ] && [ "\$OLD_IMAGE_ID" != "$(docker inspect --format='{{.Image}}' ${imageName})" ]; then
+      echo "Removing old image: \$OLD_IMAGE_ID"
+      docker rmi \$OLD_IMAGE_ID || true
     fi;` // 移除悬空（无标签）镜像
     `docker image prune -f`,
     // 删除临时文件
