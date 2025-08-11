@@ -245,7 +245,8 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
   const deployCommands = [
     `echo "${process.env.DOCKER_HUB_PASSWORD}" | docker login -u ${dockerHubUsername} --password-stdin`,
     // 记录当前运行的镜像ID（旧版本）,如果报错，重定向错误输出，始终true返回成功
-    `OLD_IMAGE_ID=$(docker inspect --format='{{.Image}}' ${imageName} 2>/dev/null || true)``docker pull ${imageTag}`,
+    `OLD_IMAGE_ID=$(docker inspect --format='{{.Image}}' ${imageName} 2>/dev/null || true)`,
+    `docker pull ${imageTag}`,
     `docker stop ${imageName} || true`,
     `docker rm ${imageName} || true`,
     `docker run -d --name ${imageName} -p 80:80 --restart always ${imageTag}`,
@@ -253,7 +254,7 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
     `if [ -n "${OLD_IMAGE_ID}" ] && [ "${OLD_IMAGE_ID}" != "$(docker inspect --format='{{.Image}}' ${imageName})" ]; then
       echo "Removing old image: ${OLD_IMAGE_ID}"
       docker rmi ${OLD_IMAGE_ID} || true
-    fi`// 移除悬空（无标签）镜像
+    fi` // 移除悬空（无标签）镜像
     `docker image prune -f`,
     `docker logout`
   ]
