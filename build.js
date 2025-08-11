@@ -254,7 +254,7 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
     `if [ -n "${OLD_IMAGE_ID}" ] && [ "${OLD_IMAGE_ID}" != "$(docker inspect --format='{{.Image}}' ${imageName})" ]; then
       echo "Removing old image: ${OLD_IMAGE_ID}"
       docker rmi ${OLD_IMAGE_ID} || true
-    fi` // 移除悬空（无标签）镜像
+    fi;` // 移除悬空（无标签）镜像
     `docker image prune -f`,
     `docker logout`
   ]
