@@ -194,7 +194,12 @@ const runRemoteCommand = (host, port, user, authMethod, command) => {
     }
 
     // 对命令中的特殊字符进行转义
-    const escapedCommand = command.replace(/"/g, '\\"').replace(/\$/g, '\\$')
+    // const escapedCommand = command.replace(/"/g, '\\"').replace(/\$/g, '\\$')
+    const escapedCommand = command
+      // 先转义双引号
+      .replace(/"/g, '\\"')
+      // 再转义 shell 变量，但跳过 awk 单引号里的 $数字
+      .replace(/\$(?!\d)/g, '\\$')
     const fullCommand = `${sshBase} "${escapedCommand}"`
 
     log(`执行远程命令: ${fullCommand}`)
@@ -248,7 +253,7 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
     `docker stop ${imageName} || true`,
     `docker rm ${imageName} || true`,
     `docker run -d --name ${imageName} -p 80:80 --restart always ${imageTag}`,
-    `docker images --format "{{.ID}} {{.Repository}}:{{.Tag}}" | grep "${imageName}" | grep -v ":${newVersion}" | awk '{print \$1}' | xargs -r docker rmi -f`,
+    `docker images --format "{{.ID}} {{.Repository}}:{{.Tag}}" | grep "${imageName}" | grep -v ":${newVersion}" | awk '{print $1}' | xargs -r docker rmi -f`,
     // 移除悬空（无标签）镜像 -a 删除未被容器使用的镜像
     `docker image prune -f`,
     `docker logout`
