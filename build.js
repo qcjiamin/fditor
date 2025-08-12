@@ -248,7 +248,7 @@ const remoteDeploy = (newVersion, dockerHubUsername, imageName) => {
     `docker stop ${imageName} || true`,
     `docker rm ${imageName} || true`,
     `docker run -d --name ${imageName} -p 80:80 --restart always ${imageTag}`,
-    `docker images --format "{{.ID}} {{.Repository}}:{{.Tag}}" | grep "${imageName}" | grep -v ":${newVersion}" | awk '{print $1}' | xargs -r docker rmi -f`,
+    `docker images --format "{{.ID}} {{.Repository}}:{{.Tag}}" | grep "${imageName}" | grep -v ":${newVersion}" | awk '{print \$1}' | xargs -r docker rmi -f`,
     // 移除悬空（无标签）镜像 -a 删除未被容器使用的镜像
     `docker image prune -f`,
     `docker logout`
