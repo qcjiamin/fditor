@@ -22,7 +22,7 @@ COPY . .
 
 # 4. 单独构建fditor-ui（指定工作目录）
 WORKDIR /app/fditor-ui
-RUN yarn run build& && echo "Built at: $BUILD_TIMESTAMP" >> ./dist/build-info.txt  # 执行fditor-ui的build脚本
+RUN yarn run build && echo "Built at: $BUILD_TIMESTAMP" >> ./dist/build-info.txt  # 执行fditor-ui的build脚本
 
 # 生产阶段：部署到Nginx
 FROM nginx:stable-alpine AS production-stage
