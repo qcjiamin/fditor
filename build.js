@@ -290,7 +290,7 @@ const main = () => {
     // 3. 自增fditor-ui版本号
     const newVersion = incrementVersion()
 
-    // 4. 根目录安装所有依赖（包括workspaces）
+    // 4. 根目录安装所有依赖（包括workspaces）强制使用现有 lockfile 而不更新它
     log('安装根目录依赖（包括workspaces）')
     runCommand('yarn install --frozen-lockfile')
 
