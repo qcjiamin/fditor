@@ -1,3 +1,8 @@
+# 在Dockerfile顶部添加
+ARG BUILD_TIMESTAMP
+# 可选：将时间戳写入镜像内作为标识（非必须）
+ENV BUILD_TIMESTAMP=$BUILD_TIMESTAMP
+
 # 构建阶段：处理monorepo依赖并构建fditor-ui
 FROM node:20-alpine AS build-stage
 RUN node -v && npm -v
