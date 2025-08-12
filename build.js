@@ -302,7 +302,8 @@ const main = () => {
     // 7. 构建Docker镜像
     const imageTag = `${imageName}:${newVersion}`
     log(`构建Docker镜像: ${imageTag}`)
-    runCommand(`docker build -t ${imageTag} .`) // 根目录执行docker build
+    const buildTimestamp = new Date().getTime() // 生成唯一时间戳
+    runCommand(`docker build -t ${imageTag} --build-arg BUILD_TIMESTAMP=${buildTimestamp} .`) // 根目录执行docker build
 
     // 8. 推送镜像到Docker Hub（如果提供了认证信息）
     if (dockerHubUsername && dockerHubPassword) {

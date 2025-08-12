@@ -1,10 +1,10 @@
 # 在Dockerfile顶部添加
 ARG BUILD_TIMESTAMP
-# 可选：将时间戳写入镜像内作为标识（非必须）
-ENV BUILD_TIMESTAMP=$BUILD_TIMESTAMP
 
 # 构建阶段：处理monorepo依赖并构建fditor-ui
 FROM node:20-alpine AS build-stage
+# 关键：在当前阶段重新声明ARG，接收全局传递的BUILD_TIMESTAMP
+ARG BUILD_TIMESTAMP
 RUN node -v && npm -v
 WORKDIR /app
 
@@ -22,7 +22,7 @@ COPY . .
 
 # 4. 单独构建fditor-ui（指定工作目录）
 WORKDIR /app/fditor-ui
-RUN yarn run build  # 执行fditor-ui的build脚本
+RUN yarn run build& & echo "Built at: $BUILD_TIMESTAMP" >> ./dist/build-info.txt  # 执行fditor-ui的build脚本
 
 # 生产阶段：部署到Nginx
 FROM nginx:stable-alpine AS production-stage
