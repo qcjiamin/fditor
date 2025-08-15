@@ -7,7 +7,7 @@
 
   async function checkUpload() {
     // 检查是否登录
-    const res = await fetch(`${VITE_API_URL}/user/vertify`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/user/vertify`, {
       method: 'GET',
       credentials: 'include'
     })

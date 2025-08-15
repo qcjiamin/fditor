@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 // 文档推荐 vite-plugin-eslint， 但是该插件与新版ts不兼容，这里使用2
 import eslint from 'vite-plugin-eslint2'
@@ -11,11 +11,11 @@ import svgLoader from 'vite-svg-loader'
 // import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vite.dev/config/
-export default defineConfig(() => {
-  // const env = loadEnv(mode, process.cwd())
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd())
   // 环境常量替换
   const define = {
-    VITE_API_URL: JSON.stringify('http://localhost:4090')
+    APP_VERSION: JSON.stringify(env.APP_VERSION)
   }
   return {
     define,

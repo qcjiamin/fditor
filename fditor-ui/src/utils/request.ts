@@ -69,7 +69,7 @@ interface GetProjectRes {
   project_name: string
 }
 export async function getProjectByID(id: number) {
-  return await request<GetProjectRes>(`${VITE_API_URL}/project/get/${id}`, {
+  return await request<GetProjectRes>(`${import.meta.env.VITE_API_URL}/project/get/${id}`, {
     method: 'GET',
     credentials: 'include'
   })
@@ -85,14 +85,18 @@ interface AddProjectOptions {
 }
 
 export async function requestAddProject(options: AddProjectOptions) {
-  const res = await request<AddProjectRes, AddProjectOptions & { status: 1 | 2 }>(`${VITE_API_URL}/project/add`, {
-    method: 'POST',
-    credentials: 'include',
-    body: {
-      ...options,
-      status: 1
+  console.log(import.meta.env.VITE_API_URL)
+  const res = await request<AddProjectRes, AddProjectOptions & { status: 1 | 2 }>(
+    `${import.meta.env.VITE_API_URL}/project/add`,
+    {
+      method: 'POST',
+      credentials: 'include',
+      body: {
+        ...options,
+        status: 1
+      }
     }
-  })
+  )
   return res.insertID
 }
 
@@ -100,7 +104,7 @@ type SaveProjectOptions = Pick<AddProjectOptions, 'project_data'> &
   Record<'id', number> &
   Record<'preview_image_url', string>
 export async function requestSaveProject(options: SaveProjectOptions) {
-  return await request<void, SaveProjectOptions>(`${VITE_API_URL}/project/save`, {
+  return await request<void, SaveProjectOptions>(`${import.meta.env.VITE_API_URL}/project/save`, {
     method: 'POST',
     credentials: 'include',
     body: options
@@ -121,7 +125,7 @@ export async function uploadFile(file: Blob, filename: string) {
   // 创建 FormData
   const formData = new FormData()
   formData.append('file', file, filename)
-  const res = await request<uploadFileRes, FormData>(`${VITE_API_URL}/upload/file`, {
+  const res = await request<uploadFileRes, FormData>(`${import.meta.env.VITE_API_URL}/upload/file`, {
     method: 'POST',
     credentials: 'include',
     body: formData
@@ -135,7 +139,7 @@ export async function uploadCover(file: Blob, filename: string, projectID: numbe
   //! 顺序非常重要，字段放在文字之前，不然multer的filename回调时拿不到 projectID
   formData.append('projectID', projectID.toString())
   formData.append('file', file, filename)
-  const res = await request<uploadFileRes, FormData>(`${VITE_API_URL}/upload/cover`, {
+  const res = await request<uploadFileRes, FormData>(`${import.meta.env.VITE_API_URL}/upload/cover`, {
     method: 'POST',
     credentials: 'include',
     body: formData
