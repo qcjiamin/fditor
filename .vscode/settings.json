@@ -81,7 +81,8 @@
       // "editor.defaultFormatter": "HookyQR.beautify"
       "editor.defaultFormatter": "esbenp.prettier-vscode"
    },
-    // #每次保存的时候将代码按eslint格式进行修复
+    // #每次保存的时候将代码按eslint格式进行修复, codeActionsOnSave 表示的是保存时触发的代码操作
+    // 与 editor.formatOnSave 配合使用，eslint修复语法问题，prettier负责代码格式化
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
     },

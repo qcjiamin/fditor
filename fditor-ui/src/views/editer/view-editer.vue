@@ -14,14 +14,14 @@
   import CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
   import type { CanvasStates } from '@/utils/types'
   import ClipBar from '@/views/editer/components/propertyBar/clip-bar.vue'
-  import { onClickOutside } from '@vueuse/core'
+  import { onClickOutside, useResizeObserver } from '@vueuse/core'
   import hotkeys from 'hotkeys-js'
   import { eventBus } from '@/events/eventBus'
   import loginBox from '@/views/editer/login-box.vue'
   import { getProjectByID, requestSaveProject } from '@/utils/request'
   import { createProject, uploadEditorThumbnail } from '@/utils/workflow'
 
-  const mainRef = ref<InstanceType<typeof workspaceMain> | null>(null)
+  const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
 
   const editor = new Editor()
@@ -29,6 +29,11 @@
   // window.editor = editor
   onMounted(async () => {
     await editor.init(document.querySelector('#canvas-container canvas')!)
+    useResizeObserver(mainRef.value, (entries) => {
+      const entry = entries[0]
+      const { width, height } = entry.contentRect
+      editor.autoSize(width, height)
+    })
     // 选择事件
     editor.on('selected:change', (selected) => {
       console.log('selected:change', selected)

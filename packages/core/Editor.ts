@@ -33,10 +33,8 @@ class Editor extends EventBus<EditorEventMap> {
   #stage: FCanvas | null = null
   #pluginMap: Map<string, IPlugin>
   #layout: Layout
-  public resizeObserver: ResizeObserver | null = null
   public workspace!: IRect
   public scaleRate: number
-  public container: HTMLDivElement | null = null
   public isSilence: boolean = false
   constructor(layout: Layout = Layout.Portrait) {
     super()
@@ -57,7 +55,7 @@ class Editor extends EventBus<EditorEventMap> {
   }
   set layout(value: Layout) {
     this.#layout = value
-    this.autoSize(this.container!.clientWidth, this.container!.clientHeight)
+    // this.autoSize(this.container!.clientWidth, this.container!.clientHeight)
     this.emit('layout:change', null)
   }
 
@@ -120,12 +118,6 @@ class Editor extends EventBus<EditorEventMap> {
 
     // window.fab = this.stage
     this.#stage.backgroundColor = 'rgba(255,255,255,1)'
-    // todo: 这里强制监听了画布容器元素的父元素。不是很严谨，会疑惑为什么是父元素
-    // 因为容器元素为相对定位，用父元素来自适应窗口调整，不让容器把窗口撑起来导致observer 无效
-    //! 必须优化
-    this.container = element.parentElement!.parentElement!.parentElement as HTMLDivElement
-    this.resizeObserver = new ResizeObserver(this.onContainerResize)
-    this.resizeObserver.observe(this.container)
   }
 
   public async use(plugin: PluginConstructor) {
@@ -292,11 +284,7 @@ class Editor extends EventBus<EditorEventMap> {
     this.stage.fire('canvas:resize')
   }
 
-  public onContainerResize = (e: ResizeObserverEntry[]): void => {
-    const { width, height } = e[0].contentRect
 
-    this.autoSize(width, height)
-  }
 }
 
 export default Editor
