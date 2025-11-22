@@ -29,10 +29,16 @@
   // window.editor = editor
   onMounted(async () => {
     await editor.init(document.querySelector('#canvas-container canvas')!)
+    const containerSize = { width: 0, height: 0 }
     useResizeObserver(mainRef.value, (entries) => {
       const entry = entries[0]
       const { width, height } = entry.contentRect
+      containerSize.width = width
+      containerSize.height = height
       editor.autoSize(width, height)
+    })
+    editor.on('layout:change', () => {
+      editor.autoSize(containerSize.width, containerSize.height)
     })
     // 选择事件
     editor.on('selected:change', (selected) => {
