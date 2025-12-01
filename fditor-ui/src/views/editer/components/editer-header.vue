@@ -93,7 +93,7 @@
                   <div class="item-title">{{ item.label }}</div>
                   <div class="item-desc">{{ item.desc }}</div>
                 </div>
-                <div class="item-check" v-if="currentLayout === item.value">
+                <div v-if="currentLayout === item.value" class="item-check">
                   <el-icon><Check /></el-icon>
                 </div>
               </div>
