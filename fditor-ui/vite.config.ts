@@ -10,6 +10,24 @@ import svgLoader from 'vite-svg-loader'
 // import Components from 'unplugin-vue-components/vite'
 // import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
+// 自定义插件：当修改核心库文件时强制完全刷新
+function forceReloadOnCoreChange() {
+  return {
+    name: 'force-reload-on-core-change',
+    handleHotUpdate({ file, server }: { file: string; server: any }) {
+      // 当修改 packages/core 下的文件时，强制完全刷新页面
+      if (file.includes('packages\\core') || file.includes('packages/core')) {
+        console.log('Core library changed, forcing full reload...')
+        server.ws.send({
+          type: 'full-reload',
+          path: '*'
+        })
+        return []
+      }
+    }
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
@@ -32,7 +50,8 @@ export default defineConfig(({ mode }) => {
         // fix: true,
         // 是否启用缓存
         cache: false
-      })
+      }),
+      forceReloadOnCoreChange()
       // AutoImport({
       //   resolvers: [ElementPlusResolver()]
       // }),

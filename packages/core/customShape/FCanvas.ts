@@ -310,7 +310,6 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
    */
   static async resetCreateControls(options: ResetControlParams) {
     if (Object.keys(options).length === 0) return
-
     // 加载完图片
     const params: ResetControlRenderParams = {}
     for (const key in options) {
@@ -369,7 +368,12 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
 
   static async addControl(name: string, options: defControlOptions) {
     const { controls } = FabricObject.createControls()
-    if (isKeyInObj(controls, name) || isKeyInObj(this.otherControls, name)) throw new Error('already exists' + name)
+    // 静态属性 otherControls 在热更新时不会被重置，即使创建了新的实例
+    // 所以需要检查是否已存在，避免重复添加导致错误
+    if (isKeyInObj(controls, name) || isKeyInObj(this.otherControls, name)) {
+      console.warn(`Control "${name}" already exists, skipping...`)
+      return
+    }
     let params: defControlRenderOptions = {}
     let imgEl: HTMLImageElement | undefined = undefined
     // 加载图片
