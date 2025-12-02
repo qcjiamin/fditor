@@ -26,7 +26,7 @@
 
   const editor = new Editor()
   let handler: ReturnType<typeof setTimeout>
-  // window.editor = editor
+  window.editor = editor
   onMounted(async () => {
     await editor.init(document.querySelector('#canvas-container canvas')!)
     const containerSize = { width: 0, height: 0 }

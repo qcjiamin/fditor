@@ -13,7 +13,8 @@ const type2Type: Record<string, ElementTypes> = {
   fhexagon: 'Shape',
   activeselection: 'activeselection',
   ftextbox: 'text',
-  fimage: 'image'
+  fimage: 'image',
+  group: 'group'
 }
 
 // 主要用于管理画布的状态

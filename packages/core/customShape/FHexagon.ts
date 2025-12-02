@@ -26,8 +26,24 @@ const DefHeight = 256
 
 export class FHexagon extends FPath {
   public static type = 'fhexagon'
+
+  /**
+   * 从 JSON 对象创建 FHexagon 实例
+   * Fabric.js 在 loadFromJSON 时会调用此方法
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static async fromObject(object: any) {
+    return new FHexagon(object)
+  }
+
   constructor(options: Partial<FPathProps> = {}) {
-    const pathStr = createHexagonPath(DefWidth, DefHeight)
+    // 从 JSON 加载时使用已保存的 path，创建新对象时生成 path
+    let pathStr: string
+    if (options.path) {
+      pathStr = Array.isArray(options.path) ? options.path.map((cmd) => cmd.join(' ')).join(' ') : options.path
+    } else {
+      pathStr = createHexagonPath(DefWidth, DefHeight)
+    }
     super(pathStr, options)
     this.radiusAble = true
 

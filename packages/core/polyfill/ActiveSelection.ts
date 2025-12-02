@@ -5,7 +5,7 @@ import { isFCanvas } from '../utils/tsHelper'
 
 declare module 'fabric' {
   export interface ActiveSelection {
-    toGorup(): Group
+    toGroup(): Group
     setAlign(align: HorizontalAlign | VerticalAlign): void
     /** 解除多选 */
     _unGroup(): void
@@ -28,7 +28,7 @@ function getMaxZindexInCollection(collection: (FabricObject | Group)[]) {
   return maxZIndexObject.getZIndex()
 }
 
-ActiveSelection.prototype.toGorup = function () {
+ActiveSelection.prototype.toGroup = function () {
   if (!this.canvas) throw new Error('toGroup but no canvas')
 
   const objs = this._objects
@@ -51,9 +51,6 @@ ActiveSelection.prototype.toGorup = function () {
   tempArr.sort((item1, item2) => {
     return item1.getZIndex() - item2.getZIndex()
   })
-  tempArr.forEach((item) => {
-    console.log(item.canvas)
-  })
 
   const maxZindex = getMaxZindexInCollection(tempArr)
   const beforeObjIdx = maxZindex + 1
@@ -68,7 +65,11 @@ ActiveSelection.prototype.toGorup = function () {
     this.canvas._insertBefore(newGroup, beforeObj)
   }
   this.canvas._remove(...tempArr)
-  this.canvas._activeObject = newGroup
+  // this.canvas._activeObject = newGroup
+  // 触发组对象的选中事件
+  this.canvas.setActiveObject(newGroup)
+  this.canvas.fire('def:modified', { target: this })
+  // 触发修改事件
   return newGroup
 }
 

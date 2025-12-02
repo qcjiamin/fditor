@@ -7,14 +7,16 @@ export enum ElementType {
   bg = 'bg',
   shape = 'shape',
   image = 'fimage',
-  text = 'text'
+  text = 'text',
+  group = 'group',
+  activeselection = 'activeselection'
 }
 
 export const CanvasStateArr = ['normal', 'clip'] as const
 /** 画布状态=>属性条位置显示的类型 */
 export type CanvasStates = (typeof CanvasStateArr)[number]
 
-export const ElementTypeArr = ['bg', 'Shape', 'image', 'text', 'activeselection'] as const
+export const ElementTypeArr = ['bg', 'Shape', 'image', 'text', 'activeselection', 'group'] as const
 /** 属性条属性类型 */
 export type ElementTypes = (typeof ElementTypeArr)[number]
 

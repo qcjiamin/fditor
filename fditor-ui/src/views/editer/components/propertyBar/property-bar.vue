@@ -9,6 +9,8 @@
   import { useEditorStore } from '@/stores/editorStore'
   import textBar from '@/views/editer/components/propertyBar/textBar/text-bar.vue'
   import imageBar from '@/views/editer/components/propertyBar/imageBar/image-bar.vue'
+  import ActiveSelectionBar from '@/views/editer/components/propertyBar/activeSelectionBar/activeSelection-bar.vue'
+  import GroupBar from '@/views/editer/components/propertyBar/groupBar/group-bar.vue'
   const editorStore = useEditorStore()
 
   const barComponents: Record<ElementTypes, Component> = {
@@ -16,7 +18,8 @@
     Shape: ShapeBar,
     image: imageBar,
     text: textBar,
-    activeselection: bgBar
+    activeselection: ActiveSelectionBar,
+    group: GroupBar
   }
   const showPublicRef = computed(() => editorStore.selectType !== 'bg')
 </script>

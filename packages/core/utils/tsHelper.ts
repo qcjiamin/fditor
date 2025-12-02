@@ -5,5 +5,7 @@ import { FCanvas } from '../customShape/FCanvas'
 export type PropType<T, K extends keyof T> = T[K]
 
 export function isFCanvas(cvs: Canvas): cvs is FCanvas {
-  return Object.prototype.hasOwnProperty.call(cvs, '_insertBefore')
+  // 使用 instanceof 检查，因为类方法定义在原型上，不是自有属性
+  // hasOwnProperty 只检查自有属性，会导致误判
+  return cvs instanceof FCanvas
 }
