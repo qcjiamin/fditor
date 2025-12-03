@@ -2,7 +2,6 @@
 import { EventBus } from './utils/event'
 import type { EditorEventMap, IPlugin, IRect } from './types/common/types'
 import { Layout, layoutDimensions } from './types/common/types'
-import { v4 as uuidv4 } from 'uuid'
 // import { BG_COLOR } from './utils/constant'
 import './polyfill'
 import { Canvas, FabricObject } from 'fabric'
@@ -155,14 +154,7 @@ class Editor extends EventBus<EditorEventMap> {
   }
 
   public _add(...nodes: FabricObject[]): this {
-    this.stage._add(
-      ...nodes.map((node) => {
-        if (!node.id) {
-          node.id = uuidv4()
-        }
-        return node
-      })
-    )
+    this.stage._add(...nodes)
     return this
   }
 

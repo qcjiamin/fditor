@@ -1,4 +1,5 @@
 // 引用 Fabric.js 类型扩展，确保所有使用 @fditor/core 的地方都能获得类型扩展
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./types/fabric/fabric.d.ts" />
 import Editor from './Editor'
 // export default Editor
