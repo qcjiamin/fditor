@@ -67,6 +67,7 @@ export function initAligningGuidelines(canvas) {
 
   canvas.on('object:moving', function (e) {
     var activeObject = e.target
+    console.log(activeObject)
     let canvasObjects,
       activeObjectCenter,
       activeObjectLeft,
@@ -75,7 +76,13 @@ export function initAligningGuidelines(canvas) {
       activeObjectHeight,
       activeObjectWidth
     function getInfo() {
+      // fix: 多选时多选对象4边都会绘制引导线，移动多选对象应该排除多选对象内的元素
       canvasObjects = canvas.getObjects()
+      if (activeObject.type === 'activeselection' && activeObject._objects && activeObject._objects.length > 0) {
+        canvasObjects = canvasObjects.filter(function (obj) {
+          return activeObject._objects.indexOf(obj) === -1
+        })
+      }
       activeObjectCenter = activeObject.getCenterPoint()
       activeObjectLeft = activeObjectCenter.x
       activeObjectTop = activeObjectCenter.y
