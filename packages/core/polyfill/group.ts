@@ -3,11 +3,13 @@ import { FCanvas } from '../customShape/FCanvas'
 
 // 扩展 Group 构造函数的类型（静态方法）
 declare module 'fabric' {
+  // 扩展 Group 实例方法
   interface Group {
     /** 解组，无事件触发。根据组上有无canvas,决定是否插入画布。插入位置为原组Zindex */
     _unGroup: () => void
     toActiveSelection: () => ActiveSelection
   }
+  // 扩展 Group 静态方法
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Group {
     let fromObjs: (children: (FabricObject | Group)[]) => Group
@@ -81,11 +83,13 @@ Group.prototype.toActiveSelection = function () {
   this._unGroup()
   canvas._remove(this)
   const selection = new ActiveSelection(objs, { canvas })
-  canvas._activeObject = selection
-  // canvas.setActiveObject(selection)
+  // canvas._activeObject = selection
+  canvas.setActiveObject(selection)
   canvas._objectsToRender = undefined
   selection.setCoords()
   canvas.requestRenderAll()
+  // 通知外部执行修改事件和历史记录更新
+  this.canvas.fire('def:modified', { target: this })
   return selection
 }
 

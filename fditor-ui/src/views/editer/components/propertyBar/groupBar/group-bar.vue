@@ -3,7 +3,7 @@
   import { inject } from 'vue'
   import { type Editor } from '@fditor/core'
   // import { useEditorStore } from '@/stores/editorStore'
-  import type { ActiveSelection } from 'fabric'
+  import type { Group } from 'fabric'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   import { Delete } from '@element-plus/icons-vue'
   // const props = defineProps<{
@@ -15,7 +15,7 @@
   // const editorStore = useEditorStore()
 
   function unGroup() {
-    ;(editor.getActiveObject() as ActiveSelection)._unGroup()
+    ;(editor.getActiveObject() as Group).toActiveSelection()
     editor.render()
   }
 </script>
