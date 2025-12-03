@@ -21,6 +21,7 @@ import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
 import { isFiller, isPattern } from '../utils/typeAssertions'
 import type { LinearGradient, RadialGradient } from '../types/common/types'
+import { objectCommonProperties } from '../utils/constant'
 
 function pathToPathStr(path: TSimplePathData) {
   return path.toString().replaceAll(',', ' ')
@@ -83,7 +84,15 @@ export interface FPathProps extends PathProps, UniqueFPathProps {}
 
 export class FPath extends Path {
   public static type = 'fpath'
-  public static customProperties: string[] = ['cornerRadius', 'radiusAble', 'originPath']
+  // 包含 id 以确保所有 FPath 子类（FRect、FTriangle、FHexagon）都能正确序列化 id
+  public static customProperties: string[] = [
+    ...objectCommonProperties,
+    'cornerRadius',
+    'radiusAble',
+    'originPath',
+    'originWidth',
+    'originHeight'
+  ]
   public cornerRadius: number = 0
   public radiusAble: boolean = false
   public originPath: string

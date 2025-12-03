@@ -11,6 +11,7 @@ import { FCanvas } from './customShape/FCanvas'
 import { FImage } from '@fditor/core'
 import { ClipFrame } from './customShape/ClipFrame'
 import BasePlugin from './plugins/BasePlugin'
+import { objectCommonProperties } from './utils/constant'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
@@ -61,9 +62,8 @@ class Editor extends EventBus<EditorEventMap> {
     // 1. 扩展序列化属性
     // 确保 id 属性被序列化
     // Fabric.js 需要在 customProperties 中声明自定义属性才会被 toJSON 序列化
-    if (!FabricObject.customProperties?.includes('id')) {
-      FabricObject.customProperties = [...(FabricObject.customProperties || []), 'id']
-    }
+    FabricObject.customProperties = [...(FabricObject.customProperties || []), ...objectCommonProperties]
+
     // 2. 重置控制点
     await FCanvas.setPredefineControls()
     this.#stage = new FCanvas(element, {
