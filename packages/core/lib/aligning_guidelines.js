@@ -67,7 +67,6 @@ export function initAligningGuidelines(canvas) {
 
   canvas.on('object:moving', function (e) {
     var activeObject = e.target
-    console.log(activeObject)
     let canvasObjects,
       activeObjectCenter,
       activeObjectLeft,
