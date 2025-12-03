@@ -1,3 +1,5 @@
+// 导入 Fabric.js 类型扩展，确保所有使用 @fditor/core 的地方都能获得类型扩展
+import './types/fabric/fabric'
 import Editor from './Editor'
 // export default Editor
 
