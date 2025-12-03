@@ -6,7 +6,7 @@ import AlignPlugin from './plugins/AlignPlugin/AlignPlugin'
 import WorkspacePlugin from './plugins/WorkspacePlugin/WorkspacePlugin'
 import LockPlugin from './plugins/LockPlugin/LockPlugin'
 import SnapPlugin from './plugins/SnapPlugin/SnapPlugin'
-export * from './types'
+export * from './types/common/types'
 export * from './helper/index'
 
 export * from './customShape/FImage'

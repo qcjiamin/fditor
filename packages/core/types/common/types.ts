@@ -1,6 +1,13 @@
+// 公共但非业务的类型
+// ✔ 配置
+// ✔ 状态结构
+// ✔ UI 组件 Props
+// ✔ 枚举
+// ✔ 常见结构（Point、Rect、Size）
+
 import { Canvas, FabricObject, Gradient } from 'fabric'
 import type { TFiller } from 'fabric'
-import type Editer from './Editor'
+import type Editer from '../../Editor'
 
 // export type colorVal = string | TFiller | null
 export type LinearGradient = Gradient<'linear'> & { _degree: number }
@@ -8,6 +15,13 @@ export type RadialGradient = Gradient<'radial'> & { _percent: number }
 export type _Gradient = LinearGradient | RadialGradient
 export type colorVal = string | _Gradient | null
 export type FillType = string | TFiller | null
+
+export interface IRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}
 
 export interface IPlugin {
   name: string

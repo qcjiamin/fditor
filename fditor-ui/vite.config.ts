@@ -14,6 +14,7 @@ import svgLoader from 'vite-svg-loader'
 function forceReloadOnCoreChange() {
   return {
     name: 'force-reload-on-core-change',
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleHotUpdate({ file, server }: { file: string; server: any }) {
       // 当修改 packages/core 下的文件时，强制完全刷新页面
       if (file.includes('packages\\core') || file.includes('packages/core')) {

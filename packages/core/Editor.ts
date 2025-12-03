@@ -1,7 +1,7 @@
 //todo: 一些基础方法没有拆分_fun 与 fun, 在需要时可以添加
 import { EventBus } from './utils/event'
-import type { EditorEventMap, IPlugin } from './types'
-import { Layout, layoutDimensions } from './types'
+import type { EditorEventMap, IPlugin, IRect } from './types/common/types'
+import { Layout, layoutDimensions } from './types/common/types'
 import { v4 as uuidv4 } from 'uuid'
 // import { BG_COLOR } from './utils/constant'
 import './polyfill'
@@ -11,21 +11,13 @@ import { FCanvas } from './customShape/FCanvas'
 import { FImage } from '@fditor/core'
 import { ClipFrame } from './customShape/ClipFrame'
 import BasePlugin from './plugins/BasePlugin'
-interface IRect {
-  x: number
-  y: number
-  width: number
-  height: number
-}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
 
-declare module 'fabric' {
-  interface FabricObject {
-    id: string
-  }
-}
+// 确保 id 属性被序列化
+// Fabric.js 需要在 customProperties 中声明自定义属性才会被 toJSON 序列化
+FabricObject.customProperties = [...(FabricObject.customProperties || []), 'id']
 
 // & Record<string, unknown[]> 当需要自定义事件时，可以使用联合类型
 // 当前不使用是因为想要事件名的提示
@@ -109,6 +101,10 @@ class Editor extends EventBus<EditorEventMap> {
       this.emit('confirm:clip', undefined)
     })
 
+    this.on('node:add', (target) => {
+      this.emit('node:modified', { target })
+      this.emit('history:update', undefined)
+    })
     // 删除使用自定义的事件
     this.on('node:remove', () => {
       //! 不同于属性修改，删除只需要更新history, 属性条修改会被 selection:clear 处理
@@ -155,7 +151,7 @@ class Editor extends EventBus<EditorEventMap> {
   }
 
   public _add(...nodes: FabricObject[]): this {
-    this.stage.add(
+    this.stage._add(
       ...nodes.map((node) => {
         if (!node.id) {
           node.id = uuidv4()
@@ -169,9 +165,15 @@ class Editor extends EventBus<EditorEventMap> {
   /** 业务逻辑方法，添加并选中元素 */
   public add(obj: FabricObject) {
     // 添加
-    this.stage.add(obj)
+    // this.stage.add(obj)
     // 选中
+    // this.stage.setActiveObject(obj)
+    this._add(obj)
+    this.stage._activeObject = obj
     this.stage.setActiveObject(obj)
+    // 触发修改事件和历史记录更新
+    this.emit('node:add', [obj])
+    return this
   }
 
   /**------ 裁剪方法 start ----- */
@@ -283,8 +285,6 @@ class Editor extends EventBus<EditorEventMap> {
     // 触发fabric.canvas 的 resize 事件，因为实际改变了宽高；目前已知会监听的功能：guideline
     this.stage.fire('canvas:resize')
   }
-
-
 }
 
 export default Editor

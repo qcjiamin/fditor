@@ -20,7 +20,7 @@ import { roundCorners } from 'svg-round-corners'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
 import { isFiller, isPattern } from '../utils/typeAssertions'
-import type { LinearGradient, RadialGradient } from '../types'
+import type { LinearGradient, RadialGradient } from '../types/common/types'
 
 function pathToPathStr(path: TSimplePathData) {
   return path.toString().replaceAll(',', ' ')
