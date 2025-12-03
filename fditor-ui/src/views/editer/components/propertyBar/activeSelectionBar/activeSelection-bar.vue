@@ -5,7 +5,8 @@
   // import { useEditorStore } from '@/stores/editorStore'
   import type { ActiveSelection } from 'fabric'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
-  import { Delete } from '@element-plus/icons-vue'
+  // import groupIcon from '/images/group.svg'
+  import groupIcon from '@/assets/icons/groupbar/group.svg'
   // const props = defineProps<{
   //   foo?: string
   // }>()
@@ -25,7 +26,7 @@
   <div class="typeBar">
     <property-normal-item tip="Group" @click="doGroup">
       <el-icon size="20">
-        <Delete></Delete>
+        <groupIcon></groupIcon>
       </el-icon>
     </property-normal-item>
   </div>

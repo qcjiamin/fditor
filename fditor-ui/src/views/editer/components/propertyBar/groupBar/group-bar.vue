@@ -5,7 +5,8 @@
   // import { useEditorStore } from '@/stores/editorStore'
   import type { Group } from 'fabric'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
-  import { Delete } from '@element-plus/icons-vue'
+  // 从 public 目录导入 SVG
+  import unGroupIcon from '@/assets/icons/groupbar/ungroup.svg'
   // const props = defineProps<{
   //   foo?: string
   // }>()
@@ -24,7 +25,7 @@
   <div class="typeBar">
     <property-normal-item tip="unGroup" @click="unGroup">
       <el-icon size="20">
-        <Delete></Delete>
+        <unGroupIcon></unGroupIcon>
       </el-icon>
     </property-normal-item>
   </div>
