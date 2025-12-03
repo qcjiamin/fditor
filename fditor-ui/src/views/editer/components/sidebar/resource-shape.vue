@@ -13,7 +13,6 @@
   } from 'fabric'
 
   const editor = inject(EditorKey) as Editor
-  console.error(editor)
 
   type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Triangle' | 'Hexagon'
 
