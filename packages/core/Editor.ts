@@ -15,10 +15,6 @@ import BasePlugin from './plugins/BasePlugin'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
 
-// 确保 id 属性被序列化
-// Fabric.js 需要在 customProperties 中声明自定义属性才会被 toJSON 序列化
-FabricObject.customProperties = [...(FabricObject.customProperties || []), 'id']
-
 // & Record<string, unknown[]> 当需要自定义事件时，可以使用联合类型
 // 当前不使用是因为想要事件名的提示
 class Editor extends EventBus<EditorEventMap> {
@@ -62,13 +58,21 @@ class Editor extends EventBus<EditorEventMap> {
   }
 
   public async init(element: HTMLCanvasElement) {
+    // 1. 扩展序列化属性
+    // 确保 id 属性被序列化
+    // Fabric.js 需要在 customProperties 中声明自定义属性才会被 toJSON 序列化
+    if (!FabricObject.customProperties?.includes('id')) {
+      FabricObject.customProperties = [...(FabricObject.customProperties || []), 'id']
+    }
+    // 2. 重置控制点
     await FCanvas.setPredefineControls()
     this.#stage = new FCanvas(element, {
       // 控制点绘制在overlay image 和 clippath 之上
       controlsAboveOverlay: true,
       showGuideLine: true
     })
-
+    // 3. 绑定事件
+    // 事件分为 对fabric内部的事件代理 和业务事件
     //todo: 多场景的话，切换场景时动态绑定监听事件; 事件的绑定统一到方法中
     // 将添加、删除、旋转，统一触发自定义的修改事件
     this.stage.on('def:modified', ({ target }) => {
