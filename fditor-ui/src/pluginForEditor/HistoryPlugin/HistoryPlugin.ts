@@ -89,7 +89,7 @@ export default class HistoryPlugin implements IPlugin {
 
     // 指针不在最后，先移除指针以后的step, 再添加
     if (this.historyIndex !== this.historyList.length - 1) {
-      this.historyList.splice(this.historyIndex)
+      this.historyList.splice(this.historyIndex + 1)
     }
     this.historyList.push(stepInfo)
     this.historyIndex = this.historyList.length - 1
