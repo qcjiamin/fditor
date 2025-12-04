@@ -165,7 +165,7 @@ class Editor extends EventBus<EditorEventMap> {
     // 选中
     // this.stage.setActiveObject(obj)
     this._add(obj)
-    this.stage._activeObject = obj
+    // this.stage._activeObject = obj
     this.stage.setActiveObject(obj)
     // 触发修改事件和历史记录更新
     this.emit('node:add', [obj])
