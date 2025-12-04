@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { ref } from 'vue'
-  import type { FontWeightKey } from '../../../../../utils/constants'
+  import type { FontWeightKey } from '../../../../../../../utils/constants'
   import Arrow from '@/assets/icons/fontsTab/arrow.svg'
   import FontSelected from '@/assets/icons/fontsTab/font-selected.svg'
   import type { FontFamilyName } from '@/utils/types'

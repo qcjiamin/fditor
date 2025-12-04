@@ -2,7 +2,7 @@
   import { EditorKey } from '@/constants/injectKey'
   import { FHexagon, FLine, FRect, FTriangle, type Editor } from '@fditor/core'
   import { inject } from 'vue'
-  import shapeItem from '@/views/editer/components/sidebar/shape-item.vue'
+  import shapeItem from '@/views/editer/components/sidebar/resources/components/shape-item.vue'
   import {
     Circle,
     FabricObject,

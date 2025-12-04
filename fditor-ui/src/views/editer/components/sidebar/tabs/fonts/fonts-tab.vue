@@ -2,7 +2,7 @@
   import { useEditorStore } from '@/stores/editorStore'
   import { Textbox } from 'fabric'
   import { reactive, ref } from 'vue'
-  import fontItem from '@/views/editer/components/sidebar/tabs/font-item.vue'
+  import fontItem from '@/views/editer/components/sidebar/tabs/fonts/components/font-item.vue'
   import { fontInfo } from '@/utils/fontinfo'
   import { AbortReason, fontWeightMap, FontWeightReverseMap, type FontWeightKey } from '@/utils/constants'
   import { typedFontInfo, type FontFamilyName, type FontStyle, type FontWeight } from '@/utils/types'

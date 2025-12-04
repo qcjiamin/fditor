@@ -1,17 +1,18 @@
 <script lang="ts" setup name="editer-sidebar">
-  import resourceMenu from './resource-menu.vue'
+  import resourceMenu from './menu/resource-menu.vue'
   // import resouceContent from './resouce-content.vue'
   import { computed, reactive, ref, watch, type Component, type CSSProperties } from 'vue'
   import { type ResourceName } from '@/utils/constants'
-  import ResourceImage from './resource-image.vue'
-  import ResourceShape from './resource-shape.vue'
-  import ResourceVideo from './resource-video.vue'
-  import ResourceText from './resource-text.vue'
+  import ResourceImage from './resources/resource-image.vue'
+  import ResourceShape from './resources/resource-shape.vue'
+  import ResourceVideo from './resources/resource-video.vue'
+  import ResourceText from './resources/resource-text.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import type { TabName } from '@/views/editer/components/sidebar/types'
-  import AnimationTab from '@/views/editer/components/sidebar/tabs/animation-tab.vue'
-  import FontsTab from '@/views/editer/components/sidebar/tabs/fonts-tab.vue'
-  import ResourceUpload from '@/views/editer/components/sidebar/resource-upload.vue'
+  import AnimationTab from '@/views/editer/components/sidebar/tabs/animation/animation-tab.vue'
+  import FontsTab from '@/views/editer/components/sidebar/tabs/fonts/fonts-tab.vue'
+  import ResourceUpload from '@/views/editer/components/sidebar/resources/resource-upload.vue'
+  import LayerTab from '@/views/editer/components/sidebar/tabs/layer/layer-tab.vue'
   const resourceRef = ref<ResourceName>('image')
   const openRef = ref(false)
   // todo: 用泛型指明指定的组件？
@@ -24,7 +25,8 @@
   }
   const tabComponents: Partial<Record<TabName, Component>> = {
     animation: AnimationTab,
-    fonts: FontsTab
+    fonts: FontsTab,
+    layer: LayerTab
   }
 
   function resourceChangeCallback(toResource: ResourceName) {

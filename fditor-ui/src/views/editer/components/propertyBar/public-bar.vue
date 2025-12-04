@@ -58,6 +58,15 @@
       editorStore.setSidebarShowTab('animation')
     }
   }
+  const openLayer = computed(() => editorStore.sidebarShowTab === 'layer')
+  function toggleLayerTab() {
+    if (editorStore.sidebarShowTab === 'layer') {
+      editorStore.setSidebarShowTab('resource')
+    } else {
+      editorStore.setSidebarShowTab('layer')
+    }
+  }
+
   function toggleLock() {
     const selected = editorStore.selected
     if (!selected) {
@@ -105,6 +114,9 @@
     ></position-property>
     <opacity-property :opacity="attrs.opacity" tip="opacity" @update:opacity="updateOpacity"></opacity-property>
     <property-normal-item tip="animate" :active="openAni" @click="toggleAnimate">
+      <Orange></Orange>
+    </property-normal-item>
+    <property-normal-item tip="layer" :active="openLayer" @click="toggleLayerTab">
       <Orange></Orange>
     </property-normal-item>
     <property-normal-item
