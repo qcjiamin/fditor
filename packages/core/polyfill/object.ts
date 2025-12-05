@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { HorizontalAlign, VerticalAlign } from '@fditor/core'
 import { FabricObject, Point } from 'fabric'
+import { isActiveSelection } from '../utils/typeAssertions'
+import { removeFromArray } from '../utils/common'
 
 declare module 'fabric' {
   export interface FabricObject {
@@ -11,6 +13,10 @@ declare module 'fabric' {
     getNext(): FabricObject | null
     getAlign(): { h: HorizontalAlign | ''; v: VerticalAlign | '' }
     setAlign(align: HorizontalAlign | VerticalAlign): void
+    bringToFront(): void
+    bringForward(): void
+    sendToBack(): void
+    sendBackwards(): void
   }
 }
 
@@ -142,4 +148,79 @@ FabricObject.prototype.setAlign = function (align) {
     default:
       break
   }
+}
+FabricObject.prototype.bringToFront = function () {
+  if (!this.canvas) return
+  if (isActiveSelection(this)) {
+    const objects = this.getObjects()
+    for (const obj of objects) {
+      this.canvas.bringObjectToFront(obj)
+    }
+  } else {
+    this.canvas.bringObjectToFront(this)
+  }
+  this.canvas.fire('def:modified', { target: this })
+}
+FabricObject.prototype.bringForward = function () {
+  if (!this.canvas) return
+  if (isActiveSelection(this)) {
+    // 找到最高层级的对象， 以它为标准，全部向上移动
+    const objects = this.getObjects()
+    const topObj = objects[objects.length - 1]
+    const topZIdx = topObj.getZIndex()
+    const topObjIsInTop = topZIdx === this.canvas.getObjects().length - 1
+    if (!topObjIsInTop) {
+      // 将最高层级对象向上移动一层，然后把其他对象依此放到它下面
+      this.canvas.bringObjectForward(topObj)
+    }
+    const otherObjs = objects.slice(0, objects.length - 1)
+    const allObjs = this.canvas._objects
+    for (const obj of otherObjs) {
+      removeFromArray(allObjs, obj)
+    }
+    // 找到topObj的新位置
+    const newTopZIdx = topObj.getZIndex()
+    this.canvas._objects.splice(newTopZIdx, 0, ...otherObjs)
+  } else {
+    this.canvas.bringObjectForward(this)
+  }
+  this.canvas.fire('def:modified', { target: this })
+}
+FabricObject.prototype.sendToBack = function () {
+  if (!this.canvas) return
+  if (isActiveSelection(this)) {
+    const objects = this.getObjects()
+    for (let i = objects.length - 1; i >= 0; i--) {
+      this.canvas.sendObjectToBack(objects[i])
+    }
+  } else {
+    this.canvas.sendObjectToBack(this)
+  }
+  this.canvas.fire('def:modified', { target: this })
+}
+FabricObject.prototype.sendBackwards = function () {
+  console.log('send backwards')
+  if (!this.canvas) return
+  if (isActiveSelection(this)) {
+    // 找到最低层级的对象， 以它为标准，全部向下移动
+    const objects = this.getObjects()
+    const bottomObj = objects[0]
+    const bottomZIdx = bottomObj.getZIndex()
+    const bottomObjIsInBottom = bottomZIdx === 0
+    if (!bottomObjIsInBottom) {
+      // 将最低层级对象向下移动一层，然后把其他对象依此放到它上面
+      this.canvas.sendObjectBackwards(bottomObj)
+    }
+    const otherObjs = objects.slice(1)
+    const allObjs = this.canvas._objects
+    for (const obj of otherObjs) {
+      removeFromArray(allObjs, obj)
+    }
+    // 找到bottomObj的新位置
+    const newBottomZIdx = bottomObj.getZIndex()
+    this.canvas._objects.splice(newBottomZIdx + 1, 0, ...otherObjs)
+  } else {
+    this.canvas.sendObjectBackwards(this)
+  }
+  this.canvas.fire('def:modified', { target: this })
 }
