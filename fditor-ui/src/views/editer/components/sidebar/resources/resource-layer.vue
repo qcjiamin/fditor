@@ -5,6 +5,7 @@
   import backwordIcon from '@/assets/icons/layerTab/backward.svg'
   import { useEditorStore } from '@/stores/editorStore'
   import type { FabricObject } from 'fabric'
+  import layerList from './components/layer-list.vue'
   // import { inject } from 'vue'
   // import { EditorKey } from '@/constants/injectKey'
   // import type { Editor } from '@fditor/core'
@@ -76,6 +77,7 @@
 
     <div class="layers">
       <!-- 图层列表将在这里显示 -->
+      <layer-list></layer-list>
     </div>
   </div>
 </template>
@@ -160,6 +162,7 @@
 
     .layers {
       flex: 1;
+      min-height: 300px; // 确保有足够的高度显示内容
       overflow-y: auto;
       border-top: 1px solid #e8e8e8;
       padding-top: 16px;

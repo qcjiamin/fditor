@@ -11,6 +11,7 @@ import LockPlugin from './plugins/LockPlugin/LockPlugin'
 import SnapPlugin from './plugins/SnapPlugin/SnapPlugin'
 export * from './types/common/types'
 export * from './helper/index'
+export * from './utils/typeAssertions'
 
 export * from './customShape/FImage'
 export * from './customShape/FCanvas'

@@ -12,7 +12,7 @@
   import AnimationTab from '@/views/editer/components/sidebar/tabs/animation/animation-tab.vue'
   import FontsTab from '@/views/editer/components/sidebar/tabs/fonts/fonts-tab.vue'
   import ResourceUpload from '@/views/editer/components/sidebar/resources/resource-upload.vue'
-  import LayerTab from '@/views/editer/components/sidebar/tabs/layer/layer-tab.vue'
+  import ResourceLayer from '@/views/editer/components/sidebar/resources/resource-layer.vue'
   const resourceRef = ref<ResourceName>('image')
   const openRef = ref(false)
   // todo: 用泛型指明指定的组件？
@@ -21,12 +21,13 @@
     shape: ResourceShape,
     video: ResourceVideo,
     text: ResourceText,
-    upload: ResourceUpload
+    upload: ResourceUpload,
+    layer: ResourceLayer
   }
+
   const tabComponents: Partial<Record<TabName, Component>> = {
     animation: AnimationTab,
-    fonts: FontsTab,
-    layer: LayerTab
+    fonts: FontsTab
   }
 
   function resourceChangeCallback(toResource: ResourceName) {
@@ -54,9 +55,11 @@
   <div class="editer-sidebar">
     <resource-menu @tab-change="resourceChangeCallback"></resource-menu>
     <div v-if="openRef" class="resouce-content">
-      <KeepAlive>
+      <!-- 对于 layer 组件不使用缓存，每次切换都重新渲染获取最新数据 -->
+      <KeepAlive v-if="resourceRef !== 'layer'">
         <component :is="resourceComponents[resourceRef]"></component>
       </KeepAlive>
+      <component :is="resourceComponents[resourceRef]" v-else></component>
     </div>
     <div v-if="showProperty" class="propertyTab" :style="positionStyle">
       <component :is="tabComponents[editorStore.sidebarShowTab]"></component>

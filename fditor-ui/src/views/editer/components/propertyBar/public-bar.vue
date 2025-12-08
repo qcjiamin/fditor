@@ -58,14 +58,6 @@
       editorStore.setSidebarShowTab('animation')
     }
   }
-  const openLayer = computed(() => editorStore.sidebarShowTab === 'layer')
-  function toggleLayerTab() {
-    if (editorStore.sidebarShowTab === 'layer') {
-      editorStore.setSidebarShowTab('resource')
-    } else {
-      editorStore.setSidebarShowTab('layer')
-    }
-  }
 
   function toggleLock() {
     const selected = editorStore.selected
@@ -90,7 +82,9 @@
   }
 
   function updateAlign(type: HorizontalAlign | VerticalAlign) {
-    const selected = editor.getSelectedObject()
+    const selected = editor.getActiveObject()
+    //todo: 这里需要处理没有选中对象的异常
+    if (!selected) return
     selected.setAlign(type)
   }
 
@@ -114,9 +108,6 @@
     ></position-property>
     <opacity-property :opacity="attrs.opacity" tip="opacity" @update:opacity="updateOpacity"></opacity-property>
     <property-normal-item tip="animate" :active="openAni" @click="toggleAnimate">
-      <Orange></Orange>
-    </property-normal-item>
-    <property-normal-item tip="layer" :active="openLayer" @click="toggleLayerTab">
       <Orange></Orange>
     </property-normal-item>
     <property-normal-item

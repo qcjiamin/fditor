@@ -146,11 +146,13 @@ class Editor extends EventBus<EditorEventMap> {
   public getActiveObject() {
     return this.stage.getActiveObject()
   }
-  /** 提供给修改对象的属性使用，所以必须有一个选中对象 */
-  public getSelectedObject() {
-    const obj = this.getActiveObject()
-    if (!obj) throw new Error('getSelectedObject but there is no object that is selected')
-    return obj
+
+  public getObjectById(id: string): FabricObject | undefined {
+    const objs = this.stage.getObjects().filter((obj) => {
+      return obj.id === id
+    })
+    if (objs.length > 1) throw new Error('getObjectById get more then 1 objects')
+    return objs[0]
   }
 
   public _add(...nodes: FabricObject[]): this {
