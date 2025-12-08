@@ -87,11 +87,26 @@
   }
 
   function onMove(e: dragSortEvent) {
-    const sum = editor.stage.getObjects().length
-    const obj = editor.getObjectById(e.id)
-    if (!obj) throw Error('onMove no object with the ID')
-    // 列表展示的与画布内渲染的顺序相反
-    editor.stage.moveObjectTo(obj, sum - 1 - e.to)
+    // 方案3：乐观更新 + 性能优化
+    // 1. 乐观更新 UI（手动调整数组顺序，避免重新生成缩略图）
+    const newList = [...list.value]
+    const [movedItem] = newList.splice(e.from, 1)
+    newList.splice(e.to, 0, movedItem)
+    list.value = newList
+
+    // 2. 同步更新画布数据（唯一数据源）
+    try {
+      const sum = editor.stage.getObjects().length
+      const obj = editor.getObjectById(e.id)
+      if (!obj) throw Error('onMove: no object with the ID')
+      // 列表展示的与画布内渲染的顺序相反
+      editor.stage.moveObjectTo(obj, sum - 1 - e.to)
+      editor.render()
+    } catch (error) {
+      // 3. 失败时回滚：从画布重新获取数据
+      console.error('Failed to move object on canvas, rolling back UI:', error)
+      list.value = getDraList()
+    }
   }
 </script>
 

@@ -1,24 +1,17 @@
 <script setup lang="ts">
   // import { ref } from 'vue'
-  import type { dragSortEvent } from './type'
-  import { VueDraggableNext as draggable, type DragChangeEvent, type SortableEvent } from 'vue-draggable-next'
-
-  type listItem = {
-    id: string
-    url: string
-    // 选中的id
-    selected: boolean
-  }
+  import type { draggableListItem, dragSortEvent } from './type'
+  import { VueDraggableNext as draggable, type DragChangeEvent } from 'vue-draggable-next'
 
   const props = defineProps<{
-    list: listItem[]
+    list: draggableListItem[]
   }>()
   const emit = defineEmits<{
     move: [dragSortEvent]
     select: [string]
   }>()
 
-  function onListChange(event: DragChangeEvent<listItem>) {
+  function onListChange(event: DragChangeEvent<draggableListItem>) {
     if (event.moved) {
       console.log(event)
       emit('move', {
@@ -28,11 +21,7 @@
       })
     }
   }
-  function onChoose(event: SortableEvent) {
-    console.log(event)
-  }
   function onSelect(e: MouseEvent) {
-    console.log('emit select')
     const target = e.target as HTMLElement
     if (!target || !target.dataset) return
     if (!target.dataset.id) return
@@ -55,7 +44,6 @@
     handle=".drag-handle"
     class="draggable-container"
     @change="onListChange"
-    @choose="onChoose"
   >
     <div v-for="item in list" :key="item.id" :class="['fade-item', { selected: item.selected }]">
       <span class="drag-handle">
