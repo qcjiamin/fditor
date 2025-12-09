@@ -2,6 +2,7 @@
   import '@/styles/reset.scss'
   import '@/styles/global.scss'
   import viewEditer from './views/editer/view-editer.vue'
+  import ContextMenuProvider from '@/components/contextMenu/ContextMenuProvider.vue'
   // import { FCanvas } from '@fditor/core'
   import { onMounted, ref } from 'vue'
   // import { onMounted } from 'vue'
@@ -16,6 +17,7 @@
 </script>
 
 <template>
+  <ContextMenuProvider />
   <div v-if="preload">inloading</div>
   <view-editer v-else />
 </template>

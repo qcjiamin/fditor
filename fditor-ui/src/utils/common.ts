@@ -192,4 +192,8 @@ export function createAbortableTaskQueueRunner<T extends unknown[], R = void>() 
   }
 }
 
+export function getDefKey() {
+  return Symbol()
+}
+
 export { add }

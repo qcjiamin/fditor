@@ -66,7 +66,8 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
       // 禁用选中元素置前
       preserveObjectStacking: true,
       // 禁用右键菜单
-      stopContextMenu: true,
+      // stopContextMenu: true,
+      // fireRightClick: true,
       ...options
     }
     // as ConstructorParameters<typeof Canvas>[1]
