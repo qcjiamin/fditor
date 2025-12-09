@@ -8,18 +8,25 @@
   // import { useEditor } from '@/hooks/useEditor'
   import { provide } from 'vue'
   import { EditorKey } from '../../constants/injectKey'
-  import { Editor, LockPlugin, SelectionPlugin, SnapPlugin, WorkspacePlugin } from '@fditor/core'
+  import {
+    Editor,
+    LockPlugin,
+    SelectionPlugin,
+    SnapPlugin,
+    WorkspacePlugin
+  } from '@fditor/core'
   import { useEditorStore } from '@/stores/editorStore'
   import HistoryPlugin from '@/pluginForEditor/HistoryPlugin/HistoryPlugin.ts'
   import CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
   import type { CanvasStates } from '@/utils/types'
   import ClipBar from '@/views/editer/components/propertyBar/clip-bar.vue'
   import { onClickOutside, useResizeObserver } from '@vueuse/core'
-  import hotkeys from 'hotkeys-js'
+  import { useEditorHotkeys } from '@/hooks/useEditorHotkeys'
   import { eventBus } from '@/events/eventBus'
   import loginBox from '@/views/editer/login-box.vue'
   import { getProjectByID, requestSaveProject } from '@/utils/request'
   import { createProject, uploadEditorThumbnail } from '@/utils/workflow'
+
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
@@ -99,30 +106,11 @@
       console.log('ready')
       editor.emit('canvas:ready', null)
     }, 0)
-
-    hotkeys('left, right, up, down', function (_e, handler) {
-      const selected = editor.getActiveObject()
-      if (!selected) return
-      switch (handler.key) {
-        case 'left':
-          selected.eset('left', selected.left - 1)
-          break
-        case 'right':
-          selected.eset('left', selected.left + 1)
-          break
-        case 'up':
-          selected.eset('top', selected.top - 1)
-          break
-        case 'down':
-          selected.eset('top', selected.top + 1)
-          break
-        default:
-          break
-      }
-    })
   })
+
+  useEditorHotkeys(editor)
+
   onUnmounted(() => {
-    hotkeys.unbind('left, right, up, down')
     editor.dispose()
   })
   provide(EditorKey, editor)

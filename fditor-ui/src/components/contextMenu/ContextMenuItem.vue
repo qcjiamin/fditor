@@ -3,8 +3,8 @@
   import type { MenuItem, MenuPosition } from './type'
   import ContextMenuBox from './ContextMenuBox.vue'
 
-  const props = defineProps<{ 
-    item: MenuItem 
+  const props = defineProps<{
+    item: MenuItem
   }>()
 
   const emit = defineEmits<{
@@ -15,20 +15,18 @@
   const showSubmenu = ref(false)
   const submenuPosition = ref<MenuPosition>({ x: 0, y: 0 })
 
-  const hasSubmenu = computed(() => 
-    props.item.submenu && props.item.submenu.length > 0
-  )
+  const hasSubmenu = computed(() => props.item.submenu && props.item.submenu.length > 0)
 
   function handleClick() {
     if (props.item.disabled || props.item.divider) return
     if (hasSubmenu.value) return
-    
+
     emit('click', props.item)
   }
 
   function handleMouseEnter() {
     if (!hasSubmenu.value || !itemRef.value) return
-    
+
     const rect = itemRef.value.getBoundingClientRect()
     submenuPosition.value = {
       x: rect.right,
@@ -45,27 +43,28 @@
 <template>
   <!-- 分隔线 -->
   <div v-if="item.divider" class="context-menu-divider"></div>
-  
+
   <!-- 普通菜单项 -->
   <div
     v-else
     ref="itemRef"
     :class="[
       'context-menu-item',
-      { 
+      {
         'has-submenu': hasSubmenu,
-        'disabled': item.disabled
+        disabled: item.disabled
       }
     ]"
     @click="handleClick"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
-    <span v-if="item.icon" class="item-icon">{{ item.icon }}</span>
+    <!-- <span v-if="item.icon" class="item-icon"></span> -->
+    <img v-if="item.icon" :src="item.icon" class="item-icon" alt="" />
     <span class="item-label">{{ item.label }}</span>
     <span v-if="item.shortcut" class="item-shortcut">{{ item.shortcut }}</span>
     <span v-if="hasSubmenu" class="item-arrow">▶</span>
-    
+
     <ContextMenuBox
       v-if="showSubmenu && hasSubmenu"
       :items="item.submenu!"

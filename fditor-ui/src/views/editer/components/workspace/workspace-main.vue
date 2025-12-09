@@ -4,8 +4,8 @@
   import type { MenuItem } from '@/components/contextMenu/type'
   import { getDefKey } from '@/utils/common'
   import { EditorKey } from '@/constants/injectKey'
-  import type { Editor } from '@fditor/core'
-  import type { TPointerEvent } from 'fabric'
+  import { isActiveSelection, isGroup, type Editor } from '@fditor/core'
+  import { type TPointerEvent } from 'fabric'
 
   // import workspaceBar from './workspace-bar.vue'
   const containerRef = ref<HTMLDivElement | null>(null)
@@ -21,7 +21,9 @@
    * 动态菜单工厂函数
    * 根据点击位置和选中的元素类型，动态生成菜单项
    */
-  function createContextMenu(e: MouseEvent): MenuItem[] {
+  async function createContextMenu(e: MouseEvent): Promise<MenuItem[]> {
+    const hasCopyStr = await editor.hasCopyStr()
+
     // 1. 将鼠标坐标转换为画布坐标
     // const pointer = editor.stage.getViewportPoint(e as TPointerEvent)
 
@@ -30,15 +32,18 @@
 
     // 3. 根据目标元素类型生成不同的菜单
     if (!target) {
+      editor.stage.discardActiveObject()
+      editor.render()
       // 点击空白区域
       return [
         {
-          label: '粘贴',
+          label: 'Paste',
           id: getDefKey(),
-          icon: '📄',
+          // icon: '📄',
+          disabled: !hasCopyStr,
+          shortcut: 'Ctrl+V',
           onSelect: () => {
-            console.log('粘贴')
-            // editor.paste()
+            editor.paste()
           }
         }
       ]
@@ -54,21 +59,13 @@
     // 通用菜单项
     const commonMenuItems: MenuItem[] = [
       {
-        label: '复制',
+        label: 'Copy',
         id: getDefKey(),
-        icon: '📋',
+        // icon: '📋',
+        shortcut: 'Ctrl+C',
         onSelect: () => {
+          editor.copy(target)
           console.log('复制元素', target)
-          // editor.copy()
-        }
-      },
-      {
-        label: '删除',
-        id: getDefKey(),
-        icon: '🗑️',
-        onSelect: () => {
-          console.log('删除元素', target)
-          // editor.remove(target)
         }
       },
       {
@@ -77,95 +74,106 @@
         divider: true
       },
       {
-        label: '图层操作',
+        label: 'Move forward',
         id: getDefKey(),
-        icon: '📚',
-        submenu: [
-          {
-            label: '置于顶层',
-            id: getDefKey(),
-            shortcut: 'Ctrl+]',
-            onSelect: () => {
-              console.log('置于顶层', target)
-              target.bringToFront()
-              editor.render()
-            }
-          },
-          {
-            label: '置于底层',
-            id: getDefKey(),
-            shortcut: 'Ctrl+[',
-            onSelect: () => {
-              console.log('置于底层', target)
-              target.sendToBack()
-              editor.render()
-            }
-          }
-        ]
+        shortcut: 'Ctrl+]',
+        onSelect: () => {
+          const obj = editor.getActiveObject()
+          if (!obj) return
+          obj.bringForward()
+        }
+      },
+      {
+        label: 'Move back',
+        id: getDefKey(),
+        shortcut: 'Ctrl+[',
+        onSelect: () => {
+          const obj = editor.getActiveObject()
+          if (!obj) return
+          obj.sendBackwards()
+        }
+      },
+      {
+        label: 'Bring to top',
+        id: getDefKey(),
+        shortcut: 'Ctrl+Alt+]',
+        onSelect: () => {
+          const obj = editor.getActiveObject()
+          if (!obj) return
+          obj.bringToFront()
+        }
+      },
+      {
+        label: 'Send to back',
+        id: getDefKey(),
+        shortcut: 'Ctrl+Alt+[',
+        onSelect: () => {
+          const obj = editor.getActiveObject()
+          if (!obj) return
+          obj.sendToBack()
+        }
+      },
+      {
+        label: '分隔线',
+        id: getDefKey(),
+        divider: true
+      },
+      {
+        label: 'Delete',
+        id: getDefKey(),
+        shortcut: 'Delete',
+        onSelect: () => {
+          console.log('删除元素', target)
+          editor.remove()
+        }
       }
     ]
 
-    // 根据元素类型添加特定菜单项
-    if (elementType === 'image') {
+    if (elementType === 'activeselection') {
       return [
         {
-          label: '编辑图片',
+          label: 'Group',
           id: getDefKey(),
-          icon: '✏️',
+          shortcut: 'Ctrl+G',
           onSelect: () => {
-            console.log('编辑图片', target)
-            // 打开图片编辑器
-          }
-        },
-        {
-          label: '裁剪图片',
-          id: getDefKey(),
-          icon: '✂️',
-          onSelect: () => {
-            console.log('裁剪图片', target)
-            // editor.cropImage(target)
-          }
-        },
-        ...commonMenuItems
-      ]
-    } else if (elementType === 'ftextbox' || elementType === 'i-text' || elementType === 'textbox') {
-      return [
-        {
-          label: '编辑文本',
-          id: getDefKey(),
-          icon: '✏️',
-          onSelect: () => {
-            console.log('编辑文本', target)
-            // target.enterEditing()
-          }
-        },
-        {
-          label: '字体样式',
-          id: getDefKey(),
-          icon: '🎨',
-          submenu: [
-            {
-              label: '加粗',
-              id: getDefKey(),
-              onSelect: () => {
-                console.log('加粗', target)
-              }
-            },
-            {
-              label: '斜体',
-              id: getDefKey(),
-              onSelect: () => {
-                console.log('斜体', target)
-              }
+            const obj = editor.getActiveObject()
+            if (!obj) return
+            if (isActiveSelection(obj)) {
+              obj.toGroup()
             }
-          ]
+          }
+        },
+        {
+          label: '分隔线',
+          id: getDefKey(),
+          divider: true
         },
         ...commonMenuItems
       ]
+    } else if (elementType === 'group') {
+      return [
+        {
+          label: 'unGroup',
+          id: getDefKey(),
+          shortcut: 'Ctrl+G',
+          onSelect: () => {
+            const obj = editor.getActiveObject()
+            if (!obj) return
+            if (isGroup(obj)) {
+              obj.toActiveSelection()
+            }
+          }
+        },
+        {
+          label: '分隔线',
+          id: getDefKey(),
+          divider: true
+        },
+        ...commonMenuItems
+      ]
+    } else {
+      return commonMenuItems
     }
-
-    // 默认菜单（其他类型元素）
-    return commonMenuItems
   }
 
   // 使用动态菜单工厂函数

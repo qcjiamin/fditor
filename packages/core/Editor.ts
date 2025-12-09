@@ -4,13 +4,14 @@ import type { EditorEventMap, IPlugin, IRect } from './types/common/types'
 import { Layout, layoutDimensions } from './types/common/types'
 // import { BG_COLOR } from './utils/constant'
 import './polyfill'
-import { Canvas, FabricObject } from 'fabric'
+import { Canvas, classRegistry, FabricObject } from 'fabric'
 import { util } from 'fabric'
 import { FCanvas } from './customShape/FCanvas'
-import { FImage } from '@fditor/core'
+import { FImage, FTextBox, isActiveSelection } from '@fditor/core'
 import { ClipFrame } from './customShape/ClipFrame'
 import BasePlugin from './plugins/BasePlugin'
-import { objectCommonProperties } from './utils/constant'
+import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, objectCommonProperties } from './utils/constant'
+import { isFirefox } from './utils/common'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
@@ -24,6 +25,8 @@ class Editor extends EventBus<EditorEventMap> {
   public workspace!: IRect
   public scaleRate: number
   public isSilence: boolean = false
+  /** 复制的字符串，给不支持 clipboard api 的浏览器使用 */
+  public copyStr: string = ''
   constructor(layout: Layout = Layout.Portrait) {
     super()
     this.#layout = layout
@@ -57,7 +60,7 @@ class Editor extends EventBus<EditorEventMap> {
     }
   }
 
-  #canvasContainer : Element | null = null
+  #canvasContainer: Element | null = null
 
   public async init(container: HTMLElement | string) {
     // 1. 解析容器
@@ -210,6 +213,14 @@ class Editor extends EventBus<EditorEventMap> {
     return this
   }
 
+  /** 删除选中的对象 */
+  public remove() {
+    const removed = this.stage._removeSelected()
+    if (removed) {
+      this.emit('node:remove', removed)
+    }
+  }
+
   /**------ 裁剪方法 start ----- */
   // 裁剪理解为业务方法，由于裁剪框会频繁触发修改事件，不大适合放入画布对象中
   /** 开始裁剪 */
@@ -318,6 +329,80 @@ class Editor extends EventBus<EditorEventMap> {
     this.emit('workspace:resize', null)
     // 触发fabric.canvas 的 resize 事件，因为实际改变了宽高；目前已知会监听的功能：guideline
     this.stage.fire('canvas:resize')
+  }
+
+  /** 剪切板是否有可控的复制内容 */
+  public async hasCopyStr() {
+    let copyStr = ''
+    if (isFirefox()) {
+      copyStr = this.copyStr
+    } else {
+      try {
+        copyStr = await navigator.clipboard.readText()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    return Boolean(copyStr)
+  }
+
+  public async copy(obj: FabricObject) {
+    console.log('copy')
+    const temp = obj.toJSON()
+    if (isFirefox()) {
+      this.copyStr = JSON.stringify(temp)
+    } else {
+      await navigator.clipboard.writeText(JSON.stringify(temp))
+    }
+  }
+
+  public async paste() {
+    // 当前焦点如果在输入框内的话，不处理
+    if (document.activeElement && document.activeElement.tagName !== 'BODY') return false
+    let copyStr = ''
+    if (isFirefox()) {
+      copyStr = this.copyStr
+    } else {
+      copyStr = await navigator.clipboard.readText()
+    }
+    if (!copyStr) return false
+    let pasteObj: string | { type: string } = ''
+    try {
+      pasteObj = JSON.parse(copyStr) as { type: string }
+    } catch {
+      // 创建文字对象，然后添加到画布
+      const text = new FTextBox(copyStr, {
+        fontFamily: DEFAULT_FONT_FAMILY,
+        fontSize: DEFAULT_FONT_SIZE
+      })
+      this.add(text as FabricObject)
+      return true
+    }
+
+    // 先取消当前的选中
+    this.stage.discardActiveObject()
+
+    //todo ts的类型检查不严谨, 根源在于 fabric.js 的类型定义比较复杂，后期优化
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const instance = (await (classRegistry.getClass(pasteObj.type) as any).fromObject(pasteObj)) as FabricObject
+
+    // 如果是多选，需要做额外处理
+    if (isActiveSelection(instance)) {
+      const activeSelectionObj = instance
+      // 将克隆的画布重新赋值
+      activeSelectionObj.canvas = this.stage
+      activeSelectionObj.forEachObject((obj) => {
+        this.stage._add(obj)
+      })
+      activeSelectionObj.setCoords()
+      this.stage.setActiveObject(activeSelectionObj)
+      this.render()
+      // 触发修改
+      this.emit('node:add', [])
+    } else {
+      this.add(instance as FabricObject)
+    }
+    return true
   }
 }
 

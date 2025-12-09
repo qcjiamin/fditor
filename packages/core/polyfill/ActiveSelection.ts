@@ -1,4 +1,4 @@
-import type { HorizontalAlign, VerticalAlign } from '@fditor/core'
+import { isGroup, type HorizontalAlign, type VerticalAlign } from '@fditor/core'
 import { ActiveSelection, FabricObject, Group, Point, util } from 'fabric'
 import { FCanvas } from '../customShape/FCanvas'
 import { isFCanvas } from '../utils/tsHelper'
@@ -10,10 +10,6 @@ declare module 'fabric' {
     /** 解除多选 */
     _unGroup(): void
   }
-}
-
-function isGroup(obj: FabricObject | Group): obj is Group {
-  return obj.type === 'group'
 }
 
 function getMaxZindexInCollection(collection: (FabricObject | Group)[]) {

@@ -93,10 +93,10 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
     this._objectsToRender = undefined
     this._objects.push(...objs)
     objs.forEach((obj) => {
-      //! 所有进入画布的对象都添加上 id
-      if (!obj.id) {
-        obj.id = uuidv4()
-      }
+      //! 所有进入画布的对象都添加上 id, 每次使用 _add 都全新赋予 id, 避免复制粘贴导致重复的 id 产生
+      // if (!obj.id) {
+      obj.id = uuidv4()
+      // }
       obj.canvas = this as FCanvas
       obj.setCoords()
     })

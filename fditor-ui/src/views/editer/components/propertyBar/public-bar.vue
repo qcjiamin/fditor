@@ -72,13 +72,7 @@
     // editor.render()
   }
   async function deleteObj() {
-    console.log('delete')
-    const activeObj = editor.stage.getActiveObject()
-    if (!activeObj) throw new Error('delete, but no object was selected ')
-
-    const removed = editor.stage._removeSelected()
-    if (!removed) throw new Error('removeSelected return null')
-    editor.emit('node:remove', removed)
+    editor.remove()
   }
 
   function updateAlign(type: HorizontalAlign | VerticalAlign) {

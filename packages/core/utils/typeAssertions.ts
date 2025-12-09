@@ -2,7 +2,7 @@
 
 import type { LinearGradient, RadialGradient } from '@fditor/core'
 import { ActiveSelection, FabricObject, FabricText, Gradient, Path, Pattern } from 'fabric'
-import type { TFiller } from 'fabric'
+import type { Group, TFiller } from 'fabric'
 
 export const isFiller = (filler: TFiller | string | null): filler is TFiller => {
   return !!filler && (filler as TFiller).toLive !== undefined
@@ -34,3 +34,7 @@ export const isPath = (fabricObject?: FabricObject): fabricObject is Path => {
 
 export const isActiveSelection = (fabricObject?: FabricObject): fabricObject is ActiveSelection =>
   !!fabricObject && 'multiSelectionStacking' in fabricObject
+
+export function isGroup(obj: FabricObject | Group): obj is Group {
+  return obj.type === 'group'
+}
