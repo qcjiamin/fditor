@@ -57,20 +57,40 @@ class Editor extends EventBus<EditorEventMap> {
     }
   }
 
-  public async init(element: HTMLCanvasElement) {
-    // 1. 扩展序列化属性
+  #canvasContainer : Element | null = null
+
+  public async init(container: HTMLElement | string) {
+    // 1. 解析容器
+    const containerEl = typeof container === 'string' ? document.querySelector(container) : container
+    if (!containerEl) {
+      throw new Error('Container element not found')
+    }
+    this.#canvasContainer = containerEl
+
+    // 2. 清理旧的 canvas（支持重新初始化）
+    if (this.#canvasContainer) {
+      this.#canvasContainer.innerHTML = ''
+    }
+
+    // 3. 创建新的 canvas
+    const canvasElement = document.createElement('canvas')
+    canvasElement.style.width = '100%'
+    canvasElement.style.height = '100%'
+    containerEl.appendChild(canvasElement)
+
+    // 4. 扩展序列化属性
     // 确保 id 属性被序列化
     // Fabric.js 需要在 customProperties 中声明自定义属性才会被 toJSON 序列化
     FabricObject.customProperties = [...(FabricObject.customProperties || []), ...objectCommonProperties]
 
-    // 2. 重置控制点
+    // 5. 重置控制点
     await FCanvas.setPredefineControls()
-    this.#stage = new FCanvas(element, {
+    this.#stage = new FCanvas(canvasElement, {
       // 控制点绘制在overlay image 和 clippath 之上
       controlsAboveOverlay: true,
       showGuideLine: true
     })
-    // 3. 绑定事件
+    // 6. 绑定事件
     // 事件分为 对fabric内部的事件代理 和业务事件
     //todo: 多场景的话，切换场景时动态绑定监听事件; 事件的绑定统一到方法中
     // 将添加、删除、旋转，统一触发自定义的修改事件
@@ -117,6 +137,22 @@ class Editor extends EventBus<EditorEventMap> {
 
     // window.fab = this.stage
     this.#stage.backgroundColor = 'rgba(255,255,255,1)'
+  }
+
+  public dispose() {
+    // 1. 清理 stage
+    if (this.#stage) {
+      this.#stage.dispose()
+      this.#stage = null
+    }
+
+    // 2. 移除 canvas 元素
+    if (this.#canvasContainer) {
+      this.#canvasContainer.innerHTML = ''
+    }
+
+    // 3. 清理事件监听
+    this.removeAllListeners() // 清理所有事件监听器
   }
 
   public async use(plugin: PluginConstructor) {

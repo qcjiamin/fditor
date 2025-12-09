@@ -28,7 +28,7 @@
   let handler: ReturnType<typeof setTimeout>
   window.editor = editor
   onMounted(async () => {
-    await editor.init(document.querySelector('#canvas-container canvas')!)
+    await editor.init(mainRef.value.containerRef!)
     const containerSize = { width: 0, height: 0 }
     useResizeObserver(mainRef.value, (entries) => {
       const entry = entries[0]
@@ -123,6 +123,7 @@
   })
   onUnmounted(() => {
     hotkeys.unbind('left, right, up, down')
+    editor.dispose()
   })
   provide(EditorKey, editor)
 

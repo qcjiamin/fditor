@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { inject, onMounted, ref } from 'vue'
+  import { inject, ref } from 'vue'
   import { useContextMenu } from '@/components/contextMenu/useContextMenu'
   import type { MenuItem } from '@/components/contextMenu/type'
   import { getDefKey } from '@/utils/common'
@@ -12,10 +12,6 @@
   defineExpose({
     //!暴露响应式属性，不输出.value
     containerRef: containerRef
-  })
-  onMounted(() => {
-    console.log('main')
-    console.log(containerRef.value)
   })
 
   // 注入 editor 实例
@@ -180,7 +176,7 @@
   <div class="workspace-main">
     <div class="pageContainer">
       <div id="canvas-container" ref="containerRef" @contextmenu="onContextMenu">
-        <canvas></canvas>
+        <!-- <canvas></canvas> -->
       </div>
     </div>
     <!-- <workspace-bar></workspace-bar> -->
