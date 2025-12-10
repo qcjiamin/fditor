@@ -59,6 +59,7 @@
   ])
 
   function updateList() {
+    console.log('updateList')
     list.value = getDraList()
   }
 
@@ -89,10 +90,11 @@
   function onMove(e: dragSortEvent) {
     // 方案3：乐观更新 + 性能优化
     // 1. 乐观更新 UI（手动调整数组顺序，避免重新生成缩略图）
-    const newList = [...list.value]
-    const [movedItem] = newList.splice(e.from, 1)
-    newList.splice(e.to, 0, movedItem)
-    list.value = newList
+    //! 手动更新列表，这里暂时不采用，让三方库自己更新UI列表
+    // const newList = [...list.value]
+    // const [movedItem] = newList.splice(e.from, 1)
+    // newList.splice(e.to, 0, movedItem)
+    // list.value = newList
 
     // 2. 同步更新画布数据（唯一数据源）
     try {
@@ -111,7 +113,7 @@
 </script>
 
 <template>
-  <draggableList :list @select="onSelect" @move="onMove"></draggableList>
+  <draggableList :list="list" @select="onSelect" @move="onMove"></draggableList>
 </template>
 
 <style scoped lang="scss"></style>
