@@ -51,6 +51,12 @@
       positionStyle.position = 'absolute'
     }
   )
+  watch(
+    () => editorStore.sidebarShowTab,
+    () => {
+      editorStore.setOpenSidebar(true)
+    }
+  )
 </script>
 
 <template>
