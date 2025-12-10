@@ -3,6 +3,7 @@
   import { FTextBox, type Editor } from '@fditor/core'
   import { FabricObject } from 'fabric'
   import { inject } from 'vue'
+  import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
 
   const editor = inject(EditorKey) as Editor
   function addText() {
@@ -16,6 +17,7 @@
 
 <template>
   <div class="resouceTextBox">
+    <resource-header title="Text"></resource-header>
     <div class="block">
       <div class="title">默认</div>
       <div class="content">
@@ -32,7 +34,6 @@
 <style scoped lang="scss">
   .resouceTextBox {
     width: 100%;
-    background-color: $TAB_BGCOLOR;
     height: 100%;
     display: flex;
     flex-direction: column;

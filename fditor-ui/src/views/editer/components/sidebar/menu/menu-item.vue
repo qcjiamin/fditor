@@ -1,13 +1,8 @@
 <script lang="ts" setup>
-  import { onBeforeUpdate } from 'vue'
-
-  const props = defineProps<{
+  defineProps<{
     text?: string
     selected: boolean
   }>()
-  onBeforeUpdate(() => {
-    console.log(props.text, props.selected)
-  })
 </script>
 
 <template>
