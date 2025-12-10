@@ -6,6 +6,7 @@
   import { EditorKey } from '@/constants/injectKey'
   import { loadImage } from '@/utils/common'
   import { FImage, type Editor } from '@fditor/core'
+  import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
 
   const editor = inject(EditorKey) as Editor
   onMounted(async () => {})
@@ -47,6 +48,7 @@
 
 <template>
   <div class="resouceImageBox">
+    <resource-header class="header" title="Image"></resource-header>
     <div class="block">
       <!-- 增加搜索功能 -->
       <water-flow :request-fun="requestImages" :page-size="30">
@@ -60,24 +62,18 @@
 
 <style scoped lang="scss">
   .resouceImageBox {
-    padding: 8px 8px 16px 16px;
     width: 100%;
-    background-color: $TAB_BGCOLOR;
+    // background-color: $TAB_BGCOLOR;
     height: 100%;
     display: flex;
     flex-direction: column;
     .block {
       width: 100%;
-      height: 100%;
-      // overflow: auto;
-      // column-count: 2; // 列数
-      // column-gap: 5px;
-      // row-gap: 5px;
-      // water-flow {
+      flex: 1;
+      height: 0; // 关键：防止内容溢出撑开容器，确保滚动条在 block 内部生效
       img {
         width: 100%;
       }
-      // }
     }
   }
 </style>

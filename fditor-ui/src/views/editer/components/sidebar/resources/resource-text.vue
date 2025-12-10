@@ -31,8 +31,6 @@
 
 <style scoped lang="scss">
   .resouceTextBox {
-    // padding-top: 8px;
-    padding: 8px 0 16px 16px;
     width: 100%;
     background-color: $TAB_BGCOLOR;
     height: 100%;

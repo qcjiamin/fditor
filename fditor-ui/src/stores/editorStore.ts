@@ -48,7 +48,12 @@ export const useEditorStore = defineStore('editor', () => {
   const setinContinueModity = function (val: boolean) {
     inContinueModity.value = val
   }
-  /** 侧边栏显示的属性页 */
+
+  const openSidebar = ref<boolean>(false)
+  const setOpenSidebar = function (val: boolean) {
+    openSidebar.value = val
+  }
+  /** 侧边栏显示的类型 */
   const sidebarShowTab = ref<TabName>('resource')
   const setSidebarShowTab = function (val: TabName) {
     sidebarShowTab.value = val
@@ -82,6 +87,8 @@ export const useEditorStore = defineStore('editor', () => {
     setinContinueModity,
     sidebarShowTab,
     setSidebarShowTab,
+    openSidebar,
+    setOpenSidebar,
     inloadingFontfamily,
     setInloadingFontfamily,
     showLoginBox,

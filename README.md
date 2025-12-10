@@ -37,6 +37,7 @@ TODO
 - [ ] layer
 - [ ] 右键菜单
 - [ ] 监控添加对象但没有id的情况。无法通过修改构造函数和_setoptions方法来添加id，构造函数无法修改，_setoptions是protected方法
+- [ ] 侧边栏样式美化
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制

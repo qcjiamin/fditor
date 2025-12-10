@@ -13,8 +13,8 @@
   import FontsTab from '@/views/editer/components/sidebar/tabs/fonts/fonts-tab.vue'
   import ResourceUpload from '@/views/editer/components/sidebar/resources/resource-upload.vue'
   import ResourceLayer from '@/views/editer/components/sidebar/resources/resource-layer.vue'
+  const editorStore = useEditorStore()
   const resourceRef = ref<ResourceName>('image')
-  const openRef = ref(false)
   // todo: 用泛型指明指定的组件？
   const resourceComponents: Record<ResourceName, Component> = {
     image: ResourceImage,
@@ -31,11 +31,10 @@
   }
 
   function resourceChangeCallback(toResource: ResourceName) {
-    openRef.value = true
+    editorStore.setOpenSidebar(true)
     resourceRef.value = toResource
   }
 
-  const editorStore = useEditorStore()
   const showProperty = computed(() => editorStore.sidebarShowTab !== 'resource')
 
   // 切换tab 和 切换选中元素时，清理属性页设置
@@ -46,15 +45,18 @@
   const positionStyle = reactive<CSSProperties>({
     position: 'static'
   })
-  watch(openRef, () => {
-    positionStyle.position = 'absolute'
-  })
+  watch(
+    () => editorStore.openSidebar,
+    () => {
+      positionStyle.position = 'absolute'
+    }
+  )
 </script>
 
 <template>
   <div class="editer-sidebar">
-    <resource-menu @tab-change="resourceChangeCallback"></resource-menu>
-    <div v-if="openRef" class="resouce-content">
+    <resource-menu :resource-type="resourceRef" @tab-change="resourceChangeCallback"></resource-menu>
+    <div v-if="editorStore.openSidebar" class="resouce-content">
       <!-- 对于 layer 组件不使用缓存，每次切换都重新渲染获取最新数据 -->
       <KeepAlive v-if="resourceRef !== 'layer'">
         <component :is="resourceComponents[resourceRef]"></component>
@@ -73,7 +75,9 @@
     height: 100%;
     position: relative;
     .resouce-content {
+      padding: 8px 8px 8px 8px;
       width: 280px;
+      height: 100%;
     }
     .propertyTab {
       // position: static;

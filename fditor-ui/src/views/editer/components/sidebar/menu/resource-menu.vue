@@ -1,7 +1,12 @@
 <script lang="ts" setup>
+  import { useEditorStore } from '@/stores/editorStore'
   import menuItem from './menu-item.vue'
   import { resourceNames, type ResourceName } from '@/utils/constants'
   const emit = defineEmits(['tabChange'])
+  const editorStore = useEditorStore()
+  defineProps<{
+    resourceType: ResourceName
+  }>()
 
   function selectResource(tabName: ResourceName) {
     emit('tabChange', tabName)
@@ -10,7 +15,13 @@
 
 <template>
   <div class="menu-box">
-    <menu-item v-for="item of resourceNames" :key="item" :text="item" @click="selectResource(item)"></menu-item>
+    <menu-item
+      v-for="item of resourceNames"
+      :key="item"
+      :text="item"
+      :selected="editorStore.openSidebar && resourceType === item"
+      @click="selectResource(item)"
+    ></menu-item>
   </div>
 </template>
 

@@ -11,6 +11,7 @@
     type RectProps,
     type SerializedLineProps
   } from 'fabric'
+  import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
 
   const editor = inject(EditorKey) as Editor
 
@@ -119,6 +120,7 @@
 
 <template>
   <div class="resouceShapeBox">
+    <resource-header title="Shape"></resource-header>
     <div class="block">
       <div class="title">基本</div>
       <div class="content">
@@ -140,9 +142,8 @@
 
 <style scoped lang="scss">
   .resouceShapeBox {
-    padding: 8px 0 16px 16px;
     width: 100%;
-    background-color: $TAB_BGCOLOR;
+    // background-color: $TAB_BGCOLOR;
     height: 100%;
     display: flex;
     flex-direction: column;
