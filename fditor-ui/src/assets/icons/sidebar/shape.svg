@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="xMidYMid meet"
+  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">  <!--?lit$0201467233$-->
+  <g>
+    <g clip-path="url(#a)">
+      <path data-follow-stroke="currentColor" d="M9.048 3.964H15M12.024 1v5.929M1.31 6.336V1.593h4.76v4.743H1.31Zm8.333 8.357V9.95h4.762v4.743H9.643ZM4.008 15 1 12.005 4.007 9.01l3.007 2.995L4.007 15h.001Z" stroke="currentColor" stroke-width="1.25"></path>
+    </g>
+    <defs>
+      <clipPath id="a">
+        <path data-follow-fill="currentColor" d="M0 0h16v16H0z" fill="currentColor"></path>
+      </clipPath>
+    </defs>
+  </g>
+</svg>
