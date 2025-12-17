@@ -114,29 +114,21 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #f9fafb; // Light gray background similar to Figma
+    background-color: rgb(22, 23, 26);
     padding: 0 16px;
     position: relative;
-    border-bottom: 1px solid #e5e7eb; // Subtle border similar to resource-menu.vue
-    box-sizing: border-box;
 
     .header-left {
       display: flex;
       align-items: center;
-      column-gap: 12px; // Increased spacing for cleaner look
-
+      column-gap: 10px;
       .name {
-        color: #374151; // Darker gray for better readability
-        font-size: 14px;
-        font-weight: 500;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 12px;
       }
-
       .saveState {
         font-size: 12px;
-        color: #6b7280; // Muted color for non-critical info
-        background-color: #f3f4f6; // Light background for subtle contrast
-        padding: 2px 8px;
-        border-radius: 12px; // Pill shape
+        color: rgba(255, 255, 255, 0.4);
       }
     }
 
@@ -150,22 +142,19 @@
       display: flex;
       align-items: center;
       background-color: white;
-      border: 1px solid #d1d5db; // Subtle border
-      border-radius: 6px; // More square corners, less rounded
-      padding: 6px 12px;
+      border-radius: 20px;
+      padding: 4px 12px;
       cursor: pointer;
       transition: all 0.2s;
       height: 32px;
       box-sizing: border-box;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
 
       &:hover {
-        background-color: #f9fafb; // Lighter hover state
-        border-color: #9ca3af; // Subtle border change on hover
+        background-color: #f0f0f0;
       }
 
       .layout-icon-mini {
-        border: 1px solid #9ca3af; // Muted color for icon border
+        border: 1.5px solid #333;
         border-radius: 2px;
         margin-right: 8px;
         box-sizing: border-box;
@@ -186,14 +175,14 @@
 
       .layout-label {
         font-size: 14px;
-        font-weight: 500; // Slightly less bold for cleaner look
-        color: #374151;
-        margin-right: 6px;
+        font-weight: 600;
+        color: #333;
+        margin-right: 4px;
       }
 
       .arrow-icon {
-        font-size: 14px;
-        color: #6b7280; // Muted arrow color
+        font-size: 12px;
+        color: #333;
       }
     }
 
@@ -205,23 +194,20 @@
         position: relative;
         align-items: center;
         justify-content: center;
-        padding: 4px 12px; // Less padding for cleaner look
+        padding: 0px 16px;
         height: 32px;
-        border-radius: 6px; // More square corners
+        border-radius: 8px;
         user-select: none;
-        font-weight: 500; // Less bold
+        font-weight: 600;
         font-size: 14px;
         transition: all 0.2s ease-out;
-        background: white; // Solid background to match Figma style
-        border: 1px solid #d1d5db; // Subtle border
-        color: #374151; // Darker text
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
         min-width: 80px;
         cursor: pointer;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
-
         &:hover {
-          background: #f9fafb; // Lighter hover state
-          border-color: #9ca3af; // Subtle border change on hover
+          background: rgba(255, 255, 255, 0.08);
         }
       }
     }
@@ -232,31 +218,26 @@
   // Global styles for dropdown menu items
   .layout-dropdown-menu {
     padding: 8px;
-    border-radius: 8px !important; // More square corners
+    border-radius: 12px !important;
     min-width: 240px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); // Figma-style shadow
-    border: 1px solid #e5e7eb; // Subtle border
 
     .el-dropdown-menu__item {
       padding: 0 !important;
-      border-radius: 6px; // More square corners
+      border-radius: 8px;
       margin-bottom: 4px;
-      background: white; // Explicit white background
-
       &:last-child {
         margin-bottom: 0;
       }
-
       &:hover,
       &.active {
-        background-color: #f9fafb !important; // Light hover/active state
+        background-color: #f5f5f5;
       }
     }
 
     .item-content {
       display: flex;
       align-items: center;
-      padding: 10px 12px; // More generous padding
+      padding: 8px 12px;
       width: 100%;
       box-sizing: border-box;
 
@@ -268,7 +249,7 @@
         width: 24px;
 
         div {
-          border: 1px solid #d1d5db; // Muted border color
+          border: 2px solid #333;
           border-radius: 3px;
           box-sizing: border-box;
         }
@@ -294,21 +275,21 @@
 
         .item-title {
           font-size: 14px;
-          font-weight: 500; // Less bold
-          color: #374151;
+          font-weight: 600;
+          color: #333;
           line-height: 1.2;
         }
 
         .item-desc {
           font-size: 12px;
-          color: #6b7280; // Muted description color
+          color: #999;
           margin-top: 2px;
         }
       }
 
       .item-check {
         margin-left: 12px;
-        color: #4f46e5; // Use theme color for checkmark
+        color: #333;
         font-size: 16px;
       }
     }
