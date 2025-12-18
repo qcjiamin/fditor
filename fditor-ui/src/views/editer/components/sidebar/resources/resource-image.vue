@@ -65,7 +65,10 @@
 <style scoped lang="scss">
   @use '@/styles/mixins/resourceContentBox.scss' as *;
   @include resource-content-box;
-
+  .content-block {
+    // 特殊的，由滚动条来占位
+    padding-right: 0px;
+  }
   .image-item {
     width: 100%;
     height: 100%;

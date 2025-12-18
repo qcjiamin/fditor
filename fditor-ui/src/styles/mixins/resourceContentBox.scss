@@ -12,6 +12,8 @@
     width: 100%;
     flex: 1;
     padding: 8px;
-    overflow-y: auto;
+    // 滚动条范围来控制右边的空隙
+    // padding-right: 0px;
+    overflow-y: hidden;
   }
 }
