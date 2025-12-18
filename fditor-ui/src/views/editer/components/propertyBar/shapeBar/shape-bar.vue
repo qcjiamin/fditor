@@ -1,8 +1,8 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
   import { computed, inject, reactive } from 'vue'
-  import strokeProperty from '@/views/editer/components/propertyBar/stroke-property.vue'
-  import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
+  import strokeProperty from '@/views/editer/components/propertyBar/components/stroke-property.vue'
+  import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
   import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
   // todo 将core中定义的类型导出

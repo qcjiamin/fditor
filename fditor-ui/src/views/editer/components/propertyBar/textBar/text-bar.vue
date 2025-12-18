@@ -3,7 +3,7 @@
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import { computed, inject, onMounted, onUnmounted, reactive } from 'vue'
   import { useEditorStore } from '@/stores/editorStore'
-  import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
+  import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
   import { EditorKey } from '@/constants/injectKey'
   import { createLinearGradient, createRadialGradient, FTextBox, type colorVal, type Editor } from '@fditor/core'
   import { colorInstance2Info } from '@/utils/common'
@@ -251,16 +251,33 @@
   .typeBar {
     :deep(.el-select) {
       width: 120px !important;
+      :deep(.el-input__wrapper) {
+        height: 36px !important; // Match new component height
+        padding: 0 8px !important; // Match new padding
+        border-radius: 4px !important; // Match new border radius
+        border: 1px solid #dcdfe6 !important; // Subtle border
+        box-shadow: none !important; // Remove default shadow
+      }
     }
     :deep(.el-select__wrapper) {
-      min-height: 30px;
+      min-height: 36px; // Match new component height
     }
     // 字号输入框
     :deep(.el-input-number--small) {
       width: 100px;
+      :deep(.el-input__wrapper) {
+        height: 36px !important; // Match new component height
+        border-radius: 4px !important; // Match new border radius
+        border: 1px solid #dcdfe6 !important; // Subtle border
+      }
     }
     :deep(.el-input) {
-      height: 30px;
+      height: 36px; // Match new component height
+      :deep(.el-input__wrapper) {
+        height: 36px !important; // Match new component height
+        border-radius: 4px !important; // Match new border radius
+        border: 1px solid #dcdfe6 !important; // Subtle border
+      }
     }
   }
 </style>

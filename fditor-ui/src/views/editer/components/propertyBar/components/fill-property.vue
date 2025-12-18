@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { computed } from 'vue'
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   // import colorPicker from '@/components/colorPicker/color-picker.vue'
   import colorBox from '@/components/colorBox/color-box.vue'
   // 引入透明背景图
@@ -64,15 +64,21 @@
     width: 100%;
     height: 100%;
     position: relative;
+    border-radius: 2px; // Keep internal elements slightly rounded
+
     .child {
       position: absolute;
       width: 100%;
       height: 100%;
       left: 0;
       top: 0;
+      border-radius: 2px; // Keep internal elements slightly rounded
     }
   }
+
   .pickerContainer {
-    width: 190px;
+    width: 200px; // Slightly wider to match Figma's design
+    border-radius: 8px; // Consistent with popup border radius
+    overflow: hidden; // Ensure content stays within bounds
   }
 </style>

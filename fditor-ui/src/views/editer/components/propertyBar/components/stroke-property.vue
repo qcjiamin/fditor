@@ -1,8 +1,8 @@
 <script lang="ts" setup>
   import { computed } from 'vue'
-  import strokeBox from '@/components/stroke-box/stroke-box.vue'
+  import strokeBox from '@/views/editer/components/propertyBar/components/stroke-box.vue'
   import strokeIcon from '@/assets/icons/stroke.svg'
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   const emit = defineEmits<{
     'update:dash': [number[]]
@@ -51,6 +51,9 @@
 <style scoped lang="scss">
   .anchorIcon {
     width: 100%;
-    // height: 30px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 </style>

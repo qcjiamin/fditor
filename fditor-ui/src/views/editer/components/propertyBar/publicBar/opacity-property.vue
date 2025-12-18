@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import transparentIcon from '@/assets/transparent.svg'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { ref, watch } from 'vue'
@@ -60,18 +60,33 @@
     width: 100%;
     height: 100%;
     position: relative;
+    border-radius: 2px; // Keep internal elements slightly rounded
+
     .child {
       position: absolute;
       width: 100%;
       height: 100%;
       left: 0;
       top: 0;
+      border-radius: 2px; // Keep internal elements slightly rounded
     }
   }
+
   .pickerContainer {
-    width: 190px;
-  }
-  :deep(.el-slider__input) {
-    width: 50px;
+    width: 200px; // Slightly wider to match Figma's design
+    padding: 8px 12px; // Add padding for better visual balance
+
+    :deep(.el-slider) {
+      :deep(.el-slider__input) {
+        width: 60px; // Slightly wider input
+        margin-left: 12px; // More space between slider and input
+
+        :deep(.el-input__inner) {
+          height: 28px; // Match component height
+          border-radius: 4px; // Consistent with design system
+          border: 1px solid #dcdfe6; // Subtle border
+        }
+      }
+    }
   }
 </style>

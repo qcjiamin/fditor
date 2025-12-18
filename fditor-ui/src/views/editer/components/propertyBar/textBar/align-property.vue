@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { ref, watch } from 'vue'
   import alignBox from '@/views/editer/components/propertyBar/textBar/align-box.vue'
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import type { alignType } from '@/views/editer/components/propertyBar/textBar/types'
   import AlignLeft from '@/assets/icons/fontbar/align_left.svg'
   import AlignCenter from '@/assets/icons/fontbar/align_center.svg'

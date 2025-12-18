@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import flipBox from '@/views/editer/components/propertyBar/imageBar/flip-box.vue'
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   const { tip = '' } = defineProps<{
     tip?: string
   }>()

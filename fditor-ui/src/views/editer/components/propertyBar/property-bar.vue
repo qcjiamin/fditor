@@ -4,8 +4,8 @@
   import { computed, type Component } from 'vue'
   import bgBar from '@/views/editer/components/propertyBar/bgBar/bg-bar.vue'
   import ShapeBar from '@/views/editer/components/propertyBar/shapeBar/shape-bar.vue'
-  import historyBox from '@/views/editer/components/propertyBar/history-box.vue'
-  import publicBar from '@/views/editer/components/propertyBar/public-bar.vue'
+  import historyBox from '@/views/editer/components/propertyBar/historyBar/history-box.vue'
+  import publicBar from '@/views/editer/components/propertyBar/publicBar/public-bar.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import textBar from '@/views/editer/components/propertyBar/textBar/text-bar.vue'
   import imageBar from '@/views/editer/components/propertyBar/imageBar/image-bar.vue'
@@ -35,17 +35,22 @@
 
 <style scoped lang="scss">
   .propertyBar {
-    height: 40px;
+    height: 48px; // Slightly taller to accommodate the larger components
     width: 100%;
     display: flex;
-    column-gap: 5px;
-    background-color: rgb(245, 245, 247);
+    align-items: center; // Center items vertically
+    padding: 0 12px; // Add horizontal padding for better visual balance
+    column-gap: 8px; // Match design system spacing
+    background-color: #ffffff; // Cleaner background following Figma's approach
+    border-bottom: 1px solid #e4e7ed; // Add subtle bottom border for separation
+    box-sizing: border-box; // Ensure padding is included in height
+
     .typeBar {
       flex-grow: 1;
       display: flex;
       flex-wrap: nowrap;
       align-items: center;
-      column-gap: 5px;
+      column-gap: 8px; // Match design system spacing
     }
   }
 </style>

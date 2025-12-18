@@ -3,7 +3,7 @@
   import { EditorKey } from '@/constants/injectKey'
   import type { Editor, HorizontalAlign, VerticalAlign } from '@fditor/core'
   import { computed, inject, onMounted, onUnmounted, reactive } from 'vue'
-  import opacityProperty from '@/views/editer/components/propertyBar/opacity-property.vue'
+  import opacityProperty from '@/views/editer/components/propertyBar/publicBar/opacity-property.vue'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
@@ -131,16 +131,36 @@
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    column-gap: 5px;
+    column-gap: 8px; // Match new design system spacing
+
     .delete {
-      width: 30px;
-      height: 30px;
-      background-color: aqua;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgba(64, 87, 109, 0.08);
+      }
     }
+
     .lock {
-      width: 20px;
-      height: 20px;
-      background-color: aqua;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: rgba(64, 87, 109, 0.08);
+      }
     }
   }
 </style>

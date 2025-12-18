@@ -77,14 +77,48 @@
   .strokeBox {
     display: flex;
     flex-direction: column;
-    row-gap: 10px;
+    row-gap: 12px; // More consistent spacing following design system
+    padding: 4px 0; // Add slight padding for better visual balance
+
+    .dash {
+      :deep(.el-radio-group) {
+        display: flex;
+        // Style the radio buttons to match new design
+        :deep(.el-radio-button) {
+          :deep(.el-radio-button__inner) {
+            border-radius: 4px !important; // Match design system
+            border: 1px solid #dcdfe6 !important;
+            padding: 6px 8px !important; // More compact padding
+          }
+
+          :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+            border-color: #409eff !important;
+            box-shadow: inset 0 0 0 1px #409eff !important;
+          }
+        }
+      }
+    }
+
     .strokeWidth {
-      font-size: 15px;
+      font-size: 14px; // Slightly smaller, more refined font
+      color: #606266; // Softer text color
       display: flex;
       flex-direction: column;
-      row-gap: 5px;
-      :deep(.el-slider__input) {
-        width: 50px;
+      row-gap: 8px; // Consistent spacing
+
+      :deep(.el-slider) {
+        padding: 0 4px; // Add padding to keep controls balanced
+
+        :deep(.el-slider__input) {
+          width: 60px; // Slightly wider input
+          margin-left: 12px; // More space between slider and input
+
+          :deep(.el-input__inner) {
+            height: 28px; // Match component height
+            border-radius: 4px; // Consistent with design system
+            border: 1px solid #dcdfe6; // Subtle border
+          }
+        }
       }
     }
   }

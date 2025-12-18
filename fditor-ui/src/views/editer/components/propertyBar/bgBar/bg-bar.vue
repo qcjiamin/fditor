@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { inject, onMounted, onUnmounted, onUpdated, reactive } from 'vue'
-  import fillProperty from '@/views/editer/components/propertyBar/fill-property.vue'
+  import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
   import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
   import { EditorKey } from '@/constants/injectKey'
   import { useGetAttrs } from '@/hooks/useGetAttrs'

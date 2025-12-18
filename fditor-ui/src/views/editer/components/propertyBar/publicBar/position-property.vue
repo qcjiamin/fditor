@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import PositionIcon from '@/assets/icons/publicbar/public_position.svg'
   import positionBox from '@/views/editer/components/propertyBar/publicBar/position-box.vue'
   import type { HorizontalAlign, VerticalAlign } from '@fditor/core'

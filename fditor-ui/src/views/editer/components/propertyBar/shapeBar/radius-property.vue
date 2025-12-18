@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import RadiusIcon from '@/assets/icons/shapebar/radius.svg'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import radiusBox from '@/views/editer/components/propertyBar/shapeBar/radius-box.vue'

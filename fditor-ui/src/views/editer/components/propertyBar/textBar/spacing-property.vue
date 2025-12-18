@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import { ref, watch } from 'vue'
-  import propertyItem from '@/views/editer/components/propertyBar/property-item.vue'
+  import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import FontSpacing from '@/assets/icons/fontbar/font-spacing.svg'
   import spacingBox from '@/views/editer/components/propertyBar/textBar/spacing-box.vue'
   import type { updateColorOptions } from '@/components/colorPicker/types'
