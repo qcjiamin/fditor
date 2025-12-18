@@ -59,7 +59,7 @@
 </script>
 
 <template>
-  <div class="resourceUploadBox">
+  <div class="resource-container">
     <div class="content-block">
       <div class="upload-area" @click="checkUpload">
         <div class="upload-icon">📁</div>
@@ -69,97 +69,92 @@
       </div>
       <div class="recent-uploads-section">
         <div class="section-title">Recent Uploads</div>
-        <div class="recent-uploads-placeholder">
-          No recent uploads
-        </div>
+        <div class="recent-uploads-placeholder"> No recent uploads </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-  .resourceUploadBox {
+  @use '@/styles/mixins/resourceContentBox.scss' as *;
+  @include resource-content-box;
+
+  .content-block {
     width: 100%;
-    height: 100%;
+    flex: 1;
+    padding: 8px; // Add padding to create breathing space
     display: flex;
     flex-direction: column;
-    background-color: #f9fafb; // Light background similar to resource-menu.vue
+    gap: 16px; // Space between sections
+    overflow-y: auto; // Ensure scrollability
 
-    .content-block {
-      width: 100%;
-      flex: 1;
-      padding: 8px; // Add padding to create breathing space
+    .upload-area {
+      border: 2px dashed #d1d5db; // Dashed border for upload area
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background-color: white;
       display: flex;
       flex-direction: column;
-      gap: 16px; // Space between sections
-      overflow-y: auto; // Ensure scrollability
+      align-items: center;
+      justify-content: center;
 
-      .upload-area {
-        border: 2px dashed #d1d5db; // Dashed border for upload area
-        border-radius: 8px;
-        padding: 24px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-        background-color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        &:hover {
-          border-color: #9ca3af; // Darker border on hover
-          background-color: #f3f4f6; // Light background on hover
-        }
-
-        .upload-icon {
-          font-size: 40px;
-          margin-bottom: 12px;
-        }
-
-        .upload-text {
-          font-size: 16px;
-          font-weight: 500;
-          color: #374151;
-          margin-bottom: 4px;
-        }
-
-        .upload-subtext {
-          font-size: 14px;
-          color: #6b7280;
-        }
-
-        .uploadIpt {
-          display: none; // Hide the input but still allow interaction
-        }
+      &:hover {
+        border-color: #9ca3af; // Darker border on hover
+        background-color: #f3f4f6; // Light background on hover
       }
 
-      .recent-uploads-section {
-        .section-title {
-          font-size: 12px;
-          font-weight: 500;
-          color: #6b7280; // Muted title color
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 8px;
-          padding-left: 4px;
-        }
+      .upload-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
 
-        .recent-uploads-placeholder {
-          width: 100%;
-          min-height: 80px;
-          border-radius: 6px;
-          background-color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #9ca3af; // Muted text color
-          transition: all 0.2s;
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
+      .upload-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 4px;
+      }
 
-          &:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          }
+      .upload-subtext {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .uploadIpt {
+        display: none; // Hide the input but still allow interaction
+      }
+    }
+
+    .recent-uploads-section {
+      .section-title {
+        font-size: 12px;
+        font-weight: 500;
+        color: #6b7280; // Muted title color
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+        padding-left: 4px;
+      }
+
+      .recent-uploads-placeholder {
+        width: 100%;
+        min-height: 80px;
+        border-radius: 6px;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af; // Muted text color
+        transition: all 0.2s;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
+
+        &:hover {
+          box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
       }
     }

@@ -146,8 +146,6 @@
       position: relative;
       .item {
         box-sizing: border-box;
-        border-radius: 4px;
-        overflow: hidden;
         position: absolute;
         left: 0;
         top: 0;

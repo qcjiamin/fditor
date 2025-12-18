@@ -119,7 +119,7 @@
 </script>
 
 <template>
-  <div class="resourceShapeBox">
+  <div class="resource-container">
     <resource-header title="Shape"></resource-header>
     <div class="content-block">
       <div class="section">
@@ -143,58 +143,48 @@
 </template>
 
 <style scoped lang="scss">
-  .resourceShapeBox {
+  @use '@/styles/mixins/resourceContentBox.scss' as *;
+  @include resource-content-box;
+
+  .section {
     width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    background-color: #f9fafb; // Light background similar to resource-menu.vue
+    margin-bottom: 16px; // Increased spacing between sections
 
-    .content-block {
+    .section-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #6b7280; // Muted title color
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      padding-left: 4px;
+    }
+
+    .content {
       width: 100%;
-      flex: 1;
-      padding: 8px; // Add padding to create breathing space
-      overflow-y: auto; // Ensure scrollability
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px; // Consistent spacing
+    }
 
-      .section {
-        width: 100%;
-        margin-bottom: 16px; // Increased spacing between sections
+    .content-placeholder {
+      width: 100%;
+      min-height: 80px;
+      border-radius: 6px;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #d1d5db; // Dashed border for placeholder
+      transition: all 0.2s;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
 
-        .section-title {
-          font-size: 12px;
-          font-weight: 500;
-          color: #6b7280; // Muted title color
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          margin-bottom: 8px;
-          padding-left: 4px;
-        }
-
-        .content {
-          width: 100%;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px; // Consistent spacing
-        }
-
-        .content-placeholder {
-          width: 100%;
-          min-height: 80px;
-          border-radius: 6px;
-          background-color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px dashed #d1d5db; // Dashed border for placeholder
-          transition: all 0.2s;
-          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
-
-          &:hover {
-            border-style: solid;
-            border-color: #9ca3af; // More solid border on hover
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-          }
-        }
+      &:hover {
+        border-style: solid;
+        border-color: #9ca3af; // More solid border on hover
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
       }
     }
   }

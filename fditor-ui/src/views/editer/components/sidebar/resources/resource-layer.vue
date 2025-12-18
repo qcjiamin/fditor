@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <div class="resourceLayerBox">
+  <div class="resource-container">
     <resource-header title="Layers"></resource-header>
     <div class="content-block">
       <!-- 图层列表将在这里显示 -->
@@ -14,17 +14,6 @@
 </template>
 
 <style scoped lang="scss">
-  .resourceLayerBox {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    background-color: #f9fafb; // Light background similar to resource-menu.vue
-
-    .content-block {
-      flex: 1;
-      padding: 8px; // Add padding to create breathing space
-      overflow-y: auto; // Ensure scrollability
-    }
-  }
+  @use '@/styles/mixins/resourceContentBox.scss' as *;
+  @include resource-content-box;
 </style>

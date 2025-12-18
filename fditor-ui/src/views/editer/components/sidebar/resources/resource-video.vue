@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <div class="resourceVideoBox">
+  <div class="resource-container">
     <resource-header class="header" title="Video"></resource-header>
     <div class="content-block">
       <div class="placeholder-content">
@@ -19,41 +19,36 @@
 </template>
 
 <style scoped lang="scss">
-  .resourceVideoBox {
-    width: 100%;
-    height: 100%;
+  @use '@/styles/mixins/resourceContentBox.scss' as *;
+  @include resource-content-box;
+
+  .content-block {
+    flex: 1;
+    padding: 8px;
     display: flex;
-    flex-direction: column;
-    background-color: #f9fafb; // Light background similar to resource-menu.vue
+    align-items: center;
+    justify-content: center;
 
-    .content-block {
-      flex: 1;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .placeholder-content {
+      text-align: center;
+      color: #9ca3af; // Muted color
 
-      .placeholder-content {
-        text-align: center;
-        color: #9ca3af; // Muted color
+      .placeholder-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #d1d5db; // Light icon color
+      }
 
-        .placeholder-icon {
-          font-size: 48px;
-          margin-bottom: 16px;
-          color: #d1d5db; // Light icon color
-        }
+      .placeholder-text {
+        font-size: 16px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #6b7280;
+      }
 
-        .placeholder-text {
-          font-size: 16px;
-          font-weight: 500;
-          margin-bottom: 8px;
-          color: #6b7280;
-        }
-
-        .placeholder-subtext {
-          font-size: 14px;
-          color: #9ca3af;
-        }
+      .placeholder-subtext {
+        font-size: 14px;
+        color: #9ca3af;
       }
     }
   }

@@ -1,0 +1,40 @@
+:root,
+* {
+  ::-webkit-scrollbar {
+    /* 横竖滚动条宽度 */
+    width: 14px;
+    height: 14px;
+  }
+  ::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+  ::-webkit-scrollbar-track {
+    // 轨道样式
+    background-color: transparent;
+    box-shadow: none;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border: 4px solid transparent; // 通过设置透明边框来控制滚动条实现居中，左右有间距效果
+    box-shadow: none;
+    background-color: #c2c0c0;
+    border-radius: 14px;
+    background-clip: content-box; // 使背景只显示在内容区域，避免被边框覆盖,重要
+    transition: all 0.3s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    border-width: 3px; // 鼠标悬停时，缩小边框宽度,使滚动条实现变粗效果
+    background-color: #777676;
+  }
+  ::-webkit-scrollbar-button {
+    // 隐藏箭头
+    display: none;
+  }
+}
+
+/* 全局滚动条 - Firefox */
+// :root {
+//   scrollbar-width: thin;
+//   scrollbar-color: #888 #f1f1f1;
+// }
