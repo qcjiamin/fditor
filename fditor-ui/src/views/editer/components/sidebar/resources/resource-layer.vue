@@ -4,10 +4,9 @@
 </script>
 
 <template>
-  <div class="layerTab">
+  <div class="resourceLayerBox">
     <resource-header title="Layers"></resource-header>
-
-    <div class="layers">
+    <div class="content-block">
       <!-- 图层列表将在这里显示 -->
       <layer-list></layer-list>
     </div>
@@ -15,17 +14,17 @@
 </template>
 
 <style scoped lang="scss">
-  .layerTab {
+  .resourceLayerBox {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-    background-color: #fff;
+    background-color: #f9fafb; // Light background similar to resource-menu.vue
 
-    .layers {
+    .content-block {
       flex: 1;
-      min-height: 300px; // 确保有足够的高度显示内容
-      overflow-y: auto;
+      padding: 8px; // Add padding to create breathing space
+      overflow-y: auto; // Ensure scrollability
     }
   }
 </style>

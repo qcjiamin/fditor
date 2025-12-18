@@ -28,54 +28,38 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 12px; // Add horizontal padding to match Figma style
+    border-bottom: 1px solid #e5e7eb; // Subtle border similar to resource-menu.vue
 
     .flow-btn {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 2px 4px;
+      padding: 6px; // More consistent padding
       background: transparent;
-      border: none;
-      border-radius: 2px;
+      border: 1px solid transparent; // Start with transparent border
+      border-radius: 6px; // Softer rounded corners
       cursor: pointer;
-      transition: background-color 0.2s;
-      text-align: left;
-      color: #1a1a1a;
-      font-size: 13px;
-      height: 35px;
-      width: 35px;
-      min-width: 0; // 允许按钮收缩
-
-      .icon {
-        width: 20px;
-        height: 20px;
-        flex-shrink: 0;
-        stroke: currentColor;
-      }
-
-      span {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        min-width: 0; // 允许文字收缩
-      }
+      transition: all 0.2s;
+      color: #6b7280; // Muted color for icon
+      width: 32px;
+      height: 32px;
 
       &:hover:not(.disabled) {
-        background-color: rgba(54, 55, 73, 0.07);
+        background-color: #f3f4f6; // Light hover state
+        border-color: #d1d5db; // Subtle border on hover
+        color: #374151; // Darker on hover
       }
 
       &:active:not(.disabled) {
-        background-color: rgba(54, 55, 73, 0.09);
+        background-color: #e5e7eb; // Slightly more active state
       }
     }
 
     span {
-      line-height: 14px;
       font-size: 14px;
-      font-weight: 600;
-      color: #1a1a1a;
+      font-weight: 500; // Slightly less bold for cleaner look
+      color: #374151; // Use more consistent gray
       text-transform: capitalize;
     }
   }

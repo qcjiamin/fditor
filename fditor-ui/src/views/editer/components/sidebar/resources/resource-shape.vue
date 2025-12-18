@@ -119,47 +119,82 @@
 </script>
 
 <template>
-  <div class="resouceShapeBox">
+  <div class="resourceShapeBox">
     <resource-header title="Shape"></resource-header>
-    <div class="block">
-      <div class="title">基本</div>
-      <div class="content">
-        <shape-item
-          v-for="item in shapes"
-          :key="item.name"
-          :name="item.name"
-          :url="item.src"
-          @click="addShape(item.name as ShapeName)"
-        ></shape-item>
+    <div class="content-block">
+      <div class="section">
+        <div class="section-title">Basic</div>
+        <div class="content">
+          <shape-item
+            v-for="item in shapes"
+            :key="item.name"
+            :name="item.name"
+            :url="item.src"
+            @click="addShape(item.name as ShapeName)"
+          ></shape-item>
+        </div>
       </div>
-    </div>
-    <div class="block">
-      <div class="title">标记</div>
-      <div class="box"> </div>
+      <div class="section">
+        <div class="section-title">Markers</div>
+        <div class="content-placeholder"> </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-  .resouceShapeBox {
+  .resourceShapeBox {
     width: 100%;
-    // background-color: $TAB_BGCOLOR;
     height: 100%;
     display: flex;
     flex-direction: column;
-    .block {
+    background-color: #f9fafb; // Light background similar to resource-menu.vue
+
+    .content-block {
       width: 100%;
-      margin-bottom: 1rem;
-      .title {
-        color: $TAB_TITLE_COLOR;
-        font-size: $TAB_TITLE_FONTSIZE;
-        margin-bottom: 7px;
-      }
-      .content {
+      flex: 1;
+      padding: 8px; // Add padding to create breathing space
+      overflow-y: auto; // Ensure scrollability
+
+      .section {
         width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+        margin-bottom: 16px; // Increased spacing between sections
+
+        .section-title {
+          font-size: 12px;
+          font-weight: 500;
+          color: #6b7280; // Muted title color
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 8px;
+          padding-left: 4px;
+        }
+
+        .content {
+          width: 100%;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px; // Consistent spacing
+        }
+
+        .content-placeholder {
+          width: 100%;
+          min-height: 80px;
+          border-radius: 6px;
+          background-color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px dashed #d1d5db; // Dashed border for placeholder
+          transition: all 0.2s;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
+
+          &:hover {
+            border-style: solid;
+            border-color: #9ca3af; // More solid border on hover
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          }
+        }
       }
     }
   }

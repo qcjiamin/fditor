@@ -47,13 +47,15 @@
 </script>
 
 <template>
-  <div class="resouceImageBox">
+  <div class="resourceImageBox">
     <resource-header class="header" title="Image"></resource-header>
-    <div class="block">
+    <div class="content-block">
       <!-- 增加搜索功能 -->
       <water-flow :request-fun="requestImages" :page-size="30">
         <template #item="{ imgInfo }">
-          <img :src="imgInfo.src" alt="" loading="lazy" @click="addImage(imgInfo.src)" />
+          <div class="image-item">
+            <img :src="imgInfo.src" alt="" loading="lazy" @click="addImage(imgInfo.src)" />
+          </div>
         </template>
       </water-flow>
     </div>
@@ -61,18 +63,48 @@
 </template>
 
 <style scoped lang="scss">
-  .resouceImageBox {
+  .resourceImageBox {
     width: 100%;
-    // background-color: $TAB_BGCOLOR;
     height: 100%;
     display: flex;
     flex-direction: column;
-    .block {
+    background-color: #f9fafb; // Light background similar to resource-menu.vue
+
+    .content-block {
       width: 100%;
       flex: 1;
-      height: 0; // 关键：防止内容溢出撑开容器，确保滚动条在 block 内部生效
-      img {
+      padding: 8px; // Add padding to create breathing space
+      overflow-y: auto; // Ensure scrollability
+
+      :deep(.water-flow) {
+        .water-item {
+          margin-bottom: 8px; // Space between items
+          border-radius: 6px; // Softer corners
+          overflow: hidden; // Ensure images stay within rounded corners
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // Subtle shadow
+
+          &:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); // Figma-style hover effect
+          }
+        }
+      }
+
+      .image-item {
         width: 100%;
+        height: 100%;
+        cursor: pointer;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover; // Ensure images maintain aspect ratio
+          display: block;
+          transition: opacity 0.2s;
+
+          &:hover {
+            opacity: 0.9; // Subtle hover effect
+          }
+        }
       }
     }
   }

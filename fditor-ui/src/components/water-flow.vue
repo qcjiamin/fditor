@@ -146,7 +146,8 @@
       position: relative;
       .item {
         box-sizing: border-box;
-        // border: 1px solid green;
+        border-radius: 4px;
+        overflow: hidden;
         position: absolute;
         left: 0;
         top: 0;

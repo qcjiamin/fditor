@@ -1,0 +1,17 @@
+## 1. Implementation
+- [x] 1.1 Analyze all resource components and reference resource-menu.vue design
+- [x] 1.2 Create backups of all resource component files
+- [x] 1.3 Update resource-header.vue with Figma-inspired minimalist design
+- [x] 1.4 Update resource-image.vue with consistent design patterns
+- [x] 1.5 Update resource-text.vue with consistent design patterns
+- [x] 1.6 Update resource-shape.vue with consistent design patterns
+- [x] 1.7 Update resource-video.vue with consistent design patterns
+- [x] 1.8 Update resource-layer.vue with consistent design patterns
+- [x] 1.9 Update resource-upload.vue with consistent design patterns
+- [x] 1.10 Ensure all functionality remains intact after UI changes
+- [x] 1.11 Test resource selection and addition functionality
+- [x] 1.12 Verify visual consistency with resource-menu.vue
+- [x] 1.13 Ensure responsive behavior is maintained
+- [x] 1.14 Perform visual QA to ensure design meets Figma-inspired requirements
+- [x] 1.15 Verify accessibility of the new design
+- [x] 1.16 Update any necessary global styles to support the new design
