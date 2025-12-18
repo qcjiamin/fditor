@@ -111,9 +111,11 @@
 </script>
 
 <template>
-  <div class="fontTab">
-    <div class="header">{{ loadingRef ? 'loading' : 'fonts' }}</div>
-    <div class="content">
+  <div class="resource-container">
+    <div class="header">
+      <span>{{ loadingRef ? 'Loading...' : 'Fonts' }}</span>
+    </div>
+    <div class="content-block">
       <font-item
         v-for="familyName in familiesRef"
         :key="familyName"
@@ -129,8 +131,26 @@
 </template>
 
 <style scoped lang="scss">
-  .fontTab {
-    width: 100%;
-    height: 100%;
+  @use '@/styles/mixins/resourceContentBox.scss' as *;
+  @include resource-content-box;
+
+  .content-block {
+    padding-right: 0;
+  }
+
+  .header {
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 1px solid #e5e7eb;
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+      color: #374151;
+      text-transform: capitalize;
+    }
   }
 </style>
