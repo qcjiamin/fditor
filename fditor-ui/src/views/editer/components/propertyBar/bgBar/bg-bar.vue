@@ -88,4 +88,11 @@
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .typeBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+  }
+</style>

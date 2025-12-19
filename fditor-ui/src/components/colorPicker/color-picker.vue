@@ -469,39 +469,59 @@
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
-    // justify-content: center;
     align-items: center;
-    row-gap: 10px;
-    padding: 5px;
+    row-gap: 12px;
+    padding: 16px;
+
     .svCvs {
       width: 100%;
       height: 150px;
-      border-radius: 5px;
+      border-radius: 6px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
+
     .hCvs {
       width: 100%;
       height: 20px;
-      border-radius: 5px;
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
+
     .oCvs {
       width: 100%;
       height: 20px;
-      border-radius: 5px;
+      border-radius: 10px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
+
     .iptColor {
       width: 100%;
       display: flex;
       column-gap: 8px;
       align-items: center;
+
       .colorType {
-        font-size: 14px;
-        border-radius: 5px;
-        border: none;
+        font-size: 13px;
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
         outline: none;
-        height: 25px;
-        // 控制监听与文字的间距
-        padding-right: 5px;
+        height: 32px;
+        padding: 0 10px;
+        background-color: #ffffff;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #d0d0d0;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        &:focus {
+          border-color: #409eff;
+          box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3);
+        }
       }
+
       .ipts {
         flex-grow: 1;
         display: flex;

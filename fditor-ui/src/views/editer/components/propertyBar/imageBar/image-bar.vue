@@ -21,11 +21,23 @@
   <div class="typeBar">
     <property-normal-item tip="crop" @click="addClippath">
       <el-icon size="20">
-        <Crop></Crop>
+        <Crop class="figma-icon"></Crop>
       </el-icon>
     </property-normal-item>
     <flip-property></flip-property>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .typeBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+  }
+
+  .figma-icon {
+    width: 18px;
+    height: 18px;
+  }
+</style>

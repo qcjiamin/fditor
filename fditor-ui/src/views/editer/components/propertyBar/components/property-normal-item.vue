@@ -28,32 +28,39 @@
 
 <style scoped lang="scss">
   .anchorBox {
-    min-width: 36px;
-    height: 36px;
-    padding: 8px;
+    min-width: 32px;
+    height: 32px;
+    padding: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 4px; // Softer rounded corners following Figma's design
-    transition: background-color 0.2s ease; // Smooth transitions for better UX
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background-color: #ffffff;
+    border: 1px solid transparent;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
     &.showBorder {
-      box-sizing: border-box;
-      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08); // Subtle border instead of grey outline
+      border-color: #409eff;
+      box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
     }
 
     &:hover {
-      background-color: rgba(64, 87, 109, 0.08); // Slightly more pronounced hover effect
+      background-color: #f5f7fa;
+      border-color: #e0e0e0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     &.active {
-      background-color: rgba(57, 76, 96, 0.16); // Slightly more pronounced active state
-      font-weight: 500; // Add slight weight to indicate active state
+      background-color: #e6f0fa;
+      border-color: #409eff;
+      color: #409eff;
     }
 
     &.disable {
       pointer-events: none;
-      opacity: 0.5; // Use opacity instead of color change for disabled state
+      opacity: 0.5;
+      background-color: #f5f7fa;
     }
   }
 </style>

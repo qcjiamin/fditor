@@ -93,7 +93,7 @@
 </script>
 
 <template>
-  <div class="historyBox">
+  <div class="figmaPublicBar">
     <position-property
       tip="change position"
       :horizontal="attrs.horizontal"
@@ -102,7 +102,9 @@
     ></position-property>
     <opacity-property :opacity="attrs.opacity" tip="opacity" @update:opacity="updateOpacity"></opacity-property>
     <property-normal-item tip="animate" :active="openAni" @click="toggleAnimate">
-      <Orange></Orange>
+      <el-icon size="20">
+        <Orange class="figma-icon"></Orange>
+      </el-icon>
     </property-normal-item>
     <property-normal-item
       v-if="showLockIcon"
@@ -111,56 +113,30 @@
       @click="toggleLock"
     >
       <el-icon v-if="attrs.lock" size="20" color="#409EFF">
-        <Lock></Lock>
+        <Lock class="figma-icon"></Lock>
       </el-icon>
       <el-icon v-else size="20">
-        <Unlock></Unlock>
+        <Unlock class="figma-icon"></Unlock>
       </el-icon>
     </property-normal-item>
     <property-normal-item tip="delete" @click="deleteObj">
       <el-icon size="20">
-        <Delete></Delete>
+        <Delete class="figma-icon"></Delete>
       </el-icon>
     </property-normal-item>
   </div>
 </template>
 
 <style scoped lang="scss">
-  .historyBox {
-    height: 100%;
+  .figmaPublicBar {
     display: flex;
-    flex-wrap: nowrap;
     align-items: center;
-    column-gap: 8px; // Match new design system spacing
+    gap: 8px;
+    padding: 4px;
+  }
 
-    .delete {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      background-color: transparent;
-      transition: background-color 0.2s ease;
-
-      &:hover {
-        background-color: rgba(64, 87, 109, 0.08);
-      }
-    }
-
-    .lock {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 4px;
-      background-color: transparent;
-      transition: background-color 0.2s ease;
-
-      &:hover {
-        background-color: rgba(64, 87, 109, 0.08);
-      }
-    }
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

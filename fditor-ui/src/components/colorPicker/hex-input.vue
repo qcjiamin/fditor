@@ -41,15 +41,29 @@
 <style scoped lang="scss">
   .hexbox {
     width: 100%;
-    height: 25px;
+    height: 32px;
     display: flex;
+
     input {
-      padding: 0px 10px;
-      font-size: 14px;
+      padding: 6px 12px;
+      font-size: 13px;
       width: 100%;
-      border-radius: 5px;
+      border-radius: 6px;
       outline: none;
-      border: none;
+      border: 1px solid #e0e0e0;
+      background-color: #ffffff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #d0d0d0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      &:focus {
+        border-color: #409eff;
+        box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+      }
     }
   }
 </style>

@@ -225,16 +225,22 @@
     >
       {{ attrs.fontfamily }}
     </property-fontfamily-item>
-    <el-input-number :model-value="attrs.fontsize" :min="10" size="small" @change="updateFontsize" />
+    <el-input-number
+      :model-value="attrs.fontsize"
+      :min="10"
+      size="small"
+      @change="updateFontsize"
+      class="figma-input-number"
+    />
     <fill-property :color="attrs.fill" tip="font color" @update:color="updateFill"></fill-property>
     <property-normal-item :active="isBold" :disable="!canBold" @click="updateFontWeight">
-      <FontBold></FontBold>
+      <FontBold class="figma-icon"></FontBold>
     </property-normal-item>
     <property-normal-item :active="isItalic" :disable="!canItalic" @click="updateFontStyle">
-      <FontItalic></FontItalic>
+      <FontItalic class="figma-icon"></FontItalic>
     </property-normal-item>
     <property-normal-item :active="attrs.underline" @click="updateUnderline">
-      <FontUnderline></FontUnderline>
+      <FontUnderline class="figma-icon"></FontUnderline>
     </property-normal-item>
     <align-property :align="attrs.align" tip="alignment" @update:align="updateAlign"></align-property>
     <spacing-property
@@ -249,35 +255,109 @@
 
 <style scoped lang="scss">
   .typeBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+
     :deep(.el-select) {
       width: 120px !important;
       :deep(.el-input__wrapper) {
-        height: 36px !important; // Match new component height
-        padding: 0 8px !important; // Match new padding
-        border-radius: 4px !important; // Match new border radius
-        border: 1px solid #dcdfe6 !important; // Subtle border
-        box-shadow: none !important; // Remove default shadow
+        height: 32px !important;
+        padding: 0 8px !important;
+        border-radius: 4px !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #d0d0d0 !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        &:focus {
+          border-color: #409eff !important;
+          box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3) !important;
+        }
       }
     }
+
     :deep(.el-select__wrapper) {
-      min-height: 36px; // Match new component height
+      min-height: 32px;
     }
-    // 字号输入框
+
+    // 字号输入框 with Figma-inspired styling
     :deep(.el-input-number--small) {
-      width: 100px;
+      width: 80px;
       :deep(.el-input__wrapper) {
-        height: 36px !important; // Match new component height
-        border-radius: 4px !important; // Match new border radius
-        border: 1px solid #dcdfe6 !important; // Subtle border
+        height: 32px !important;
+        border-radius: 4px !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #d0d0d0 !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        &:focus {
+          border-color: #409eff !important;
+          box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3) !important;
+        }
+      }
+
+      :deep(.el-input__inner) {
+        height: 30px;
+        padding: 0 8px;
+        font-size: 13px;
+      }
+
+      :deep(.el-input-number__decrease),
+      :deep(.el-input-number__increase) {
+        width: 24px !important;
+        border-left: 1px solid #e0e0e0 !important;
+        background-color: #f8f9fa;
+
+        &:hover {
+          background-color: #eef2f8;
+        }
       }
     }
+
     :deep(.el-input) {
-      height: 36px; // Match new component height
+      height: 32px;
       :deep(.el-input__wrapper) {
-        height: 36px !important; // Match new component height
-        border-radius: 4px !important; // Match new border radius
-        border: 1px solid #dcdfe6 !important; // Subtle border
+        height: 32px !important;
+        border-radius: 4px !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #d0d0d0 !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        &:focus {
+          border-color: #409eff !important;
+          box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3) !important;
+        }
       }
     }
+  }
+
+  .figma-input-number {
+    :deep(.el-input__wrapper) {
+      padding: 0 4px !important;
+    }
+  }
+
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

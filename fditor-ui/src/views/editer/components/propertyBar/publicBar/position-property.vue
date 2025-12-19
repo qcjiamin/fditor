@@ -43,7 +43,7 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <PositionIcon></PositionIcon>
+      <PositionIcon class="figma-icon"></PositionIcon>
     </template>
     <template #popup>
       <position-box :horizontal="horizontalRef" :vertical="verticalRef" @update:align="updateAlign"></position-box>
@@ -52,8 +52,8 @@
 </template>
 
 <style scoped lang="scss">
-  .anchorIcon {
-    width: 100%;
-    // height: 30px;
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

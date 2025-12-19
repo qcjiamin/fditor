@@ -34,7 +34,7 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <strokeIcon class="anchorIcon"></strokeIcon>
+      <strokeIcon class="figma-icon"></strokeIcon>
     </template>
     <template #popup>
       <stroke-box
@@ -49,11 +49,8 @@
 </template>
 
 <style scoped lang="scss">
-  .anchorIcon {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

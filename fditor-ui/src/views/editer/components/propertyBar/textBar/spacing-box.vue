@@ -49,7 +49,7 @@
 <template>
   <div class="spacingBox">
     <div class="spacingItem">
-      <div>字间距</div>
+      <div class="label">Character Spacing</div>
       <el-slider
         id="charspacing"
         v-model="charSpacingRef"
@@ -60,10 +60,11 @@
         :min="-200"
         @input="inputCharSpacing"
         @change="updateCharSpacing"
+        class="figma-slider"
       />
     </div>
     <div class="spacingItem">
-      <div>行高</div>
+      <div class="label">Line Height</div>
       <el-slider
         id="lineheight"
         v-model="lineHeightRef"
@@ -75,6 +76,7 @@
         :step="0.01"
         @input="inputLineHeight"
         @change="updateLineHeight"
+        class="figma-slider"
       />
     </div>
   </div>
@@ -82,15 +84,81 @@
 
 <style scoped lang="scss">
   .spacingBox {
-    width: 200px;
+    width: 260px;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+
     .spacingItem {
       display: flex;
       flex-direction: column;
-      :deep(.el-slider__input) {
-        width: 60px;
+      gap: 8px;
+
+      .label {
+        font-size: 12px;
+        color: #606266;
+        font-weight: 500;
       }
+
+      :deep(.el-slider) {
+        margin: 0;
+      }
+
+      :deep(.el-slider__input) {
+        width: 70px;
+        margin-left: 12px;
+
+        .el-input__wrapper {
+          height: 28px !important;
+          padding: 0 6px !important;
+          border-radius: 4px !important;
+          border: 1px solid #e0e0e0 !important;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+          background-color: #ffffff;
+          transition: all 0.2s ease;
+
+          &:hover {
+            border-color: #d0d0d0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+          }
+
+          &:focus {
+            border-color: #409eff !important;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3) !important;
+          }
+        }
+      }
+    }
+  }
+
+  .figma-slider {
+    :deep(.el-slider__runway) {
+      height: 4px;
+      background-color: #f0f0f0;
+      border-radius: 2px;
+      margin: 0;
+    }
+
+    :deep(.el-slider__bar) {
+      height: 4px;
+      background-color: #409eff;
+      border-radius: 2px;
+    }
+
+    :deep(.el-slider__button) {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #409eff;
+      background-color: #fff;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    :deep(.el-slider__button:hover) {
+      transform: scale(1.2);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
   }
 </style>

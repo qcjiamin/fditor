@@ -46,7 +46,7 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <FontSpacing></FontSpacing>
+      <FontSpacing class="figma-icon"></FontSpacing>
     </template>
     <template #popup>
       <spacing-box
@@ -60,8 +60,8 @@
 </template>
 
 <style scoped lang="scss">
-  .anchorIcon {
-    width: 100%;
-    // height: 30px;
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

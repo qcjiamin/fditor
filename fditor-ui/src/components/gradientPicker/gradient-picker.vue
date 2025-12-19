@@ -108,19 +108,19 @@
   <div>
     <div class="colors">
       <div class="area">
-        <p>风格</p>
-        <div>
-          <el-radio-group :model-value="gradientType" size="large" fill="#6cf" @update:model-value="updateType">
-            <el-radio-button label="linear90" value="linear90" size="small"><linearA></linearA></el-radio-button>
-            <el-radio-button label="linear180" value="linear180" size="small"><linearB></linearB></el-radio-button>
-            <el-radio-button label="linear135" value="linear135" size="small"><linearC></linearC></el-radio-button>
-            <el-radio-button label="radial50" value="radial50" size="small"><radialA></radialA></el-radio-button>
-            <el-radio-button label="radial0" value="radial0" size="small"><radialB></radialB></el-radio-button>
+        <p class="area-title">Style</p>
+        <div class="radio-group-wrapper">
+          <el-radio-group :model-value="gradientType" fill="#409eff" @update:model-value="updateType">
+            <el-radio-button label="linear90" value="linear90" size="small"><linearA class="radio-icon"></linearA></el-radio-button>
+            <el-radio-button label="linear180" value="linear180" size="small"><linearB class="radio-icon"></linearB></el-radio-button>
+            <el-radio-button label="linear135" value="linear135" size="small"><linearC class="radio-icon"></linearC></el-radio-button>
+            <el-radio-button label="radial50" value="radial50" size="small"><radialA class="radio-icon"></radialA></el-radio-button>
+            <el-radio-button label="radial0" value="radial0" size="small"><radialB class="radio-icon"></radialB></el-radio-button>
           </el-radio-group>
         </div>
       </div>
       <div class="area">
-        <p>渐变色</p>
+        <p class="area-title">Gradient Colors</p>
         <div class="colorstops">
           <div
             v-for="(_color, index) in props.color.colors"
@@ -142,18 +142,71 @@
 </template>
 
 <style scoped lang="scss">
+  .area {
+    margin-bottom: 16px;
+
+    .area-title {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .radio-group-wrapper {
+      :deep(.el-radio-group) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+
+        .el-radio-button {
+          .el-radio-button__inner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #dcdfe6;
+            transition: all 0.2s ease;
+
+            &:hover {
+              border-color: #c0c4cc;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+          }
+
+          &.is-active .el-radio-button__inner {
+            border-color: #409eff;
+            background-color: #e6f0fa;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+          }
+        }
+      }
+    }
+  }
+
   .colorstops {
     display: flex;
-    column-gap: 5px;
+    column-gap: 8px;
     .anchor {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       position: relative;
-      border-radius: 5px;
+      border-radius: 6px;
       overflow: hidden;
-      &.active {
-        border: 2px solid rgb(42, 133, 185);
+      border: 1px solid #e0e0e0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #d0d0d0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
+
+      &.active {
+        border: 2px solid #409eff;
+        box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+      }
+
       .child {
         position: absolute;
         width: 100%;
@@ -162,5 +215,10 @@
         top: 0;
       }
     }
+  }
+
+  .radio-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

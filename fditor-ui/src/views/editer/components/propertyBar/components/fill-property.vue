@@ -64,7 +64,7 @@
     width: 100%;
     height: 100%;
     position: relative;
-    border-radius: 2px; // Keep internal elements slightly rounded
+    border-radius: 4px;
 
     .child {
       position: absolute;
@@ -72,13 +72,14 @@
       height: 100%;
       left: 0;
       top: 0;
-      border-radius: 2px; // Keep internal elements slightly rounded
+      border-radius: 4px;
+      border: 1px solid #e0e0e0;
     }
   }
 
   .pickerContainer {
-    width: 200px; // Slightly wider to match Figma's design
-    border-radius: 8px; // Consistent with popup border radius
-    overflow: hidden; // Ensure content stays within bounds
+    width: 240px;
+    border-radius: 8px;
+    overflow: hidden;
   }
 </style>

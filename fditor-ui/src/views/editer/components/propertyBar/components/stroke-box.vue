@@ -48,18 +48,18 @@
 </script>
 
 <template>
-  <div class="strokeBox">
-    <div class="dash">
+  <div class="figmaStrokeBox">
+    <div class="figmaDash">
       <el-radio-group :model-value="dashType" size="small" @update:model-value="updateDashType">
-        <el-radio-button label="-1" value="-1"><strokeNoneIcon /></el-radio-button>
-        <el-radio-button label="0" value="0"><stroke0Icon /></el-radio-button>
-        <el-radio-button label="15" value="15"><stroke15Icon /></el-radio-button>
-        <el-radio-button label="10" value="10"><stroke10Icon /></el-radio-button>
-        <el-radio-button label="5" value="5"><stroke5Icon /></el-radio-button>
+        <el-radio-button label="-1" value="-1"><strokeNoneIcon class="figma-icon"></strokeNoneIcon></el-radio-button>
+        <el-radio-button label="0" value="0"><stroke0Icon class="figma-icon"></stroke0Icon></el-radio-button>
+        <el-radio-button label="15" value="15"><stroke15Icon class="figma-icon"></stroke15Icon></el-radio-button>
+        <el-radio-button label="10" value="10"><stroke10Icon class="figma-icon"></stroke10Icon></el-radio-button>
+        <el-radio-button label="5" value="5"><stroke5Icon class="figma-icon"></stroke5Icon></el-radio-button>
       </el-radio-group>
     </div>
-    <div class="strokeWidth">
-      <div>描边粗细</div>
+    <div class="figmaStrokeWidth">
+      <div class="figmaLabel">描边粗细</div>
       <el-slider
         v-model="localStrokeWidth"
         show-input
@@ -68,58 +68,126 @@
         :max="Math.floor(maxWidth)"
         @input="inputStrokeWidth"
         @change="updateStrokeWidth"
+        class="figma-slider"
       />
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-  .strokeBox {
+  .figmaStrokeBox {
     display: flex;
     flex-direction: column;
-    row-gap: 12px; // More consistent spacing following design system
-    padding: 4px 0; // Add slight padding for better visual balance
+    gap: 12px;
+    padding: 12px;
+    width: 260px;
+  }
 
-    .dash {
-      :deep(.el-radio-group) {
-        display: flex;
-        // Style the radio buttons to match new design
-        :deep(.el-radio-button) {
-          :deep(.el-radio-button__inner) {
-            border-radius: 4px !important; // Match design system
-            border: 1px solid #dcdfe6 !important;
-            padding: 6px 8px !important; // More compact padding
-          }
-
-          :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-            border-color: #409eff !important;
-            box-shadow: inset 0 0 0 1px #409eff !important;
-          }
-        }
-      }
-    }
-
-    .strokeWidth {
-      font-size: 14px; // Slightly smaller, more refined font
-      color: #606266; // Softer text color
+  .figmaDash {
+    :deep(.el-radio-group) {
       display: flex;
-      flex-direction: column;
-      row-gap: 8px; // Consistent spacing
+      gap: 6px;
 
-      :deep(.el-slider) {
-        padding: 0 4px; // Add padding to keep controls balanced
+      .el-radio-button {
+        .el-radio-button__inner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 8px;
+          border-radius: 6px !important;
+          border: 1px solid #e0e0e0 !important;
+          background-color: #ffffff;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+          transition: all 0.2s ease;
 
-        :deep(.el-slider__input) {
-          width: 60px; // Slightly wider input
-          margin-left: 12px; // More space between slider and input
-
-          :deep(.el-input__inner) {
-            height: 28px; // Match component height
-            border-radius: 4px; // Consistent with design system
-            border: 1px solid #dcdfe6; // Subtle border
+          &:hover {
+            border-color: #d0d0d0 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
           }
+        }
+
+        &.is-active .el-radio-button__inner {
+          border-color: #409eff !important;
+          background-color: #e6f0fa;
+          box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2) !important;
         }
       }
     }
+  }
+
+  .figmaStrokeWidth {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .figmaLabel {
+      font-size: 12px;
+      color: #606266;
+      font-weight: 500;
+    }
+
+    :deep(.el-slider) {
+      margin: 0;
+    }
+
+    :deep(.el-slider__input) {
+      width: 70px;
+      margin-left: 12px;
+
+      .el-input__wrapper {
+        height: 28px !important;
+        padding: 0 6px !important;
+        border-radius: 4px !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #d0d0d0 !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        &:focus {
+          border-color: #409eff !important;
+          box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3) !important;
+        }
+      }
+    }
+  }
+
+  .figma-slider {
+    :deep(.el-slider__runway) {
+      height: 4px;
+      background-color: #f0f0f0;
+      border-radius: 2px;
+      margin: 0;
+    }
+
+    :deep(.el-slider__bar) {
+      height: 4px;
+      background-color: #409eff;
+      border-radius: 2px;
+    }
+
+    :deep(.el-slider__button) {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #409eff;
+      background-color: #fff;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    :deep(.el-slider__button:hover) {
+      transform: scale(1.2);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

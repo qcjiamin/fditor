@@ -35,18 +35,19 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <div class="anchor">
-        <transparentIcon class="child"></transparentIcon>
+      <div class="figmaAnchor">
+        <transparentIcon class="figmaChild"></transparentIcon>
       </div>
     </template>
     <template #popup>
-      <div class="pickerContainer">
+      <div class="figmaPickerContainer">
         <el-slider
           :model-value="opacityRef"
           show-input
           :show-input-controls="false"
           size="small"
           :max="100"
+          class="figma-slider"
           @input="inputHandle"
           @change="changeHandle"
         />
@@ -56,37 +57,83 @@
 </template>
 
 <style scoped lang="scss">
-  .anchor {
+  .figmaAnchor {
     width: 100%;
     height: 100%;
     position: relative;
-    border-radius: 2px; // Keep internal elements slightly rounded
+    border-radius: 4px;
+    overflow: hidden;
 
-    .child {
+    .figmaChild {
       position: absolute;
       width: 100%;
       height: 100%;
       left: 0;
       top: 0;
-      border-radius: 2px; // Keep internal elements slightly rounded
+      border-radius: 4px;
     }
   }
 
-  .pickerContainer {
-    width: 200px; // Slightly wider to match Figma's design
-    padding: 8px 12px; // Add padding for better visual balance
+  .figmaPickerContainer {
+    width: 240px;
+    padding: 12px;
 
     :deep(.el-slider) {
-      :deep(.el-slider__input) {
-        width: 60px; // Slightly wider input
-        margin-left: 12px; // More space between slider and input
+      margin: 0;
+    }
+    :deep(.el-slider__input) {
+      width: 60px;
+      margin-left: 12px;
 
-        :deep(.el-input__inner) {
-          height: 28px; // Match component height
-          border-radius: 4px; // Consistent with design system
-          border: 1px solid #dcdfe6; // Subtle border
+      .el-input__wrapper {
+        height: 28px !important;
+        padding: 0 6px !important;
+        border-radius: 4px !important;
+        border: 1px solid #e0e0e0 !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #d0d0d0 !important;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        &:focus {
+          border-color: #409eff !important;
+          box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3) !important;
         }
       }
+    }
+  }
+
+  .figma-slider {
+    :deep(.el-slider__runway) {
+      height: 4px;
+      background-color: #f0f0f0;
+      border-radius: 2px;
+      margin: 0;
+    }
+
+    :deep(.el-slider__bar) {
+      height: 4px;
+      background-color: #409eff;
+      border-radius: 2px;
+    }
+
+    :deep(.el-slider__button) {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #409eff;
+      background-color: #fff;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    :deep(.el-slider__button:hover) {
+      transform: scale(1.2);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
   }
 </style>

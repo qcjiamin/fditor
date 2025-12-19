@@ -21,7 +21,7 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <RadiusIcon></RadiusIcon>
+      <RadiusIcon class="figma-icon"></RadiusIcon>
     </template>
     <template #popup>
       <radius-box :radius="radius" @update:radius="updateRadius"></radius-box>
@@ -30,8 +30,8 @@
 </template>
 
 <style scoped lang="scss">
-  .anchorIcon {
-    width: 100%;
-    // height: 30px;
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

@@ -25,10 +25,22 @@
   <div class="typeBar">
     <property-normal-item tip="unGroup" @click="unGroup">
       <el-icon size="20">
-        <unGroupIcon></unGroupIcon>
+        <unGroupIcon class="figma-icon"></unGroupIcon>
       </el-icon>
     </property-normal-item>
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .typeBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+  }
+
+  .figma-icon {
+    width: 18px;
+    height: 18px;
+  }
+</style>

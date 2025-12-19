@@ -31,9 +31,9 @@
 <template>
   <property-item :tip="tip">
     <template #anchor>
-      <AlignLeft v-if="currentAlign === 'left'"></AlignLeft>
-      <AlignCenter v-else-if="currentAlign === 'center'"></AlignCenter>
-      <AlignRight v-else></AlignRight>
+      <AlignLeft v-if="currentAlign === 'left'" class="figma-icon"></AlignLeft>
+      <AlignCenter v-else-if="currentAlign === 'center'" class="figma-icon"></AlignCenter>
+      <AlignRight v-else class="figma-icon"></AlignRight>
     </template>
     <template #popup>
       <align-box :align="currentAlign" @update:align="updateAlign"></align-box>
@@ -42,8 +42,8 @@
 </template>
 
 <style scoped lang="scss">
-  .anchorIcon {
-    width: 100%;
-    // height: 30px;
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

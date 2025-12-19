@@ -80,9 +80,9 @@
 </script>
 
 <template>
-  <el-tabs v-model="type" class="tabs">
-    <el-tab-pane label="solid" name="solid"></el-tab-pane>
-    <el-tab-pane label="gradient" name="gradient"></el-tab-pane>
+  <el-tabs v-model="type" class="tabs" type="card" stretch>
+    <el-tab-pane label="Solid" name="solid"></el-tab-pane>
+    <el-tab-pane label="Gradient" name="gradient"></el-tab-pane>
   </el-tabs>
 
   <div class="colorBox">
@@ -96,4 +96,49 @@
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .tabs {
+    :deep(.el-tabs__header) {
+      margin: 0 0 12px 0;
+      border-bottom: 1px solid #e4e7ed;
+    }
+
+    :deep(.el-tabs__nav-wrap)::after {
+      height: 1px;
+      background-color: #e4e7ed;
+    }
+
+    :deep(.el-tabs__item) {
+      padding: 8px 16px;
+      color: #606266;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      transition: all 0.2s ease;
+
+      &.is-active {
+        color: #409eff;
+        background-color: transparent;
+        border: none;
+      }
+
+      &:not(.is-active):hover {
+        color: #409eff;
+      }
+    }
+
+    :deep(.el-tabs__active-bar) {
+      background-color: #409eff;
+      height: 2px;
+    }
+  }
+
+  .colorBox {
+    min-height: 200px;
+  }
+
+  .colorType {
+    border-radius: 8px;
+    overflow: hidden;
+  }
+</style>

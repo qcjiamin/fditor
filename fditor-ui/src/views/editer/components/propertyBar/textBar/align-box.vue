@@ -28,36 +28,50 @@
 
 <template>
   <div class="alignBox" @click="updateAlign">
-    <div class="alignItem" :class="{ active: alignRef === 'left' }" data-align="left"
-      ><AlignLeft class="alignIcon"></AlignLeft
-    ></div>
-    <div class="alignItem" :class="{ active: alignRef === 'center' }" data-align="center"
-      ><AlignCenter class="alignIcon"></AlignCenter
-    ></div>
-    <div class="alignItem" :class="{ active: alignRef === 'right' }" data-align="right"
-      ><AlignRight class="alignIcon"></AlignRight
-    ></div>
+    <div class="alignItem" :class="{ active: alignRef === 'left' }" data-align="left">
+      <AlignLeft class="alignIcon"></AlignLeft>
+    </div>
+    <div class="alignItem" :class="{ active: alignRef === 'center' }" data-align="center">
+      <AlignCenter class="alignIcon"></AlignCenter>
+    </div>
+    <div class="alignItem" :class="{ active: alignRef === 'right' }" data-align="right">
+      <AlignRight class="alignIcon"></AlignRight>
+    </div>
   </div>
 </template>
 
 <style scoped lang="scss">
   .alignBox {
     display: flex;
+    gap: 4px;
+    padding: 8px;
 
-    column-gap: 5px;
     .alignItem {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
       &.active {
-        background-color: rgba(57, 76, 96, 0.15);
+        background-color: #e6f0fa;
+        color: #409eff;
       }
+
       &:hover {
-        background-color: rgba(64, 87, 109, 0.07);
+        background-color: #f0f5f9;
       }
+
+      &:active {
+        background-color: #e1ebf5;
+      }
+
       .alignIcon {
+        width: 18px;
+        height: 18px;
         pointer-events: none;
       }
     }

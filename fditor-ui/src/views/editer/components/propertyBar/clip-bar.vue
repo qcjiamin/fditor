@@ -21,15 +21,15 @@
 </script>
 
 <template>
-  <div class="clipBar">
-    <property-normal-item show-border tip="confirm" @click="confirmClip">
+  <div class="figmaClipBar">
+    <property-normal-item tip="confirm" @click="confirmClip">
       <el-icon size="20">
-        <Check></Check>
+        <Check class="figma-icon"></Check>
       </el-icon>
     </property-normal-item>
-    <property-normal-item show-border tip="cancel" @click="cancelClip">
+    <property-normal-item tip="cancel" @click="cancelClip">
       <el-icon size="20">
-        <Close></Close>
+        <Close class="figma-icon"></Close>
       </el-icon>
     </property-normal-item>
     <!-- <button @click="confirmClip">confirm</button>
@@ -38,13 +38,17 @@
 </template>
 
 <style scoped lang="scss">
-  .clipBar {
-    height: 40px;
-    width: 100%;
+  .figmaClipBar {
+    height: 48px;
     display: flex;
-    column-gap: 10px;
     align-items: center;
     justify-content: center;
-    background-color: rgb(245, 245, 247);
+    gap: 8px;
+    padding: 4px;
+  }
+
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>

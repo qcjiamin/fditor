@@ -208,7 +208,7 @@
 </script>
 
 <template>
-  <div class="typeBar">
+  <div class="figmaShapeBar">
     <fill-property :color="attrs.fill" tip="fill" @update:color="updateFill"></fill-property>
     <fill-property
       v-if="showStroke"
@@ -228,4 +228,12 @@
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+  .figmaShapeBar {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+  }
+</style>

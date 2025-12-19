@@ -35,26 +35,24 @@
 <template>
   <div class="historyBox">
     <property-normal-item tip="undo" :disable="!able.canUndo" @click="undo">
-      <undoIcon></undoIcon>
+      <undoIcon class="figma-icon"></undoIcon>
     </property-normal-item>
     <property-normal-item tip="redo" :disable="!able.canRedo" @click="redo">
-      <redoIcon></redoIcon>
+      <redoIcon class="figma-icon"></redoIcon>
     </property-normal-item>
   </div>
 </template>
 
 <style scoped lang="scss">
   .historyBox {
-    height: 100%;
     display: flex;
-    flex-wrap: nowrap;
-    // justify-content: center;
     align-items: center;
-    column-gap: 5px;
-    .colorBtn {
-      width: 30px;
-      height: 30px;
-      background-color: aqua;
-    }
+    gap: 8px;
+    padding: 4px;
+  }
+
+  .figma-icon {
+    width: 18px;
+    height: 18px;
   }
 </style>
