@@ -1,24 +1,36 @@
 <script lang="ts" setup>
-  import { ref } from 'vue'
   import moveIcon from '@/assets/icons/tool_move.svg'
   import penIcon from '@/assets/icons/tool_pen.svg'
   import pencilIcon from '@/assets/icons/tool_pencil.svg'
+  import type { CanvasMode } from '@/types'
+  import { useEditorStore } from '@/stores/editorStore'
+  import { storeToRefs } from 'pinia'
+  import { inject } from 'vue'
+  import { EditorKey } from '@/constants/injectKey'
+  import type { Editor } from '@fditor/core'
 
-  // Define the available modes
-  type CanvasMode = 'move' | 'pencil' | 'pen'
+  const editorStore = useEditorStore()
+  const { setCanvasMode } = editorStore
+  const { canvasMode } = storeToRefs(editorStore)
 
-  // Current active mode
-  const currentMode = ref<CanvasMode>('move')
+  const editor = inject(EditorKey) as Editor
 
   const modes = [
     { key: 'move' as const, label: 'Select', shortcut: 'V', icon: moveIcon },
     { key: 'pencil' as const, label: 'Pencil', shortcut: 'Shift+P', icon: pencilIcon },
-    { key: 'pen' as const, label: 'Pen', shortcut: 'P', icon: penIcon },
+    { key: 'pen' as const, label: 'Pen', shortcut: 'P', icon: penIcon }
   ]
 
-  // Function to handle mode change
   function changeMode(mode: CanvasMode) {
-    currentMode.value = mode
+    if (mode === canvasMode.value) return
+    if (canvasMode.value === 'pencil') editor.leavePencilMode()
+    // if(canvasMode.value === 'pen') editor.leavePenMode()
+    if (mode === 'pencil') {
+      editor.enterPencilMode()
+    } else if (mode === 'pen') {
+      // editor.enterPenMode()
+    }
+    setCanvasMode(mode)
     console.log(`Canvas mode changed to: ${mode}`)
   }
 </script>
@@ -29,11 +41,11 @@
       v-for="mode in modes"
       :key="mode.key"
       class="modeItem"
-      :class="{ active: currentMode === mode.key }"
+      :class="{ active: canvasMode === mode.key }"
       @click="changeMode(mode.key)"
     >
       <component :is="mode.icon" class="icon" />
-      
+
       <!-- Tooltip -->
       <div class="tooltip">
         <span class="label">{{ mode.label }}</span>

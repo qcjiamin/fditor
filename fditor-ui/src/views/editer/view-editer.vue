@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onMounted, onUnmounted, ref, useTemplateRef, type Component } from 'vue'
+  import { onMounted, onUnmounted, ref, useTemplateRef, watch, type Component } from 'vue'
   import editerHeader from './components/editer-header.vue'
   import editerSidebar from './components/sidebar/editer-sidebar.vue'
   import workspaceMain from './components/workspace/workspace-main.vue'
@@ -20,6 +20,7 @@
   import loginBox from '@/views/editer/login-box.vue'
   import { getProjectByID, requestSaveProject } from '@/utils/request'
   import { createProject, uploadEditorThumbnail } from '@/utils/workflow'
+  import PencilBar from '@/views/editer/components/propertyBar/pencilBar/pencil-bar.vue'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
@@ -118,7 +119,8 @@
 
   const barTypeComponents: Record<CanvasStates, Component> = {
     normal: propertyBar,
-    clip: ClipBar
+    clip: ClipBar,
+    pencil: PencilBar
   }
 
   const workspaceRef = useTemplateRef<HTMLElement>('workspace')
@@ -129,6 +131,20 @@
       editorStore.setCvsState('normal')
     }
   })
+
+  watch(
+    () => editorStore.canvasMode,
+    (newState) => {
+      console.log(newState, 11111)
+      if (newState === 'pencil') {
+        editorStore.setCvsState('pencil')
+      } else if (newState === 'pen') {
+        console.log('pen mode')
+      } else {
+        editorStore.setCvsState('normal')
+      }
+    }
+  )
 </script>
 
 <template>

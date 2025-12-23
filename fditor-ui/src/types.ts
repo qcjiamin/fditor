@@ -4,3 +4,6 @@ export interface ImageInfo {
   width: number
   height: number
 }
+
+/** 画布操作状态 */
+export type CanvasMode = 'move' | 'pencil' | 'pen'

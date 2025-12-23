@@ -1,3 +1,4 @@
+import type { CanvasMode } from '@/types'
 import type { SaveState } from '@/utils/constants'
 import type { CanvasStates, ElementTypes } from '@/utils/types'
 import type { TabName } from '@/views/editer/components/sidebar/types'
@@ -72,7 +73,11 @@ export const useEditorStore = defineStore('editor', () => {
   const setSaveState = function (val: SaveState) {
     saveState.value = val
   }
-
+  /** 舞台状态 */
+  const canvasMode = ref<CanvasMode>('move')
+  const setCanvasMode = function (val: CanvasMode) {
+    canvasMode.value = val
+  }
   return {
     projectID,
     setProjectID,
@@ -94,6 +99,8 @@ export const useEditorStore = defineStore('editor', () => {
     showLoginBox,
     setShowLoginBox,
     saveState,
-    setSaveState
+    setSaveState,
+    canvasMode,
+    setCanvasMode
   }
 })

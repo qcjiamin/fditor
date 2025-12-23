@@ -12,7 +12,7 @@ export enum ElementType {
   activeselection = 'activeselection'
 }
 
-export const CanvasStateArr = ['normal', 'clip'] as const
+export const CanvasStateArr = ['normal', 'clip', 'pencil'] as const
 /** 画布状态=>属性条位置显示的类型 */
 export type CanvasStates = (typeof CanvasStateArr)[number]
 
