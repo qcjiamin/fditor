@@ -8,13 +8,7 @@
   // import { useEditor } from '@/hooks/useEditor'
   import { provide } from 'vue'
   import { EditorKey } from '../../constants/injectKey'
-  import {
-    Editor,
-    LockPlugin,
-    SelectionPlugin,
-    SnapPlugin,
-    WorkspacePlugin
-  } from '@fditor/core'
+  import { Editor, LockPlugin, PencilPlugin, SelectionPlugin, SnapPlugin, WorkspacePlugin } from '@fditor/core'
   import { useEditorStore } from '@/stores/editorStore'
   import HistoryPlugin from '@/pluginForEditor/HistoryPlugin/HistoryPlugin.ts'
   import CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
@@ -26,7 +20,6 @@
   import loginBox from '@/views/editer/login-box.vue'
   import { getProjectByID, requestSaveProject } from '@/utils/request'
   import { createProject, uploadEditorThumbnail } from '@/utils/workflow'
-
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
@@ -83,7 +76,15 @@
     editor.on('history:update', () => {
       eventBus.emit('config:save', 2000)
     })
-    await editor.useAll(WorkspacePlugin, SelectionPlugin, HistoryPlugin, CropPlugin, LockPlugin, SnapPlugin)
+    await editor.useAll(
+      WorkspacePlugin,
+      SelectionPlugin,
+      HistoryPlugin,
+      CropPlugin,
+      LockPlugin,
+      SnapPlugin,
+      PencilPlugin
+    )
     // 平台初始化完成，加载工程配置
     // 获取工程配置
     const url = new window.URL(window.location.href)

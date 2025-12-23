@@ -6,6 +6,7 @@
   import { EditorKey } from '@/constants/injectKey'
   import { isActiveSelection, isGroup, type Editor } from '@fditor/core'
   import { type TPointerEvent } from 'fabric'
+  import CanvasModeSwitcher from './components/canvas-mode-switcher.vue'
 
   // import workspaceBar from './workspace-bar.vue'
   const containerRef = ref<HTMLDivElement | null>(null)
@@ -183,6 +184,7 @@
 <template>
   <div class="workspace-main">
     <div class="pageContainer">
+      <canvas-mode-switcher></canvas-mode-switcher>
       <div id="canvas-container" ref="containerRef" @contextmenu="onContextMenu">
         <!-- <canvas></canvas> -->
       </div>
