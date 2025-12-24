@@ -1,7 +1,10 @@
+<!-- 1. el-slider 的value使用双向绑定 -->
+<!-- 2. 因此不需要watch props.modelValue, 双绑会修改本身的值 -->
 <script lang="ts" setup>
   import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import type { updateColorOptions } from '@/components/colorPicker/types'
-  import { computed } from 'vue'
+  import { ref } from 'vue'
+  // import { computed } from 'vue'
 
   const emit = defineEmits<{
     'update:modelValue': [val: number]
@@ -23,11 +26,11 @@
       step: 1
     }
   )
-
-  const localValue = computed({
-    get: () => props.modelValue,
-    set: (val) => emit('update:modelValue', val)
-  })
+  const modelValRef = ref(props.modelValue)
+  // const localValue = computed({
+  //   get: () => props.modelValue,
+  //   set: (val) => emit('update:modelValue', val)
+  // })
 
   function changeHandle(val: number | number[]) {
     if (Array.isArray(val)) return
@@ -54,7 +57,7 @@
     <template #popup>
       <div class="figmaPickerContainer">
         <el-slider
-          v-model="localValue"
+          v-model="modelValRef"
           show-input
           :show-input-controls="false"
           size="small"

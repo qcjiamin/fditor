@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { ref, watch } from 'vue'
+  import { ref } from 'vue'
   import type { updateColorOptions } from '@/components/colorPicker/types'
 
   const emit = defineEmits<{
@@ -12,19 +12,6 @@
   }>()
   const charSpacingRef = ref(charSpacing)
   const lineHeightRef = ref(lineHeight)
-
-  watch(
-    () => charSpacing,
-    (_charSpacing) => {
-      charSpacingRef.value = _charSpacing
-    }
-  )
-  watch(
-    () => lineHeight,
-    (_lineHeight) => {
-      lineHeightRef.value = _lineHeight
-    }
-  )
 
   function inputCharSpacing(val: number | number[]) {
     if (Array.isArray(val)) return
@@ -58,9 +45,9 @@
         size="small"
         :max="800"
         :min="-200"
+        class="figma-slider"
         @input="inputCharSpacing"
         @change="updateCharSpacing"
-        class="figma-slider"
       />
     </div>
     <div class="spacingItem">
@@ -74,9 +61,9 @@
         :min="0.5"
         :max="2.5"
         :step="0.01"
+        class="figma-slider"
         @input="inputLineHeight"
         @change="updateLineHeight"
-        class="figma-slider"
       />
     </div>
   </div>

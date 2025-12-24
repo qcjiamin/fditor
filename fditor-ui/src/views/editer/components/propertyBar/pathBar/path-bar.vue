@@ -39,9 +39,8 @@
       selected.eset('strokeWidth', value, false)
     } else {
       selected.set('strokeWidth', value)
+      editor.render()
     }
-
-    editor.render()
   }
   function changeStrokeColor(info: ColorInfo, { commit }: updateColorOptions) {
     if (!selected) throw new Error('update path color but no selected')
@@ -61,11 +60,12 @@
     <fill-property
       :color="attrs.strokeColor"
       :enable-gradient="false"
+      tip="stroke color"
       @update:color="changeStrokeColor"
     ></fill-property>
     <slider-property
       :model-value="attrs.strokeWidth"
-      :tip="'lineWidth'"
+      tip="stroke width"
       :min="1"
       :max="100"
       :step="1"
