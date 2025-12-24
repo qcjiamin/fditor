@@ -17,8 +17,13 @@
     'update:color': [info: ColorInfo, options: updateColorOptions]
   }>()
 
-  const { color, tip = '' } = defineProps<{
+  const {
+    color,
+    enableGradient = true,
+    tip = ''
+  } = defineProps<{
     color: ColorInfo
+    enableGradient?: boolean
     tip?: string
   }>()
 
@@ -53,7 +58,7 @@
     <template #popup>
       <div class="pickerContainer">
         <!-- <color-picker v-model:color="transferColor"></color-picker> -->
-        <color-box :color="color" @update:color="updateColor"></color-box>
+        <color-box :color="color" :enable-gradient="enableGradient" @update:color="updateColor"></color-box>
       </div>
     </template>
   </property-item>

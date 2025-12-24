@@ -13,6 +13,7 @@ TODO
 - [x] 插件异步功能 tapable
 - [ ] 鼠标移入元素显示边框效果
 - [x] undo redo
+- [ ] 结合 pinia 优化 history
 - [x] 瀑布流
 - [ ] 虚拟列表
 - [ ] 瀑布流+虚拟列表

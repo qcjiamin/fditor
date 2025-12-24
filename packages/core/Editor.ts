@@ -138,6 +138,8 @@ class Editor extends EventBus<EditorEventMap> {
       this.emit('history:update', undefined)
     })
 
+    // 自由会话时的鼠标样式继承父级元素的样式
+    this.stage.freeDrawingCursor = 'inherit'
     // window.fab = this.stage
     this.#stage.backgroundColor = 'rgba(255,255,255,1)'
   }

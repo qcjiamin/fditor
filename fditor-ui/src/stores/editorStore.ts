@@ -1,4 +1,4 @@
-import type { CanvasMode } from '@/types'
+import type { BrushStyle, CanvasMode } from '@/types'
 import type { SaveState } from '@/utils/constants'
 import type { CanvasStates, ElementTypes } from '@/utils/types'
 import type { TabName } from '@/views/editer/components/sidebar/types'
@@ -78,6 +78,22 @@ export const useEditorStore = defineStore('editor', () => {
   const setCanvasMode = function (val: CanvasMode) {
     canvasMode.value = val
   }
+  /** 画笔样式 */
+  const brushStyle = ref<BrushStyle>({
+    brushType: 'pencil',
+    lineWidth: 15,
+    color: 'rgba(0,0,0,1)'
+  })
+  /** 修改画笔样式，单项修改 */
+  const setBrushStyleByKey = <K extends keyof BrushStyle>(
+    key: K,
+    value: BrushStyle[K] // 泛型推导：value 必须是 key 对应属性的类型
+  ) => {
+    brushStyle.value = {
+      ...brushStyle.value,
+      [key]: value
+    }
+  }
   return {
     projectID,
     setProjectID,
@@ -101,6 +117,8 @@ export const useEditorStore = defineStore('editor', () => {
     saveState,
     setSaveState,
     canvasMode,
-    setCanvasMode
+    setCanvasMode,
+    brushStyle,
+    setBrushStyleByKey
   }
 })

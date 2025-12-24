@@ -1,7 +1,8 @@
 /** 理论上能直接在Editor类上实现这个方法，插件的实现方式可以将这个功能插件化，分配给不同的人实现 */
 import { CircleBrush, PatternBrush, PencilBrush, SprayBrush } from 'fabric'
 import Editor from '../../Editor'
-import { BrushConstructor, brushType } from './type'
+import { BrushConstructor } from './type'
+import { brushType } from '@fditor/core'
 
 declare module '@fditor/core' {
   interface Editor {

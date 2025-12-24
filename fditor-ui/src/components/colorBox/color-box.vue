@@ -5,17 +5,16 @@
   import type { ColorInfo, GradientOption } from '@/views/editer/components/propertyBar/types'
   import type { colorTypes } from '@/components/colorBox/types'
   import type { updateColorOptions } from '@/components/colorPicker/types'
-  const props = defineProps<{
+  const { color, enableGradient = true } = defineProps<{
     color: ColorInfo
+    enableGradient: boolean
   }>()
   const emit = defineEmits<{
     'update:color': [color: ColorInfo, options: updateColorOptions]
   }>()
 
   // type 用做页面切换
-  const type = ref(props.color.type)
-
-  // const transferColor = ref(props.color)
+  const type = ref(color.type)
   const pickerComponents: Record<colorTypes, Component> = {
     solid: ColorPicker,
     gradient: GradientPicker
@@ -80,18 +79,14 @@
 </script>
 
 <template>
-  <el-tabs v-model="type" class="tabs" type="card" stretch>
+  <el-tabs v-if="enableGradient" v-model="type" class="tabs" type="card" stretch>
     <el-tab-pane label="Solid" name="solid"></el-tab-pane>
     <el-tab-pane label="Gradient" name="gradient"></el-tab-pane>
   </el-tabs>
 
   <div class="colorBox">
     <div class="colorType">
-      <component
-        :is="pickerComponents[props.color.type]"
-        :color="props.color.value"
-        @update:color="updateColor"
-      ></component>
+      <component :is="pickerComponents[color.type]" :color="color.value" @update:color="updateColor"></component>
     </div>
   </div>
 </template>

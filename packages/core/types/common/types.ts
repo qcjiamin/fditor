@@ -76,3 +76,6 @@ export type Config = {
 
 export type HorizontalAlign = 'left' | 'center' | 'right'
 export type VerticalAlign = 'top' | 'middle' | 'bottom'
+
+// 定义笔触类型
+export type brushType = 'pencil' | 'circle' | 'spray' | 'pattern'
