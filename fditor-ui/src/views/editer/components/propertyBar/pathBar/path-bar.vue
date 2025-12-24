@@ -1,0 +1,93 @@
+<script lang="ts" setup>
+  import { EditorKey } from '@/constants/injectKey'
+  import { useEditorStore } from '@/stores/editorStore'
+  import type { colorVal, Editor } from '@fditor/core'
+  import { inject, reactive } from 'vue'
+  import { useGetAttrs } from '@/hooks/useGetAttrs'
+  import type { IPathAttrs } from '@/views/editer/components/propertyBar/pathBar/type'
+  import { Path } from 'fabric'
+  import { colorInstance2Info } from '@/utils/common'
+  import sliderProperty from '@/views/editer/components/propertyBar/components/slider-property.vue'
+  import lineWidthIcon from '@/assets/icons/pencilbar/lineWidth.svg'
+  import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
+  import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
+  import type { updateColorOptions } from '@/components/colorPicker/types'
+
+  const editor = inject(EditorKey) as Editor
+  const editorStore = useEditorStore()
+  const selected = editorStore.selected
+
+  const attrs: IPathAttrs = reactive({
+    strokeColor: {
+      type: 'solid',
+      value: 'rgba(0,0,0,1)'
+    },
+    strokeWidth: 15
+  })
+  function getAttrs() {
+    console.log('get font attr')
+    if (!selected) throw new Error('get font color but no selected')
+    if (!(selected instanceof Path)) throw new Error('get attr but is not textbox')
+    attrs.strokeColor = colorInstance2Info(selected.stroke as colorVal)
+    attrs.strokeWidth = selected.strokeWidth ? (selected.strokeWidth ?? 0) : 0
+  }
+  useGetAttrs(getAttrs)
+
+  function changeStrokeWidth(value: number, { commit }: updateColorOptions) {
+    if (!selected) throw new Error('update path color but no selected')
+    if (commit) {
+      selected.eset('strokeWidth', value, false)
+    } else {
+      selected.set('strokeWidth', value)
+    }
+
+    editor.render()
+  }
+  function changeStrokeColor(info: ColorInfo, { commit }: updateColorOptions) {
+    if (!selected) throw new Error('update path color but no selected')
+    if (info.type === 'solid') {
+      if (commit) {
+        selected.eset('stroke', info.value, false)
+      } else {
+        selected.set('stroke', info.value)
+      }
+    }
+    editor.render()
+  }
+</script>
+
+<template>
+  <div class="typeBar">
+    <fill-property
+      :color="attrs.strokeColor"
+      :enable-gradient="false"
+      @update:color="changeStrokeColor"
+    ></fill-property>
+    <slider-property
+      :model-value="attrs.strokeWidth"
+      :tip="'lineWidth'"
+      :min="1"
+      :max="100"
+      :step="1"
+      @change="changeStrokeWidth"
+    >
+      <template #icon>
+        <lineWidthIcon></lineWidthIcon>
+      </template>
+    </slider-property>
+  </div>
+</template>
+
+<style scoped lang="scss">
+  .typeBar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+  }
+
+  .figma-icon {
+    width: 18px;
+    height: 18px;
+  }
+</style>

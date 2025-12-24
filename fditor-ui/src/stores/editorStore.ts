@@ -15,7 +15,8 @@ const type2Type: Record<string, ElementTypes> = {
   activeselection: 'activeselection',
   ftextbox: 'text',
   fimage: 'image',
-  group: 'group'
+  group: 'group',
+  path: 'path'
 }
 
 // 主要用于管理画布的状态

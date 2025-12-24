@@ -11,6 +11,7 @@
   import imageBar from '@/views/editer/components/propertyBar/imageBar/image-bar.vue'
   import ActiveSelectionBar from '@/views/editer/components/propertyBar/activeSelectionBar/activeSelection-bar.vue'
   import GroupBar from '@/views/editer/components/propertyBar/groupBar/group-bar.vue'
+  import PathBar from '@/views/editer/components/propertyBar/pathBar/path-bar.vue'
   const editorStore = useEditorStore()
 
   const barComponents: Record<ElementTypes, Component> = {
@@ -18,6 +19,7 @@
     Shape: ShapeBar,
     image: imageBar,
     text: textBar,
+    path: PathBar,
     activeselection: ActiveSelectionBar,
     group: GroupBar
   }
