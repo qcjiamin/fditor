@@ -79,3 +79,20 @@ export type VerticalAlign = 'top' | 'middle' | 'bottom'
 
 // 定义笔触类型
 export type brushType = 'pencil' | 'circle' | 'spray' | 'pattern'
+
+export type NormalPoint = { x: number; y: number }
+export interface Segment {
+  a: NormalPoint
+  b: NormalPoint
+}
+export interface XNode extends NormalPoint {
+  edges: Edge[]
+}
+export interface Edge {
+  from: XNode
+  to: XNode
+  visited: boolean
+}
+export interface Face {
+  points: NormalPoint[]
+}
