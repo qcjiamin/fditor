@@ -397,6 +397,6 @@ export function initAligningGuidelines(canvas) {
 
   canvas.on('mouse:up', function () {
     verticalLines.length = horizontalLines.length = 0
-    canvas.renderAll()
+    // canvas.renderAll()
   })
 }

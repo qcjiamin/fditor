@@ -42,6 +42,7 @@ TODO
 - [ ] 钢笔工具与贝塞尔曲线
   - [ ] 实现 Path 类封装，数据结构设计 
   - [ ] 添加自定义控制点，实现手柄控制状态
+  - [ ] 有添加或其他修改事件时，退出pen和pencil状态
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制

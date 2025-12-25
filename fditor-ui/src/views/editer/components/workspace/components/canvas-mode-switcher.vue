@@ -25,7 +25,7 @@
     if (mode === canvasMode.value) return
     // 先离开原有模式
     if (canvasMode.value === 'pencil') editor.leavePencilMode()
-    // if(canvasMode.value === 'pen') editor.leavePenMode()
+    if (canvasMode.value === 'pen') editor.leavePenMode()
     // 进入新模式
     if (mode === 'pencil') {
       editor.enterPencilMode(editorStore.brushStyle.brushType)
@@ -34,7 +34,7 @@
       editor.stage.freeDrawingBrush.width = editorStore.brushStyle.lineWidth
       editor.stage.freeDrawingBrush.color = editorStore.brushStyle.color
     } else if (mode === 'pen') {
-      // editor.enterPenMode()
+      editor.enterPenMode()
     }
 
     setCanvasMode(mode)

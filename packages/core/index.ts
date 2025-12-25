@@ -10,6 +10,7 @@ import WorkspacePlugin from './plugins/WorkspacePlugin/WorkspacePlugin'
 import LockPlugin from './plugins/LockPlugin/LockPlugin'
 import SnapPlugin from './plugins/SnapPlugin/SnapPlugin'
 import PencilPlugin from './plugins/PencilPlugin/PencilPlugin'
+import PenPlugin from './plugins/PenPlugin/penPlugin'
 export * from './types/common/types'
 export * from './helper/index'
 export * from './utils/typeAssertions'
@@ -23,4 +24,4 @@ export * from './customShape/FRect'
 export * from './customShape/FTriangle'
 export * from './customShape/FHexagon'
 
-export { Editor, WorkspacePlugin, AlignPlugin, SelectionPlugin, LockPlugin, SnapPlugin, PencilPlugin }
+export { Editor, WorkspacePlugin, AlignPlugin, SelectionPlugin, LockPlugin, SnapPlugin, PencilPlugin, PenPlugin }

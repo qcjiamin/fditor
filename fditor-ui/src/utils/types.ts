@@ -13,7 +13,7 @@ export enum ElementType {
   path = 'path'
 }
 
-export const CanvasStateArr = ['normal', 'clip', 'pencil'] as const
+export const CanvasStateArr = ['normal', 'clip', 'pencil', 'pen'] as const
 /** 画布状态=>属性条位置显示的类型 */
 export type CanvasStates = (typeof CanvasStateArr)[number]
 

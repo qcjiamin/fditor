@@ -8,7 +8,15 @@
   // import { useEditor } from '@/hooks/useEditor'
   import { provide } from 'vue'
   import { EditorKey } from '../../constants/injectKey'
-  import { Editor, LockPlugin, PencilPlugin, SelectionPlugin, SnapPlugin, WorkspacePlugin } from '@fditor/core'
+  import {
+    Editor,
+    LockPlugin,
+    PencilPlugin,
+    SelectionPlugin,
+    SnapPlugin,
+    WorkspacePlugin,
+    PenPlugin
+  } from '@fditor/core'
   import { useEditorStore } from '@/stores/editorStore'
   import HistoryPlugin from '@/pluginForEditor/HistoryPlugin/HistoryPlugin.ts'
   import CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
@@ -21,6 +29,7 @@
   import { getProjectByID, requestSaveProject } from '@/utils/request'
   import { createProject, uploadEditorThumbnail } from '@/utils/workflow'
   import PencilBar from '@/views/editer/components/propertyBar/pencilBar/pencil-bar.vue'
+  import PenBar from '@/views/editer/components/propertyBar/penBar/pen-bar.vue'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
@@ -84,7 +93,8 @@
       CropPlugin,
       LockPlugin,
       SnapPlugin,
-      PencilPlugin
+      PencilPlugin,
+      PenPlugin
     )
     // 平台初始化完成，加载工程配置
     // 获取工程配置
@@ -120,7 +130,8 @@
   const barTypeComponents: Record<CanvasStates, Component> = {
     normal: propertyBar,
     clip: ClipBar,
-    pencil: PencilBar
+    pencil: PencilBar,
+    pen: PenBar
   }
 
   const workspaceRef = useTemplateRef<HTMLElement>('workspace')
@@ -139,7 +150,7 @@
       if (newState === 'pencil') {
         editorStore.setCvsState('pencil')
       } else if (newState === 'pen') {
-        console.log('pen mode')
+        editorStore.setCvsState('pen')
       } else {
         editorStore.setCvsState('normal')
       }
