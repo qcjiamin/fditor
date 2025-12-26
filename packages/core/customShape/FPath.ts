@@ -14,13 +14,13 @@ import {
   util
 } from 'fabric'
 import { createLinearGradient, createRadialGradient, wrapWithFireEvent, wrapWithFixedAnchor } from '../helper'
-import { switchPointFromContainerToLocal, switchPointFromLocalToContainer } from '../utils/mat'
+import { switchPointFromLocalToContainer } from '../utils/mat'
 import svgPath from 'svgpath'
 import { roundCorners } from 'svg-round-corners'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
 import { isFiller, isPattern } from '../utils/typeAssertions'
-import type { Face, LinearGradient, NormalPoint, RadialGradient, Segment, XNode } from '../types/common/types'
+import type { LinearGradient, RadialGradient } from '../types/common/types'
 import { objectCommonProperties } from '../utils/constant'
 
 function pathToPathStr(path: TSimplePathData) {
@@ -107,6 +107,7 @@ export class FPath extends Path {
 
   constructor(path: string, options: Partial<FPathProps> = {}) {
     const _path = roundCorners(path, options.cornerRadius ?? 0).path
+    console.log(_path)
     super(_path, {
       radiusAble: false,
       ...options,
@@ -298,189 +299,6 @@ export class FPath extends Path {
       this.set('fill', autoGradient)
     }
     if (this.canvas) this.canvas.requestRenderAll()
-  }
-
-  _renderFill(ctx: CanvasRenderingContext2D) {
-    // 求2线交点
-    function segmentIntersection(a: NormalPoint, b: NormalPoint, c: NormalPoint, d: NormalPoint): NormalPoint | null {
-      const cross = (p: NormalPoint, q: NormalPoint) => p.x * q.y - p.y * q.x
-
-      const r = { x: b.x - a.x, y: b.y - a.y }
-      const s = { x: d.x - c.x, y: d.y - c.y }
-
-      const denom = cross(r, s)
-      if (Math.abs(denom) < 1e-8) return null
-
-      const t = cross({ x: c.x - a.x, y: c.y - a.y }, s) / denom
-      const u = cross({ x: c.x - a.x, y: c.y - a.y }, r) / denom
-
-      if (t > 0 && t < 1 && u > 0 && u < 1) {
-        return {
-          x: a.x + t * r.x,
-          y: a.y + t * r.y
-        }
-      }
-      return null
-    }
-    // 在交接点位置分割线段
-    function splitSegments(segments: Segment[]): Segment[] {
-      const result: Segment[] = []
-
-      for (let i = 0; i < segments.length; i++) {
-        const seg = segments[i]
-        const points: { x: number; y: number }[] = [seg.a, seg.b]
-
-        for (let j = 0; j < segments.length; j++) {
-          if (i === j) continue
-          const p = segmentIntersection(seg.a, seg.b, segments[j].a, segments[j].b)
-          if (p) points.push(p)
-        }
-
-        // 按在 AB 上的参数排序
-        points.sort((p1, p2) => Math.hypot(p1.x - seg.a.x, p1.y - seg.a.y) - Math.hypot(p2.x - seg.a.x, p2.y - seg.a.y))
-
-        for (let k = 0; k < points.length - 1; k++) {
-          result.push({ a: points[k], b: points[k + 1] })
-        }
-      }
-
-      return result
-    }
-    // 构建平面图
-    function buildGraph(segments: Segment[]): XNode[] {
-      const nodes = new Map<string, XNode>()
-
-      const key = (p: NormalPoint) => `${p.x.toFixed(4)},${p.y.toFixed(4)}`
-
-      const getNode = (p: NormalPoint): XNode => {
-        const k = key(p)
-        if (!nodes.has(k)) {
-          nodes.set(k, { ...p, edges: [] })
-        }
-        return nodes.get(k)!
-      }
-
-      for (const seg of segments) {
-        const a = getNode(seg.a)
-        const b = getNode(seg.b)
-
-        a.edges.push({ from: a, to: b, visited: false })
-        b.edges.push({ from: b, to: a, visited: false })
-      }
-
-      return Array.from(nodes.values())
-    }
-    // 按角度排序出边[关键]
-    function sortEdges(nodes: XNode[]) {
-      for (const node of nodes) {
-        node.edges.sort((e1, e2) => {
-          const a1 = Math.atan2(e1.to.y - node.y, e1.to.x - node.x)
-          const a2 = Math.atan2(e2.to.y - node.y, e2.to.x - node.x)
-          return a1 - a2
-        })
-      }
-    }
-    // 提取闭合面
-    function extractFaces(nodes: XNode[]): Face[] {
-      const faces: Face[] = []
-
-      for (const node of nodes) {
-        for (const edge of node.edges) {
-          if (edge.visited) continue
-
-          const face: NormalPoint[] = []
-          let currentEdge = edge
-
-          while (!currentEdge.visited) {
-            currentEdge.visited = true
-            face.push({ x: currentEdge.from.x, y: currentEdge.from.y })
-
-            const toNode = currentEdge.to
-            const edges = toNode.edges
-            const idx = edges.findIndex((e) => e.to === currentEdge.from)
-
-            // 选“最左转”的下一条边
-            const nextEdge = edges[(idx - 1 + edges.length) % edges.length]
-
-            currentEdge = nextEdge
-          }
-
-          if (face.length > 2) {
-            faces.push({ points: face })
-          }
-        }
-      }
-
-      return faces
-    }
-
-    function polygonArea(points: NormalPoint[]): number {
-      let area = 0
-      for (let i = 0; i < points.length; i++) {
-        const p1 = points[i]
-        const p2 = points[(i + 1) % points.length]
-        area += p1.x * p2.y - p2.x * p1.y
-      }
-      return area / 2
-    }
-    // 过滤掉外部面
-    function filterInnerFaces(faces: Face[]): Face[] {
-      return faces.filter((face) => polygonArea(face.points) > 0)
-    }
-
-    if (!this.fill) {
-      return
-    }
-
-    ctx.save()
-    this._setFillStyles(ctx, this)
-
-    // 将每一条线段列出来
-    const rawSegments: Segment[] = []
-    let a = null
-    let b = null
-
-    for (let i = 0; i < this.path.length; i++) {
-      if (i > 0) {
-        const lastItem = this.path[i - 1]
-        const item = this.path[i]
-        a = { x: lastItem[1] as number, y: lastItem[2] as number }
-        b = { x: item[1] as number, y: item[2] as number }
-        rawSegments.push({ a, b })
-      }
-    }
-    const split = splitSegments(rawSegments)
-    const nodes = buildGraph(split)
-    sortEdges(nodes)
-    const faces = extractFaces(nodes)
-    const inner = filterInnerFaces(faces)
-    console.log(inner)
-    const l = -this.pathOffset.x
-    const t = -this.pathOffset.y
-    // 将内部面单独填充
-    for (const face of inner) {
-      ctx.beginPath()
-
-      const m = this.calcTransformMatrix()
-      const startPoint = new Point(face.points[0].x, face.points[0].y)
-      // let _startPoint = switchPointFromContainerToLocal(m, startPoint)
-      const _startPoint = startPoint.transform(m, true)
-      // ctx.moveTo(face.points[0].x, face.points[0].y)
-      ctx.moveTo(_startPoint.x + l, _startPoint.y + t)
-      for (let i = 1; i < face.points.length; i++) {
-        const point = new Point(face.points[i].x, face.points[i].y)
-
-        // let _point = switchPointFromContainerToLocal(m, point)
-        // _point = _point.transform(m)
-
-        const _point = point.transform(m, true)
-        ctx.lineTo(_point.x + l, _point.y + t)
-        // ctx.lineTo(face.points[i].x, face.points[i].y)
-      }
-      ctx.closePath()
-      ctx.fill()
-    }
-    ctx.restore()
   }
 }
 

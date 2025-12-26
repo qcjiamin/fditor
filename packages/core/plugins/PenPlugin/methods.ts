@@ -1,7 +1,8 @@
 import { Canvas, TPointerEvent } from 'fabric'
 import BasePen from './basePen'
-import { Editor, FPath } from '@fditor/core'
+import { Editor } from '@fditor/core'
 import { penPoint } from './type'
+import { FPenPath } from '../../customShape/FPenPath'
 declare module 'fabric' {
   export interface Canvas {
     pen: BasePen | undefined
@@ -100,7 +101,7 @@ Editor.prototype.leavePenMode = function () {
   const penPoints = pen._points.filter((point) => !point.fake)
   if (penPoints.length > 1) {
     const pathstr = penPointsToPath(penPoints)
-    const path = new FPath(pathstr, {
+    const path = new FPenPath(pathstr, {
       radiusAble: true,
       fill: null,
       stroke: pen.color,

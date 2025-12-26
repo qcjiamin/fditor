@@ -6,4 +6,6 @@ export type penPoint = {
   type: penState
   point: Point
   fake: boolean
+  hover: boolean
+  selected: boolean
 }
