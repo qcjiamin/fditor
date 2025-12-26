@@ -1,4 +1,4 @@
-import { Canvas, TPointerEvent } from 'fabric'
+import { Canvas, Point, TPointerEvent } from 'fabric'
 import BasePen from './basePen'
 import { Editor } from '@fditor/core'
 import { penPoint } from './type'
@@ -41,12 +41,19 @@ Canvas.prototype._onMouseUpInPenMode = function (e: TPointerEvent) {
 /** penPoints 转换为 pathstr */
 function penPointsToPath(points: penPoint[]) {
   let path = ''
+  let lastM: Point | null = null
   for (let i = 0; i < points.length; i++) {
     const { type, point } = points[i]
     if (type === 'move') {
       path += `M${point.x},${point.y}`
+      lastM = point
     } else if (type === 'line') {
-      path += `L${point.x},${point.y}`
+      // L往前寻找，碰到的第一个M，如果与其相同，需要将命令改为Z
+      if (point.x - lastM!.x === 0 && point.y - lastM!.y === 0) {
+        path += 'Z'
+      } else {
+        path += `L${point.x},${point.y}`
+      }
     }
   }
   return path
