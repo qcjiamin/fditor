@@ -188,6 +188,7 @@ export default class BasePen {
     if (!this.canvas._isMainEvent(e)) {
       return
     }
+
     // 先移除fake点
     if (this._points.length > 0) {
       if (this._points[this._points.length - 1].fake) {

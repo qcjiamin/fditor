@@ -70,3 +70,23 @@ TODO
 This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
 Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+
+
+
+### 🎨 Adobe Illustrator 钢笔工具操作汇总表
+
+| 操作分类 | 目标行为 | 快捷键 / 鼠标动作 | 前置条件 / 依赖操作 |
+| :--- | :--- | :--- | :--- |
+| **基础绘图** | 绘制直线锚点 | **左键单击** | 无 |
+| | 绘制曲线锚点 | **左键按住并拖拽** | 无 |
+| | 绘制水平/垂直/45°线 | **Shift + 点击/拖拽** | 正在绘制路径中 |
+| | 闭合路径 | 移至起点出现“○”时 **点击** | 至少已有一个锚点 |
+| **路径调整** | 转换锚点（尖角变圆角） | 按住 **Alt (Win) / Opt (Mac)** | 鼠标悬停在现有锚点上 |
+| | 实时拆分调节杆方向 | 按住 **Alt (Win) / Opt (Mac)** | 正在拖拽曲线调节杆时 |
+| | 移动正在绘制中的锚点 | 按住 **空格键 (Space)** | 鼠标左键尚未松开时 |
+| | 增加锚点 | 移至路径线段出现“+”时 **点击** | 必须悬停在现有路径段上 |
+| | 删除锚点 | 移至现有锚点出现“-”时 **点击** | 必须悬停在现有锚点上 |
+| **工具切换** | 临时切换到“直接选择工具” | 按住 **Ctrl (Win) / Cmd (Mac)** | 用于移动已定位的锚点或杆 |
+| | 强制结束当前路径 | **Enter** 或 **Esc** 或 **Ctrl+点击空白** | 路径未闭合但需停止绘制 |
+| **高级控制** | 重新连接路径末端 | 移至末端锚点出现“/”时 **点击** | 之前路径已断开且当前选中钢笔 |
+| | 橡皮带预览（预看线条） | 在首选项中开启“启用橡皮带” | 无 |
