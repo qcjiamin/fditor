@@ -149,13 +149,30 @@ export class FPenPath extends FPath {
 
     // 将每一条线段列出来
     const rawSegments: Segment[] = []
+
+    // 将所有的Z转换为L，不然拆分线段时会出错
+    // 可以和拆分线段放在一个循环里，这里为了逻辑清晰分开处理
+    const copyPath = this.path.slice()
+    let lastM = null
+    for (let i = 0; i < copyPath.length; i++) {
+      const item = copyPath[i]
+      if (item[0] === 'M') {
+        lastM = item
+      } else if (item[0] === 'Z') {
+        if (lastM) {
+          copyPath[i] = ['L', lastM[1], lastM[2]]
+        } else {
+          throw new Error('Z command must follow M command')
+        }
+      }
+    }
+
     let a = null
     let b = null
-
-    for (let i = 0; i < this.path.length; i++) {
+    for (let i = 0; i < copyPath.length; i++) {
       if (i > 0) {
-        const lastItem = this.path[i - 1]
-        const item = this.path[i]
+        const lastItem = copyPath[i - 1]
+        const item = copyPath[i]
         a = { x: lastItem[1] as number, y: lastItem[2] as number }
         b = { x: item[1] as number, y: item[2] as number }
         rawSegments.push({ a, b })
