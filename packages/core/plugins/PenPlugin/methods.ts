@@ -43,7 +43,8 @@ function penPointsToPath(points: penPoint[]) {
   let path = ''
   let lastM: Point | null = null
   for (let i = 0; i < points.length; i++) {
-    const { type, point } = points[i]
+    const { type, x, y } = points[i]
+    const point = new Point(x, y)
     if (type === 'move') {
       path += `M${point.x},${point.y}`
       lastM = point
@@ -105,7 +106,7 @@ Editor.prototype.leavePenMode = function () {
   const pen = this.stage.pen
   this.stage.pen = undefined
   // 添加path到画布
-  const penPoints = pen._points.filter((point) => !point.fake)
+  const penPoints = pen.points.filter((point) => point.role === 'anchor')
   if (penPoints.length > 1) {
     const pathstr = penPointsToPath(penPoints)
     const path = new FPenPath(pathstr, {

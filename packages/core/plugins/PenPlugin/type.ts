@@ -1,13 +1,11 @@
-import { Point } from 'fabric'
-
 /** 钢笔工具的状态，常规、连线 */
 export type penState = 'move' | 'line'
 export type segmentType = 'line' | 'quadratic' | 'cubic'
 export type penPoint = {
   id: string
   type: penState
-  point: Point
-  fake: boolean
+  x: number
+  y: number
   hover: boolean
   selected: boolean
   role: 'anchor' | 'handle'
@@ -17,11 +15,10 @@ export type penPoint = {
 
 export type penSegment = {
   id: string
-  from: penPoint
-  to: penPoint
+  from: string
+  to: string
   type: segmentType
   handleIn?: penPoint
   handleOut?: penPoint
-  fake: boolean
   selected: boolean
 }

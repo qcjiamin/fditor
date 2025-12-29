@@ -2,10 +2,11 @@
 // 拖动点，要实现吸附效果成为必然，它能保证点的值相同
 // 钢笔状态下，hover的点从最后一个找。 绘制控制点时从最后一个开始绘制。因为hover和selected都挂载最后的点上，如果从前往后，控制点绘制时去重会使状态绘制不出来
 import { Canvas, Point, TBrushEventData } from 'fabric'
-import type { penPoint, penState } from './type'
+import type { penPoint, penSegment, penState } from './type'
 export default class BasePen {
   canvas: Canvas
-  _points: penPoint[] = []
+  points: penPoint[] = []
+  segments: penSegment[] = []
   /** 初始状态为move, 因为第一个点一定是move */
   // 变为 line 的条件是添加了一个点
   // 变为 move 的条件是在 line 状态下 esc 一次
@@ -13,6 +14,8 @@ export default class BasePen {
   // 点击的点与最后一个点要做判断，是否在最后一个点的范围内，如果是，拒绝添加
   // 点击的点与除最后一个点之间做判断，如果点在前面的点上，添加move状态的点
   state: penState = 'move'
+  /** 临时记录中间非第一个move点 */
+  movePoint: penPoint | null = null
   color = 'rgba(0, 0, 0, 1)'
   width = 2
   strokeLineCap: CanvasLineCap = 'round'
@@ -50,35 +53,53 @@ export default class BasePen {
    * @param fake 表示当前添加的点是否为鼠标移动模拟的
    * @returns
    */
-  _addPoint(point: Point, fake: boolean = false, select: boolean = false) {
-    this._points.push({
+  _addPoint(point: Point, select: boolean = false) {
+    let lastPoint = null
+    if (this.state === 'line') {
+      const anchorPoint = this.points.filter((point) => point.role === 'anchor')
+      if (anchorPoint.length < 1) {
+        throw new Error('do not have last anchor point')
+      }
+      lastPoint = anchorPoint[anchorPoint.length - 1]
+    }
+    this.points.push({
+      id: window.crypto.randomUUID() as string,
+      role: 'anchor',
       type: this.state,
-      point,
-      fake,
+      x: point.x,
+      y: point.y,
       hover: false,
       selected: select
     })
-    if (!fake) {
-      this.state = 'line'
+    if (this.state === 'line') {
+      this.segments.push({
+        id: window.crypto.randomUUID() as string,
+        from: this.movePoint ? this.movePoint.id : lastPoint!.id,
+        to: this.points[this.points.length - 1].id,
+        type: 'line',
+        selected: false
+      })
+      this.movePoint = null
     }
     // 所有操作最终都会添加点，将重新绘制的触发逻辑放到这里
+    this.state = 'line'
     this._render()
     return true
   }
   esc() {
-    // 移除最后一个点
-    const lastPoint = this._points[this._points.length - 1]
-    if (this._points.length > 0) {
-      this._points.pop()
-    }
-    if (this.state === 'move') {
-      this.canvas.pen = undefined
-    } else if (this.state === 'line') {
-      this.state = 'move'
-      if (lastPoint) {
-        this._addPoint(lastPoint.point)
-      }
-    }
+    // // 移除最后一个点
+    // const lastPoint = this.points[this.points.length - 1]
+    // if (this.points.length > 0) {
+    //   this.points.pop()
+    // }
+    // if (this.state === 'move') {
+    //   this.canvas.pen = undefined
+    // } else if (this.state === 'line') {
+    //   this.state = 'move'
+    //   if (lastPoint) {
+    //     this._addPoint(lastPoint.point)
+    //   }
+    // }
   }
   /**
    * 检查一个点是否处于某一个控制点附近
@@ -86,11 +107,11 @@ export default class BasePen {
    * @returns
    */
   isOverPoint(point: Point) {
-    for (let i = this._points.length - 1; i >= 0; i--) {
-      if (this._points[i].fake) continue
-      const { point: p } = this._points[i]
+    for (let i = this.points.length - 1; i >= 0; i--) {
+      const { x, y } = this.points[i]
+      const p = new Point(x, y)
       if (p.distanceFrom(point) < this.pointRadius + 2) {
-        return this._points[i]
+        return this.points[i]
       }
     }
     return null
@@ -102,12 +123,19 @@ export default class BasePen {
     this._saveAndTransform(ctx)
     // 设置样式
     // this._setStyles(ctx)
-
+    let lastPointId = ''
     ctx.beginPath()
-    for (let i = 0; i < this._points.length; i++) {
-      const { type, point } = this._points[i]
-      if (type === 'move') ctx.moveTo(point.x, point.y)
-      else if (type === 'line') ctx.lineTo(point.x, point.y)
+    for (let i = 0; i < this.segments.length; i++) {
+      const { from, to } = this.segments[i]
+      const fromPoint = this.points.find((point) => point.id === from) as penPoint
+      const toPoint = this.points.find((point) => point.id === to) as penPoint
+      if (lastPointId === fromPoint.id) {
+        ctx.lineTo(toPoint.x, toPoint.y)
+      } else {
+        ctx.moveTo(fromPoint.x, fromPoint.y)
+        ctx.lineTo(toPoint.x, toPoint.y)
+      }
+      lastPointId = toPoint.id
     }
     ctx.stroke()
 
@@ -122,32 +150,17 @@ export default class BasePen {
     ctx.strokeStyle = this.pointStroke
     ctx.fillStyle = this.pointFill
 
-    // 优先画移动点，因为hover状态的点要在移动点之上
-    const fakePoint = this._points[this._points.length - 1]
-    if (fakePoint.fake) {
-      const { point } = fakePoint
-      ctx.beginPath()
-      ctx.arc(point.x, point.y, this.pointRadius, 0, Math.PI * 2)
-      ctx.stroke()
-    }
-
     //! 节点只用画一遍，去重。从后往前画！
-    const haveDrawNodes: Point[] = []
+    const anchorPoints = this.points.filter((point) => point.role === 'anchor')
+    for (let i = 0; i <= anchorPoints.length - 1; i++) {
+      const { x, y, hover, selected } = anchorPoints[i]
 
-    for (let i = this._points.length - 1; i >= 0; i--) {
-      const { point, fake, hover, selected } = this._points[i]
-
-      // 如果最后一个点是移动点，不用再画，前面已经画过了
-      if (i === this._points.length - 1) {
-        if (fake) continue
-      }
-      if (haveDrawNodes.includes(point)) continue
       if (hover) {
         ctx.save()
         ctx.fillStyle = this.pointHoverFill
         ctx.strokeStyle = this.pointHoverStroke
         ctx.beginPath()
-        ctx.arc(point.x, point.y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
         ctx.restore()
@@ -156,97 +169,103 @@ export default class BasePen {
         ctx.fillStyle = this.pointSelectFill
         ctx.strokeStyle = this.pointSelectStroke
         ctx.beginPath()
-        ctx.arc(point.x, point.y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
         ctx.restore()
       } else {
         ctx.beginPath()
-        ctx.arc(point.x, point.y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
       }
-      haveDrawNodes.push(point)
     }
     ctx.restore()
     console.log('render pen')
   }
 
   clearSelcted() {
-    this._points.forEach((point) => {
+    this.points.forEach((point) => {
       point.selected = false
     })
   }
   clearHover() {
-    const realPoint = this._points.filter((point) => !point.fake)
-    realPoint.forEach((point) => {
+    const anchorPoint = this.points.filter((point) => point.role === 'anchor')
+    anchorPoint.forEach((point) => {
       point.hover = false
     })
   }
 
-  onMouseDown(pointer: Point, { e }: TBrushEventData) {
+  onMouseDown(point: Point, { e }: TBrushEventData) {
     if (!this.canvas._isMainEvent(e)) {
       return
     }
 
-    // 先移除fake点
-    if (this._points.length > 0) {
-      if (this._points[this._points.length - 1].fake) {
-        this._points.pop()
-      }
-    }
-
-    const hoverPenPoint = this.isOverPoint(pointer)
+    const hoverPenPoint = this.isOverPoint(point)
     if (hoverPenPoint) {
-      // 如果本身是move状态，点到一个存在的点上, 状态修改为line 添加点, 然后选中该点
+      // 如果本身是move状态，点到一个存在的点上, 状态修改为line, 记录临时move点
       if (this.state === 'move') {
-        this._addPoint(hoverPenPoint.point, false, true)
         this.state = 'line'
-        // hoverPenPoint.selected = true
+        hoverPenPoint.selected = true
+        this.movePoint = hoverPenPoint
       } else if (this.state === 'line') {
         // 如果只有一个点，且点击在其范围内，什么都不做
-        if (this._points.length === 1) return
+        if (this.points.length === 1) return
         // 如果有多个点，点在最后一个点范围内，什么都不做
-        if (this._points.length > 1 && hoverPenPoint === this._points[this._points.length - 1]) {
+        if (this.points.length > 1 && hoverPenPoint === this.points[this.points.length - 1]) {
+          // todo: 点击后拖拽生成贝塞尔手柄和控制点
           return
         }
         this.clearSelcted()
         //! 其他情况，添加一个与hover相同的点， 然后变为move状态
-        this._addPoint(hoverPenPoint.point)
+        this._addPoint(new Point(hoverPenPoint.x, hoverPenPoint.y))
         this.state = 'move'
       }
     } else {
       this.clearSelcted()
-      this._addPoint(pointer, false, true)
+      this._addPoint(point, true)
     }
   }
   // 暂时先复用 TBrushEventData， 后续根据具体需求改进
-  onMouseMove(pointer: Point, { e }: TBrushEventData) {
+  onMouseMove(point: Point, { e }: TBrushEventData) {
     if (!this.canvas._isMainEvent(e)) {
       return
     }
     // 检测当前点是否在存在的点附近
-    const realPoint = this._points.filter((point) => !point.fake)
-    realPoint.forEach((point) => {
-      point.hover = false
-    })
-    const hoverPenPoint = this.isOverPoint(pointer)
+    this.clearHover()
+    const hoverPenPoint = this.isOverPoint(point)
     if (hoverPenPoint) {
       hoverPenPoint.hover = true
     }
 
-    // 移除上一个点
-    if (this._points.length > 0) {
-      if (this._points[this._points.length - 1].fake) {
-        this._points.pop()
+    const ctx = this.canvas.contextTop
+    this.canvas.clearContext(ctx)
+    this._saveAndTransform(ctx)
+    // 不添加，直接绘制
+    ctx.lineWidth = this.pointStrokeWidth
+    ctx.strokeStyle = this.pointStroke
+    ctx.fillStyle = this.pointFill
+
+    // 优先画移动点，因为hover状态的点要在移动点之上
+    ctx.beginPath()
+    ctx.arc(point.x, point.y, this.pointRadius, 0, Math.PI * 2)
+    ctx.stroke()
+    const lastPoint = this.points[this.points.length - 1]
+    if (lastPoint && this.state === 'line') {
+      // 画线
+      ctx.save()
+      ctx.strokeStyle = this.pointStroke
+      ctx.moveTo(lastPoint.x, lastPoint.y)
+      if (hoverPenPoint) {
+        ctx.lineTo(hoverPenPoint.x, hoverPenPoint.y)
+      } else {
+        ctx.lineTo(point.x, point.y)
       }
+      ctx.stroke()
+      ctx.restore()
     }
-    // 吸附效果
-    if (hoverPenPoint) {
-      this._addPoint(hoverPenPoint.point, true)
-    } else {
-      this._addPoint(pointer, true)
-    }
+    ctx.restore()
+    this._render()
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onMouseUp(pointer: Point, { e }: TBrushEventData) {
