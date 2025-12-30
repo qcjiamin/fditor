@@ -123,7 +123,9 @@ Editor.prototype.leavePenMode = function () {
       strokeWidth: pen.width,
       strokeLineCap: pen.strokeLineCap,
       strokeLineJoin: pen.strokeLineJoin,
-      strokeMiterLimit: pen.strokeMiterLimit
+      strokeMiterLimit: pen.strokeMiterLimit,
+      points: pen.points,
+      segments: pen.segments
     })
     this.add(path)
   }
@@ -142,4 +144,20 @@ Editor.prototype.leavePenMode = function () {
   //   })
   //   this.add(path)
   // }
+}
+
+declare module '@fditor/core' {
+  interface FPenPath {
+    enterSelectMode(): void
+  }
+}
+
+FPenPath.prototype.enterSelectMode = function () {
+  if (!this.canvas) {
+    throw Error('enterSelectMode: no canvas')
+  }
+  const pen = new BasePen(this.canvas)
+  pen.points = this.points
+  pen.segments = this.segments
+  this.canvas.pen = pen
 }

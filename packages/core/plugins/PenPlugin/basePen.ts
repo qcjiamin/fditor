@@ -2,11 +2,12 @@
 // 拖动点，要实现吸附效果成为必然，它能保证点的值相同
 // 钢笔状态下，hover的点从最后一个找。 绘制控制点时从最后一个开始绘制。因为hover和selected都挂载最后的点上，如果从前往后，控制点绘制时去重会使状态绘制不出来
 import { Canvas, Point, TBrushEventData } from 'fabric'
-import type { penPoint, penSegment, penState } from './type'
+import type { penPoint, penSegment, penState, subPenType } from './type'
 export default class BasePen {
   canvas: Canvas
   points: penPoint[] = []
   segments: penSegment[] = []
+  subType: subPenType = 'pen'
   /** 初始状态为move, 因为第一个点一定是move */
   // 变为 line 的条件是添加了一个点
   // 变为 move 的条件是在 line 状态下 esc 一次
@@ -34,8 +35,9 @@ export default class BasePen {
   pointHoverFill = 'rgba(59, 130, 246, 0.30)'
   pointSelectStroke = 'rgba(255, 255, 255, 1)'
   pointSelectFill = 'rgba(59, 130, 246, 1)'
-  constructor(canvas: Canvas) {
+  constructor(canvas: Canvas, subType: subPenType = 'pen') {
     this.canvas = canvas
+    this.subType = subType
     this._setStyles(this.canvas.contextTop)
   }
   protected _saveAndTransform(ctx: CanvasRenderingContext2D) {

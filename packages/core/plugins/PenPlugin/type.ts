@@ -1,4 +1,6 @@
-/** 钢笔工具的状态，常规、连线 */
+/** 钢笔工具的子类型 */
+export type subPenType = 'pen' | 'select' | 'curve'
+/** 钢笔工具-绘制工具的状态，常规、连线 */
 export type penState = 'move' | 'line'
 export type segmentType = 'line' | 'quadratic' | 'cubic'
 export type penPoint = {

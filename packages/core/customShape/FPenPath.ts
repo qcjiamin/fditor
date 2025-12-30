@@ -1,9 +1,36 @@
-import { classRegistry, Point } from 'fabric'
+import { classRegistry, Control, Point } from 'fabric'
 import type { Face, NormalPoint, Segment, XNode } from '../types/common/types'
-import { FPath } from './FPath'
+import { FPath, FPathProps } from './FPath'
+import { objectCommonProperties } from '../utils/constant'
+import { penPoint, penSegment } from '../plugins/PenPlugin/type'
+
+interface UniqueFPenPathProps {
+  points: penPoint[]
+  segments: penSegment[]
+}
+// export interface FPenPathProps extends PathProps, UniqueFPenPathProps {}
 
 export class FPenPath extends FPath {
   static type = 'fpenpath'
+  public static customProperties: string[] = [
+    ...objectCommonProperties,
+    'points',
+    'segments',
+    'cornerRadius',
+    'radiusAble',
+    'originPath',
+    'originWidth',
+    'originHeight'
+  ]
+  public points: penPoint[]
+  public segments: penSegment[]
+  // points 和 segments 必填
+  constructor(path: string, options: Partial<FPathProps> & UniqueFPenPathProps) {
+    super(path, options)
+    this.points = options.points
+    this.segments = options.segments
+  }
+
   _render(ctx: CanvasRenderingContext2D) {
     // this.paintFirst 属性在此对象上无效
     this._renderFill(ctx)
@@ -202,6 +229,23 @@ export class FPenPath extends FPath {
     }
     ctx.restore()
   }
+
+  createPenPathControls() {
+    const controls = {}
+    // const anchorPoints = this.points.filter((point) => point.role === 'anchor')
+    // anchorPoints.forEach((point) => {
+    //   controls[point.id] = new Control({
+    //     actionName: 'move-point',
+    //     positionHandler:,
+    //     actionHandler:
+    //   })
+    // })
+    return controls
+  }
+  /** 进入控制点状态 */
+  // enterControlState() {
+  //   new BasePen
+  // }
 }
 
 classRegistry.setClass(FPenPath, 'fpenpath')
