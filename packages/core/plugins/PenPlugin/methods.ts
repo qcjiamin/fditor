@@ -3,6 +3,7 @@ import BasePen from './basePen'
 import { Editor } from '@fditor/core'
 import { penPoint, penSegment } from './type'
 import { FPenPath } from '../../customShape/FPenPath'
+import { isSubPen } from './typeAssertions'
 declare module 'fabric' {
   export interface Canvas {
     pen: BasePen | undefined
@@ -101,17 +102,21 @@ declare module '@fditor/core' {
   interface Editor {
     enterPenMode(): void
     leavePenMode(): void
+    enterPenSelectMode(): void
+    leavePenSelectMode(): void
   }
 }
 
 Editor.prototype.enterPenMode = function () {
-  this.stage.pen = new BasePen(this.stage)
+  this.stage.pen = new BasePen(this.stage, 'pen')
+  // this.stage.pen.currentSubTool.enter(this.stage.pen)
 }
 
 Editor.prototype.leavePenMode = function () {
   if (!this.stage.pen) return
 
   const pen = this.stage.pen
+  if (!isSubPen(pen.currentSubTool)) return
   this.stage.pen = undefined
   // 添加path到画布
   if (pen.segments.length > 0) {
@@ -119,11 +124,11 @@ Editor.prototype.leavePenMode = function () {
     const path = new FPenPath(pathstr, {
       radiusAble: true,
       fill: null,
-      stroke: pen.color,
-      strokeWidth: pen.width,
-      strokeLineCap: pen.strokeLineCap,
-      strokeLineJoin: pen.strokeLineJoin,
-      strokeMiterLimit: pen.strokeMiterLimit,
+      stroke: pen.currentSubTool.color,
+      strokeWidth: pen.currentSubTool.width,
+      strokeLineCap: pen.currentSubTool.strokeLineCap,
+      strokeLineJoin: pen.currentSubTool.strokeLineJoin,
+      strokeMiterLimit: pen.currentSubTool.strokeMiterLimit,
       points: pen.points,
       segments: pen.segments
     })
@@ -156,8 +161,11 @@ FPenPath.prototype.enterSelectMode = function () {
   if (!this.canvas) {
     throw Error('enterSelectMode: no canvas')
   }
-  const pen = new BasePen(this.canvas)
+  const pen = new BasePen(this.canvas, 'select')
   pen.points = this.points
   pen.segments = this.segments
   this.canvas.pen = pen
+  this.canvas.discardActiveObject()
+  this.canvas.renderAll()
+  pen.currentSubTool._render(pen)
 }
