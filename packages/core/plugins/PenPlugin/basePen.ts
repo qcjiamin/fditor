@@ -15,7 +15,11 @@ export default class BasePen {
   // 点击的点与除最后一个点之间做判断，如果点在前面的点上，添加move状态的点
   state: penState = 'move'
   /** 临时记录中间非第一个move点 */
-  movePoint: penPoint | null = null
+  mPoint: penPoint | null = null
+  /** 记录mouseMove 事件的点 */
+  mousePoint: Point | null = null
+  /** move时hover的点 */
+  hoverPoint: penPoint | null = null
   color = 'rgba(0, 0, 0, 1)'
   width = 2
   strokeLineCap: CanvasLineCap = 'round'
@@ -39,6 +43,10 @@ export default class BasePen {
     ctx.save()
     ctx.transform(v[0], v[1], v[2], v[3], v[4], v[5])
   }
+  get anchorPoints() {
+    return this.points.filter((point) => point.role === 'anchor')
+  }
+
   _setStyles(ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = this.color
     ctx.lineWidth = this.width
@@ -72,14 +80,15 @@ export default class BasePen {
       selected: select
     })
     if (this.state === 'line') {
+      console.log(this.mPoint)
       this.segments.push({
         id: window.crypto.randomUUID() as string,
-        from: this.movePoint ? this.movePoint.id : lastPoint!.id,
+        from: this.mPoint ? this.mPoint.id : lastPoint!.id,
         to: this.points[this.points.length - 1].id,
         type: 'line',
         selected: false
       })
-      this.movePoint = null
+      this.mPoint = null
     }
     // 所有操作最终都会添加点，将重新绘制的触发逻辑放到这里
     this.state = 'line'
@@ -107,11 +116,12 @@ export default class BasePen {
    * @returns
    */
   isOverPoint(point: Point) {
-    for (let i = this.points.length - 1; i >= 0; i--) {
-      const { x, y } = this.points[i]
+    const anchorPoints = this.anchorPoints
+    for (let i = anchorPoints.length - 1; i >= 0; i--) {
+      const { x, y } = anchorPoints[i]
       const p = new Point(x, y)
       if (p.distanceFrom(point) < this.pointRadius + 2) {
-        return this.points[i]
+        return anchorPoints[i]
       }
     }
     return null
@@ -121,6 +131,37 @@ export default class BasePen {
     // 绘制钢笔路线
     this.canvas.clearContext(ctx)
     this._saveAndTransform(ctx)
+
+    if (!this.mousePoint) {
+      throw new Error('mousePoint is null')
+    }
+    // 画移动线
+    // 先判断是否处于共享顶点的起始状态
+    const endPoint = this.mPoint ? this.mPoint : this.points[this.points.length - 1]
+    if (endPoint && this.state === 'line') {
+      ctx.save()
+      ctx.strokeStyle = this.pointStroke
+      ctx.moveTo(endPoint.x, endPoint.y)
+      if (this.hoverPoint) {
+        ctx.lineTo(this.hoverPoint.x, this.hoverPoint.y)
+      } else {
+        ctx.lineTo(this.mousePoint!.x, this.mousePoint!.y)
+      }
+      ctx.stroke()
+      ctx.restore()
+    }
+    // 画移动圈
+    ctx.save()
+    ctx.lineWidth = this.pointStrokeWidth
+    ctx.strokeStyle = this.pointStroke
+    ctx.fillStyle = this.pointFill
+    // 优先画移动点，因为hover状态的点要在移动点之上
+    ctx.beginPath()
+    ctx.arc(this.mousePoint!.x, this.mousePoint!.y, this.pointRadius, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.restore()
+
+    // 画线段
     // 设置样式
     // this._setStyles(ctx)
     let lastPointId = ''
@@ -139,7 +180,7 @@ export default class BasePen {
     }
     ctx.stroke()
 
-    // 绘制控制点
+    // 画控制点
     // 再遍历一遍，给每个点绘制圆形控制点
     ctx.lineWidth = this.pointStrokeWidth
     // ctx.lineCap = decl.strokeLineCap
@@ -150,7 +191,6 @@ export default class BasePen {
     ctx.strokeStyle = this.pointStroke
     ctx.fillStyle = this.pointFill
 
-    //! 节点只用画一遍，去重。从后往前画！
     const anchorPoints = this.points.filter((point) => point.role === 'anchor')
     for (let i = 0; i <= anchorPoints.length - 1; i++) {
       const { x, y, hover, selected } = anchorPoints[i]
@@ -201,13 +241,13 @@ export default class BasePen {
       return
     }
 
-    const hoverPenPoint = this.isOverPoint(point)
+    const hoverPenPoint = this.hoverPoint
     if (hoverPenPoint) {
       // 如果本身是move状态，点到一个存在的点上, 状态修改为line, 记录临时move点
       if (this.state === 'move') {
         this.state = 'line'
         hoverPenPoint.selected = true
-        this.movePoint = hoverPenPoint
+        this.mPoint = hoverPenPoint
       } else if (this.state === 'line') {
         // 如果只有一个点，且点击在其范围内，什么都不做
         if (this.points.length === 1) return
@@ -218,7 +258,20 @@ export default class BasePen {
         }
         this.clearSelcted()
         //! 其他情况，添加一个与hover相同的点， 然后变为move状态
-        this._addPoint(new Point(hoverPenPoint.x, hoverPenPoint.y))
+        // this._addPoint(new Point(hoverPenPoint.x, hoverPenPoint.y))
+        // 不加点，加一条线段, 从上一个点到hover点
+        const lastPoint = this.anchorPoints[this.anchorPoints.length - 1]
+        if (!lastPoint) {
+          throw new Error('_lastPoint is null')
+        }
+        const lastPointId = this.mPoint ? this.mPoint.id : lastPoint.id
+        this.segments.push({
+          id: window.crypto.randomUUID() as string,
+          from: this.mPoint ? this.mPoint.id : lastPointId,
+          to: hoverPenPoint.id,
+          type: 'line',
+          selected: false
+        })
         this.state = 'move'
       }
     } else {
@@ -231,40 +284,14 @@ export default class BasePen {
     if (!this.canvas._isMainEvent(e)) {
       return
     }
+    this.mousePoint = point
     // 检测当前点是否在存在的点附近
     this.clearHover()
     const hoverPenPoint = this.isOverPoint(point)
     if (hoverPenPoint) {
       hoverPenPoint.hover = true
     }
-
-    const ctx = this.canvas.contextTop
-    this.canvas.clearContext(ctx)
-    this._saveAndTransform(ctx)
-    // 不添加，直接绘制
-    ctx.lineWidth = this.pointStrokeWidth
-    ctx.strokeStyle = this.pointStroke
-    ctx.fillStyle = this.pointFill
-
-    // 优先画移动点，因为hover状态的点要在移动点之上
-    ctx.beginPath()
-    ctx.arc(point.x, point.y, this.pointRadius, 0, Math.PI * 2)
-    ctx.stroke()
-    const lastPoint = this.points[this.points.length - 1]
-    if (lastPoint && this.state === 'line') {
-      // 画线
-      ctx.save()
-      ctx.strokeStyle = this.pointStroke
-      ctx.moveTo(lastPoint.x, lastPoint.y)
-      if (hoverPenPoint) {
-        ctx.lineTo(hoverPenPoint.x, hoverPenPoint.y)
-      } else {
-        ctx.lineTo(point.x, point.y)
-      }
-      ctx.stroke()
-      ctx.restore()
-    }
-    ctx.restore()
+    this.hoverPoint = hoverPenPoint
     this._render()
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

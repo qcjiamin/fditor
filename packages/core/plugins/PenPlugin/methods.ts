@@ -1,7 +1,7 @@
-import { Canvas, Point, TPointerEvent } from 'fabric'
+import { Canvas, TPointerEvent } from 'fabric'
 import BasePen from './basePen'
 import { Editor } from '@fditor/core'
-import { penPoint } from './type'
+import { penPoint, penSegment } from './type'
 import { FPenPath } from '../../customShape/FPenPath'
 declare module 'fabric' {
   export interface Canvas {
@@ -38,23 +38,31 @@ Canvas.prototype._onMouseUpInPenMode = function (e: TPointerEvent) {
   //? mouseup会触发renderAll[引导线会监听mouse:up,执行renderAll], 会清空顶层画布，这里先注释掉
   // this._handleEvent(e, 'up')
 }
-/** penPoints 转换为 pathstr */
-function penPointsToPath(points: penPoint[]) {
+
+function segmentsToPath(segments: penSegment[], points: penPoint[]) {
   let path = ''
-  let lastM: Point | null = null
-  for (let i = 0; i < points.length; i++) {
-    const { type, x, y } = points[i]
-    const point = new Point(x, y)
-    if (type === 'move') {
-      path += `M${point.x},${point.y}`
-      lastM = point
-    } else if (type === 'line') {
-      // L往前寻找，碰到的第一个M，如果与其相同，需要将命令改为Z
-      if (point.x - lastM!.x === 0 && point.y - lastM!.y === 0) {
-        path += 'Z'
+  let lastEndPointId: string = ''
+  console.log(segments, points)
+  for (let i = 0; i < segments.length; i++) {
+    const { type, from, to } = segments[i]
+    const fromPoint = points.find((point) => point.id === from) as penPoint
+    const toPoint = points.find((point) => point.id === to) as penPoint
+    if (!fromPoint || !toPoint) {
+      throw new Error('segmentsToPath: fromPoint or toPoint is null')
+    }
+    if (type === 'line') {
+      const isClose = toPoint.type === 'move'
+      if (lastEndPointId === fromPoint.id) {
+        if (isClose) {
+          path += 'Z'
+        } else {
+          path += `L${toPoint.x},${toPoint.y}`
+        }
       } else {
-        path += `L${point.x},${point.y}`
+        path += `M${fromPoint.x},${fromPoint.y}`
+        path += `L${toPoint.x},${toPoint.y}`
       }
+      lastEndPointId = toPoint.id
     }
   }
   return path
@@ -106,9 +114,8 @@ Editor.prototype.leavePenMode = function () {
   const pen = this.stage.pen
   this.stage.pen = undefined
   // 添加path到画布
-  const penPoints = pen.points.filter((point) => point.role === 'anchor')
-  if (penPoints.length > 1) {
-    const pathstr = penPointsToPath(penPoints)
+  if (pen.segments.length > 0) {
+    const pathstr = segmentsToPath(pen.segments, pen.points)
     const path = new FPenPath(pathstr, {
       radiusAble: true,
       fill: null,
@@ -120,4 +127,19 @@ Editor.prototype.leavePenMode = function () {
     })
     this.add(path)
   }
+
+  // const penPoints = pen.points.filter((point) => point.role === 'anchor')
+  // if (penPoints.length > 1) {
+  //   const pathstr = penPointsToPath(penPoints)
+  //   const path = new FPenPath(pathstr, {
+  //     radiusAble: true,
+  //     fill: null,
+  //     stroke: pen.color,
+  //     strokeWidth: pen.width,
+  //     strokeLineCap: pen.strokeLineCap,
+  //     strokeLineJoin: pen.strokeLineJoin,
+  //     strokeMiterLimit: pen.strokeMiterLimit
+  //   })
+  //   this.add(path)
+  // }
 }
