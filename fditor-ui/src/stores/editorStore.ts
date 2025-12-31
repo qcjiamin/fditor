@@ -2,6 +2,7 @@ import type { BrushStyle, CanvasMode } from '@/types'
 import type { SaveState } from '@/utils/constants'
 import type { CanvasStates, ElementTypes } from '@/utils/types'
 import type { TabName } from '@/views/editer/components/sidebar/types'
+import type { subPenType } from '@fditor/core'
 import type { FabricObject } from 'fabric'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -95,6 +96,12 @@ export const useEditorStore = defineStore('editor', () => {
       [key]: value
     }
   }
+
+  const penSubType = ref<subPenType>('pen')
+  const setPenSubType = function (val: subPenType) {
+    penSubType.value = val
+  }
+
   return {
     projectID,
     setProjectID,
@@ -120,6 +127,8 @@ export const useEditorStore = defineStore('editor', () => {
     canvasMode,
     setCanvasMode,
     brushStyle,
-    setBrushStyleByKey
+    setBrushStyleByKey,
+    penSubType,
+    setPenSubType
   }
 })

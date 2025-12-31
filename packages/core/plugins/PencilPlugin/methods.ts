@@ -25,11 +25,14 @@ Editor.prototype.enterPencilMode = function (lastBrush?: brushType) {
   const initBrushType = lastBrush || 'pencil'
   const initBrush = new brushConstructorMap[initBrushType](this.stage)
   this.stage.freeDrawingBrush = initBrush
+  this.emit('enter:pencilMode', undefined)
 }
 
 Editor.prototype.leavePencilMode = function () {
   this.stage.isDrawingMode = false
   this.stage.freeDrawingBrush = undefined
+  this.stage.setCursor('default')
+  this.emit('exit:pencilMode', undefined)
 }
 
 Editor.prototype.switchBrush = function (brushType: brushType) {

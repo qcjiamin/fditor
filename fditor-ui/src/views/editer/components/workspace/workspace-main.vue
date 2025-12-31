@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { computed, inject, ref } from 'vue'
+  import { inject, ref } from 'vue'
   import { useContextMenu } from '@/components/contextMenu/useContextMenu'
   import type { MenuItem } from '@/components/contextMenu/type'
   import { getDefKey } from '@/utils/common'
@@ -7,27 +7,13 @@
   import { isActiveSelection, isGroup, type Editor } from '@fditor/core'
   import { type TPointerEvent } from 'fabric'
   import CanvasModeSwitcher from './components/canvas-mode-switcher.vue'
-  import { useEditorStore } from '@/stores/editorStore'
 
-  const editorStore = useEditorStore()
   const containerRef = ref<HTMLDivElement | null>(null)
   defineExpose({
     //!暴露响应式属性，不输出.value
     containerRef: containerRef
   })
 
-  const cursorByCanvasMode = computed(() => {
-    switch (editorStore.canvasMode) {
-      case 'move':
-        return ''
-      case 'pencil':
-        return 'cursor-pencil'
-      case 'pen':
-        return 'cursor-pen'
-      default:
-        return ''
-    }
-  })
   // 注入 editor 实例
   const editor = inject(EditorKey) as Editor
 
@@ -196,7 +182,7 @@
 
 <template>
   <div class="workspace-main">
-    <div class="pageContainer" :class="[cursorByCanvasMode]">
+    <div class="pageContainer">
       <canvas-mode-switcher></canvas-mode-switcher>
       <div id="canvas-container" ref="containerRef" @contextmenu="onContextMenu">
         <!-- <canvas></canvas> -->
@@ -211,11 +197,6 @@
     display: flex;
     flex-direction: column;
     .pageContainer {
-      &.cursor-pencil {
-        cursor:
-          url('@/assets/icons/cursor-pencil.svg') 5 23,
-          auto;
-      }
       background-color: #e8e8ea;
       position: relative;
       flex-grow: 1;

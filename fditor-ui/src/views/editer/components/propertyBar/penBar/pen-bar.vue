@@ -1,25 +1,20 @@
 <!-- confirmClip 在裁剪框失焦时会以事件（confirm:clip）的形式通知外部 -->
 <script lang="ts" setup>
-  import { inject } from 'vue'
-  import type { Editor } from '@fditor/core'
-  import { EditorKey } from '@/constants/injectKey'
-  import { useEditorStore } from '@/stores/editorStore'
-  import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
-  import { Close } from '@element-plus/icons-vue'
-  const editor = inject<Editor>(EditorKey) as Editor
-  const editorStore = useEditorStore()
-  function exitPen() {
-    if (!editor.stage.pen) return
-    editor.leavePenMode()
-    editorStore.canvasMode = 'move'
-  }
+  // import { inject } from 'vue'
+  // import type { Editor } from '@fditor/core'
+  // import { EditorKey } from '@/constants/injectKey'
+  // import { useEditorStore } from '@/stores/editorStore'
+  import penRightBar from '@/views/editer/components/propertyBar/penBar/pen-right-bar/pen-right-bar.vue'
+  import penProperty from '@/views/editer/components/propertyBar/penBar/pen-property/pen-property.vue'
+  // const editor = inject<Editor>(EditorKey) as Editor
+  // const editorStore = useEditorStore()
 </script>
 
 <template>
+  <!-- 左右布局，颜色设置在左，模式切换在右 -->
   <div class="figmaClipBar">
-    <propertyNormalItem tip="finish" @click="exitPen">
-      <Close></Close>
-    </propertyNormalItem>
+    <penProperty></penProperty>
+    <penRightBar></penRightBar>
   </div>
 </template>
 
@@ -28,7 +23,7 @@
     height: 48px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 8px;
     padding: 4px;
   }

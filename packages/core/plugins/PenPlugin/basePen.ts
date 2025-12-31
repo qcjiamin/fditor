@@ -2,18 +2,33 @@
 // 拖动点，要实现吸附效果成为必然，它能保证点的值相同
 // 钢笔状态下，hover的点从最后一个找。 绘制控制点时从最后一个开始绘制。因为hover和selected都挂载最后的点上，如果从前往后，控制点绘制时去重会使状态绘制不出来
 import { Canvas, Point, TBrushEventData } from 'fabric'
-import type { ISubPen, penPoint, penSegment, subPenType } from './type'
+import type { penPoint, penSegment } from './type'
+import { BaseSubPen } from './baseSubPen'
 import SubPen from './subPen'
 import SubSelect from './subSelect'
 import SubCurve from './subCurve'
+import { subPenType } from '@fditor/core'
 export default class BasePen {
+  currentSubTool: BaseSubPen
   canvas: Canvas
   points: penPoint[] = []
   segments: penSegment[] = []
-  subtypes: Record<subPenType, ISubPen>
-  currentSubTool: ISubPen
+  subtypes: Record<subPenType, BaseSubPen>
+
+  color = 'rgba(0, 0, 0, 1)'
+  width = 2
+  strokeLineCap: CanvasLineCap = 'round'
+  strokeLineJoin: CanvasLineJoin = 'round'
+  strokeMiterLimit = 10
 
   pointRadius = 10
+  pointStrokeWidth = 2
+  pointStroke = 'rgba(59, 130, 246, 0.50)'
+  pointFill = 'rgba(255, 255, 255, 1)'
+  pointHoverStroke = 'rgba(255, 255, 255, 1)'
+  pointHoverFill = 'rgba(59, 130, 246, 0.30)'
+  pointSelectStroke = 'rgba(255, 255, 255, 1)'
+  pointSelectFill = 'rgba(59, 130, 246, 1)'
 
   constructor(canvas: Canvas, subType: subPenType = 'pen') {
     this.canvas = canvas
@@ -24,6 +39,7 @@ export default class BasePen {
       curve: new SubCurve()
     }
     this.currentSubTool = this.subtypes[subType]
+    this.currentSubTool.enter(this)
   }
   /** 矩阵变换 */
   _saveAndTransform(ctx: CanvasRenderingContext2D) {
@@ -33,6 +49,14 @@ export default class BasePen {
   }
   get anchorPoints() {
     return this.points.filter((point) => point.role === 'anchor')
+  }
+
+  switchSubtype(type: subPenType) {
+    if (this.currentSubTool.type === type) return // 避免重复切换
+    // 退出当前状态 → 切换新状态 → 进入新状态
+    this.currentSubTool.exit(this)
+    this.currentSubTool = this.subtypes[type]
+    this.currentSubTool.enter(this)
   }
 
   esc() {

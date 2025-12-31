@@ -10,7 +10,6 @@
   import type { Editor } from '@fditor/core'
 
   const editorStore = useEditorStore()
-  const { setCanvasMode } = editorStore
   const { canvasMode } = storeToRefs(editorStore)
 
   const editor = inject(EditorKey) as Editor
@@ -37,7 +36,6 @@
       editor.enterPenMode()
     }
 
-    setCanvasMode(mode)
     console.log(`Canvas mode changed to: ${mode}`)
   }
 </script>

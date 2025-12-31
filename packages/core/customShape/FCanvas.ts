@@ -105,6 +105,11 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
     }
     return this
   }
+  setCursor(value: string) {
+    console.error(value)
+    this.upperCanvasEl.style.cursor = value
+  }
+
   getObjectByZIndex(idx: number) {
     return this.getObjects().find((obj) => obj.getZIndex() === idx) || null
   }

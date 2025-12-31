@@ -57,6 +57,11 @@ export interface EditorEventMap {
   'history:update': void
   'historyIndex:update': void
   'confirm:clip': void
+  'subPenType:change': { newType: subPenType }
+  'exit:penMode': void
+  'enter:penMode': void
+  'exit:pencilMode': void
+  'enter:pencilMode': void
 }
 
 //todo: mainLayer 更具体的定义
@@ -96,3 +101,6 @@ export interface Edge {
 export interface Face {
   points: NormalPoint[]
 }
+
+/** 钢笔工具的子类型 */
+export type subPenType = 'pen' | 'select' | 'curve'

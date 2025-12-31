@@ -30,6 +30,7 @@
   import { createProject, uploadEditorThumbnail } from '@/utils/workflow'
   import PencilBar from '@/views/editer/components/propertyBar/pencilBar/pencil-bar.vue'
   import PenBar from '@/views/editer/components/propertyBar/penBar/pen-bar.vue'
+  import { cursorMap } from '@/utils/cursor'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
@@ -59,6 +60,32 @@
 
     editor.on('confirm:clip', () => {
       editorStore.setCvsState('normal')
+    })
+    editor.on('subPenType:change', ({ newType }) => {
+      if (newType === 'pen') {
+        console.log('enter pen mode')
+        editor.stage.setCursor(cursorMap[newType])
+      } else {
+        editor.stage.setCursor('default')
+      }
+      editorStore.setPenSubType(newType)
+    })
+    editor.on('enter:penMode', () => {
+      editorStore.setCanvasMode('pen')
+    })
+    editor.on('exit:penMode', () => {
+      editorStore.setCanvasMode('move')
+    })
+    editor.on('enter:pencilMode', () => {
+      console.log('enter pencil mode')
+      // 设置cursor样式
+      // editor.stage.setCursor(cursorMap.pencil)
+      //? 画笔模式设置父容器，因为原生的mousemove事件里会修改cursor样式
+      editor.stage.upperCanvasEl.parentElement!.style.cursor = cursorMap.pencil
+      editorStore.setCanvasMode('pencil')
+    })
+    editor.on('exit:pencilMode', () => {
+      editorStore.setCanvasMode('move')
     })
     eventBus.addListener('config:save', (timeout) => {
       if (handler) {

@@ -5,6 +5,7 @@
 
 import { Canvas } from 'fabric'
 import { ClipFrame } from '../customShape/ClipFrame'
+import { subPenType } from '@fditor/core'
 // import { CanvasEvents } from 'fabric'
 
 declare module 'fabric' {
@@ -24,6 +25,8 @@ declare module 'fabric' {
     'confirm:clip': ClipFrame
     // 画布宽高实际变化的事件
     'canvas:resize': void
+    /** 切换钢笔子类型 */
+    'subPenType:change': { newType: subPenType }
   }
 }
 

@@ -1,37 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Point } from 'fabric'
 import BasePen from './basePen'
-import { ISubPen, penPoint, subPenType } from './type'
+import { penPoint } from './type'
+import { BaseSubPen } from './baseSubPen'
+import { subPenType } from '@fditor/core'
 
-export default class SubSelect implements ISubPen {
+// todo: 拖拽放置到存在的点时，合并点
+
+export default class SubSelect extends BaseSubPen {
   type: subPenType = 'select'
   dragPoint: penPoint | null = null
   startPoint: Point | null = null
 
-  color = 'rgba(0, 0, 0, 1)'
-  width = 2
-  strokeLineCap: CanvasLineCap = 'round'
-  strokeLineJoin: CanvasLineJoin = 'round'
-  strokeMiterLimit = 10
-
-  pointRadius = 10
-  pointStrokeWidth = 2
-  pointStroke = 'rgba(59, 130, 246, 0.50)'
-  pointFill = 'rgba(255, 255, 255, 1)'
-  pointHoverStroke = 'rgba(255, 255, 255, 1)'
-  pointHoverFill = 'rgba(59, 130, 246, 0.30)'
-  pointSelectStroke = 'rgba(255, 255, 255, 1)'
-  pointSelectFill = 'rgba(59, 130, 246, 1)'
-
   onMouseDown(pen: BasePen, point: Point): void {
+    pen.clearSelcted()
     // 是否点在控制点
     const hoverPenPoint = pen.isOverPoint(point)
     if (hoverPenPoint) {
       this.startPoint = point
       this.dragPoint = hoverPenPoint
+      hoverPenPoint.selected = true
     }
+    this._render(pen)
   }
   onMouseMove(pen: BasePen, point: Point): void {
+    pen.clearHover()
+
     if (this.dragPoint && this.startPoint) {
       // 按照 startPoint 与当前鼠标位置，计算移动的距离
       const deltaX = point.x - this.startPoint.x
@@ -52,24 +46,23 @@ export default class SubSelect implements ISubPen {
     this.dragPoint = null
     this.startPoint = null
   }
-  enter(pen: BasePen): void {}
+  enter(pen: BasePen): void {
+    super.enter(pen)
+    this._render(pen)
+  }
   exit(pen: BasePen): void {}
 
-  _setStyles(ctx: CanvasRenderingContext2D) {
-    ctx.strokeStyle = this.color
-    ctx.lineWidth = this.width
-    ctx.lineCap = this.strokeLineCap
-    ctx.miterLimit = this.strokeMiterLimit
-    ctx.lineJoin = this.strokeLineJoin
-    // ctx.setLineDash(this.strokeDashArray || [])
-  }
   _render(pen: BasePen): void {
     const ctx = pen.canvas.contextTop
     // 绘制钢笔路线
     pen.canvas.clearContext(ctx)
     pen._saveAndTransform(ctx)
 
-    this._setStyles(pen.canvas.contextTop)
+    ctx.strokeStyle = pen.color
+    ctx.lineWidth = pen.width
+    ctx.lineCap = pen.strokeLineCap
+    ctx.miterLimit = pen.strokeMiterLimit
+    ctx.lineJoin = pen.strokeLineJoin
     // 画线段
     // 设置样式
     // this._setStyles(ctx)
@@ -91,14 +84,14 @@ export default class SubSelect implements ISubPen {
 
     // 画控制点
     // 再遍历一遍，给每个点绘制圆形控制点
-    ctx.lineWidth = this.pointStrokeWidth
+    ctx.lineWidth = pen.pointStrokeWidth
     // ctx.lineCap = decl.strokeLineCap
     // ctx.lineDashOffset = decl.strokeDashOffset
     // ctx.lineJoin = decl.strokeLineJoin
     // ctx.miterLimit = decl.strokeMiterLimit
 
-    ctx.strokeStyle = this.pointStroke
-    ctx.fillStyle = this.pointFill
+    ctx.strokeStyle = pen.pointStroke
+    ctx.fillStyle = pen.pointFill
 
     const anchorPoints = pen.points.filter((point) => point.role === 'anchor')
     for (let i = 0; i <= anchorPoints.length - 1; i++) {
@@ -106,25 +99,25 @@ export default class SubSelect implements ISubPen {
 
       if (hover) {
         ctx.save()
-        ctx.fillStyle = this.pointHoverFill
-        ctx.strokeStyle = this.pointHoverStroke
+        ctx.fillStyle = pen.pointHoverFill
+        ctx.strokeStyle = pen.pointHoverStroke
         ctx.beginPath()
-        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, pen.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
         ctx.restore()
       } else if (selected) {
         ctx.save()
-        ctx.fillStyle = this.pointSelectFill
-        ctx.strokeStyle = this.pointSelectStroke
+        ctx.fillStyle = pen.pointSelectFill
+        ctx.strokeStyle = pen.pointSelectStroke
         ctx.beginPath()
-        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, pen.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
         ctx.restore()
       } else {
         ctx.beginPath()
-        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, pen.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
       }

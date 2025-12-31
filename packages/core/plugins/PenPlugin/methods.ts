@@ -3,7 +3,7 @@ import BasePen from './basePen'
 import { Editor } from '@fditor/core'
 import { penPoint, penSegment } from './type'
 import { FPenPath } from '../../customShape/FPenPath'
-import { isSubPen } from './typeAssertions'
+import { isFCanvas } from '../../utils/tsHelper'
 declare module 'fabric' {
   export interface Canvas {
     pen: BasePen | undefined
@@ -108,15 +108,15 @@ declare module '@fditor/core' {
 }
 
 Editor.prototype.enterPenMode = function () {
+  this.emit('enter:penMode', undefined)
   this.stage.pen = new BasePen(this.stage, 'pen')
-  // this.stage.pen.currentSubTool.enter(this.stage.pen)
 }
 
 Editor.prototype.leavePenMode = function () {
   if (!this.stage.pen) return
 
   const pen = this.stage.pen
-  if (!isSubPen(pen.currentSubTool)) return
+  this.stage.setCursor('default')
   this.stage.pen = undefined
   // 添加path到画布
   if (pen.segments.length > 0) {
@@ -124,31 +124,17 @@ Editor.prototype.leavePenMode = function () {
     const path = new FPenPath(pathstr, {
       radiusAble: true,
       fill: null,
-      stroke: pen.currentSubTool.color,
-      strokeWidth: pen.currentSubTool.width,
-      strokeLineCap: pen.currentSubTool.strokeLineCap,
-      strokeLineJoin: pen.currentSubTool.strokeLineJoin,
-      strokeMiterLimit: pen.currentSubTool.strokeMiterLimit,
+      stroke: pen.color,
+      strokeWidth: pen.width,
+      strokeLineCap: pen.strokeLineCap,
+      strokeLineJoin: pen.strokeLineJoin,
+      strokeMiterLimit: pen.strokeMiterLimit,
       points: pen.points,
       segments: pen.segments
     })
     this.add(path)
   }
-
-  // const penPoints = pen.points.filter((point) => point.role === 'anchor')
-  // if (penPoints.length > 1) {
-  //   const pathstr = penPointsToPath(penPoints)
-  //   const path = new FPenPath(pathstr, {
-  //     radiusAble: true,
-  //     fill: null,
-  //     stroke: pen.color,
-  //     strokeWidth: pen.width,
-  //     strokeLineCap: pen.strokeLineCap,
-  //     strokeLineJoin: pen.strokeLineJoin,
-  //     strokeMiterLimit: pen.strokeMiterLimit
-  //   })
-  //   this.add(path)
-  // }
+  this.emit('exit:penMode', undefined)
 }
 
 declare module '@fditor/core' {
@@ -161,11 +147,16 @@ FPenPath.prototype.enterSelectMode = function () {
   if (!this.canvas) {
     throw Error('enterSelectMode: no canvas')
   }
+  if (!isFCanvas(this.canvas)) {
+    return
+  }
+  // 恢复鼠标样式
+  this.canvas.setCursor('default')
   const pen = new BasePen(this.canvas, 'select')
   pen.points = this.points
   pen.segments = this.segments
   this.canvas.pen = pen
-  this.canvas.discardActiveObject()
-  this.canvas.renderAll()
+  this.canvas._removeSelected()
+  // 重新绘制topCanvas
   pen.currentSubTool._render(pen)
 }

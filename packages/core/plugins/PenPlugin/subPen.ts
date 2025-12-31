@@ -1,7 +1,8 @@
 import { Point } from 'fabric'
 import BasePen from './basePen'
-import { ISubPen } from './type'
-import type { penPoint, penState, subPenType } from './type'
+import { BaseSubPen } from './baseSubPen'
+import type { penPoint, penState } from './type'
+import { subPenType } from '@fditor/core'
 
 /** 初始状态为move, 因为第一个点一定是move */
 // 变为 line 的条件是添加了一个点
@@ -10,7 +11,7 @@ import type { penPoint, penState, subPenType } from './type'
 // 点击的点与最后一个点要做判断，是否在最后一个点的范围内，如果是，拒绝添加
 // 点击的点与除最后一个点之间做判断，如果点在前面的点上，添加move状态的点
 
-export default class SubPen implements ISubPen {
+export default class SubPen extends BaseSubPen {
   type: subPenType = 'pen'
   state: penState = 'move'
   /** move时hover的点 */
@@ -19,21 +20,6 @@ export default class SubPen implements ISubPen {
   mPoint: penPoint | null = null
   /** 记录mouseMove 事件的点 */
   mousePoint: Point | null = null
-
-  color = 'rgba(0, 0, 0, 1)'
-  width = 2
-  strokeLineCap: CanvasLineCap = 'round'
-  strokeLineJoin: CanvasLineJoin = 'round'
-  strokeMiterLimit = 10
-
-  pointRadius = 10
-  pointStrokeWidth = 2
-  pointStroke = 'rgba(59, 130, 246, 0.50)'
-  pointFill = 'rgba(255, 255, 255, 1)'
-  pointHoverStroke = 'rgba(255, 255, 255, 1)'
-  pointHoverFill = 'rgba(59, 130, 246, 0.30)'
-  pointSelectStroke = 'rgba(255, 255, 255, 1)'
-  pointSelectFill = 'rgba(59, 130, 246, 1)'
 
   onMouseDown(pen: BasePen, point: Point): void {
     const hoverPenPoint = this.hoverPoint
@@ -87,15 +73,18 @@ export default class SubPen implements ISubPen {
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onMouseUp(pen: BasePen, point: Point): void {}
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   enter(pen: BasePen): void {
     // 设置指针样式
     // pen.canvas.contextTop.canvas.style.cursor = 'url(@/assets/pen.png) 5 25, crosshair'
     // pen.currentPath = pen.points // 初始化当前绘制路径
     // 需要做哪些初始化操作
+    super.enter(pen)
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  exit(pen: BasePen): void {}
+  exit(pen: BasePen): void {
+    pen.clearHover()
+    pen.clearSelcted()
+  }
 
   _addPoint(pen: BasePen, point: Point, select: boolean = false) {
     let lastPoint = null
@@ -132,15 +121,6 @@ export default class SubPen implements ISubPen {
     return true
   }
 
-  _setStyles(ctx: CanvasRenderingContext2D) {
-    ctx.strokeStyle = this.color
-    ctx.lineWidth = this.width
-    ctx.lineCap = this.strokeLineCap
-    ctx.miterLimit = this.strokeMiterLimit
-    ctx.lineJoin = this.strokeLineJoin
-    // ctx.setLineDash(this.strokeDashArray || [])
-  }
-
   _render(pen: BasePen) {
     const ctx = pen.canvas.contextTop
     // 绘制钢笔路线
@@ -150,13 +130,20 @@ export default class SubPen implements ISubPen {
     if (!this.mousePoint) {
       throw new Error('mousePoint is null')
     }
-    this._setStyles(pen.canvas.contextTop)
+    // this._setStyles(pen.canvas.contextTop)
+
+    ctx.strokeStyle = pen.color
+    ctx.lineWidth = pen.width
+    ctx.lineCap = pen.strokeLineCap
+    ctx.miterLimit = pen.strokeMiterLimit
+    ctx.lineJoin = pen.strokeLineJoin
+
     // 画移动线
     // 先判断是否处于共享顶点的起始状态
     const endPoint = this.mPoint ? this.mPoint : pen.points[pen.points.length - 1]
     if (endPoint && this.state === 'line') {
       ctx.save()
-      ctx.strokeStyle = this.pointStroke
+      ctx.strokeStyle = pen.pointStroke
       ctx.moveTo(endPoint.x, endPoint.y)
       if (this.hoverPoint) {
         ctx.lineTo(this.hoverPoint.x, this.hoverPoint.y)
@@ -168,12 +155,12 @@ export default class SubPen implements ISubPen {
     }
     // 画移动圈
     ctx.save()
-    ctx.lineWidth = this.pointStrokeWidth
-    ctx.strokeStyle = this.pointStroke
-    ctx.fillStyle = this.pointFill
+    ctx.lineWidth = pen.pointStrokeWidth
+    ctx.strokeStyle = pen.pointStroke
+    ctx.fillStyle = pen.pointFill
     // 优先画移动点，因为hover状态的点要在移动点之上
     ctx.beginPath()
-    ctx.arc(this.mousePoint!.x, this.mousePoint!.y, this.pointRadius, 0, Math.PI * 2)
+    ctx.arc(this.mousePoint!.x, this.mousePoint!.y, pen.pointRadius, 0, Math.PI * 2)
     ctx.stroke()
     ctx.restore()
 
@@ -198,14 +185,14 @@ export default class SubPen implements ISubPen {
 
     // 画控制点
     // 再遍历一遍，给每个点绘制圆形控制点
-    ctx.lineWidth = this.pointStrokeWidth
+    ctx.lineWidth = pen.pointStrokeWidth
     // ctx.lineCap = decl.strokeLineCap
     // ctx.lineDashOffset = decl.strokeDashOffset
     // ctx.lineJoin = decl.strokeLineJoin
     // ctx.miterLimit = decl.strokeMiterLimit
 
-    ctx.strokeStyle = this.pointStroke
-    ctx.fillStyle = this.pointFill
+    ctx.strokeStyle = pen.pointStroke
+    ctx.fillStyle = pen.pointFill
 
     const anchorPoints = pen.points.filter((point) => point.role === 'anchor')
     for (let i = 0; i <= anchorPoints.length - 1; i++) {
@@ -213,25 +200,25 @@ export default class SubPen implements ISubPen {
 
       if (hover) {
         ctx.save()
-        ctx.fillStyle = this.pointHoverFill
-        ctx.strokeStyle = this.pointHoverStroke
+        ctx.fillStyle = pen.pointHoverFill
+        ctx.strokeStyle = pen.pointHoverStroke
         ctx.beginPath()
-        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, pen.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
         ctx.restore()
       } else if (selected) {
         ctx.save()
-        ctx.fillStyle = this.pointSelectFill
-        ctx.strokeStyle = this.pointSelectStroke
+        ctx.fillStyle = pen.pointSelectFill
+        ctx.strokeStyle = pen.pointSelectStroke
         ctx.beginPath()
-        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, pen.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
         ctx.restore()
       } else {
         ctx.beginPath()
-        ctx.arc(x, y, this.pointRadius, 0, Math.PI * 2)
+        ctx.arc(x, y, pen.pointRadius, 0, Math.PI * 2)
         ctx.fill()
         ctx.stroke()
       }

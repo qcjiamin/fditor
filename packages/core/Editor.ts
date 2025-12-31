@@ -12,6 +12,7 @@ import { ClipFrame } from './customShape/ClipFrame'
 import BasePlugin from './plugins/BasePlugin'
 import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, objectCommonProperties } from './utils/constant'
 import { isFirefox } from './utils/common'
+import { isFPenPath } from './utils/tsHelper'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
@@ -125,6 +126,18 @@ class Editor extends EventBus<EditorEventMap> {
     this.stage.on('confirm:clip', async (clipFrame: ClipFrame) => {
       await this.confirmClip(clipFrame)
       this.emit('confirm:clip', undefined)
+    })
+    this.stage.on('subPenType:change', ({ newType }) => {
+      this.emit('subPenType:change', { newType })
+    })
+    this.stage.on('mouse:dblclick', async (options) => {
+      if (!options.target) {
+        this.leavePenMode()
+      } else if (isFPenPath(options.target)) {
+        // 先通知进入钢笔状态，再通知进入钢笔-选择状态
+        this.emit('enter:penMode', undefined)
+        options.target.enterSelectMode()
+      }
     })
 
     this.on('node:add', (target) => {
