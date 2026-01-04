@@ -1,4 +1,4 @@
-import { classRegistry, Control, Point } from 'fabric'
+import { classRegistry, Point } from 'fabric'
 import type { Face, NormalPoint, Segment, XNode } from '../types/common/types'
 import { FPath, FPathProps } from './FPath'
 import { objectCommonProperties } from '../utils/constant'

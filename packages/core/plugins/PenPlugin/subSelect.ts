@@ -4,6 +4,7 @@ import BasePen from './basePen'
 import { penPoint } from './type'
 import { BaseSubPen } from './baseSubPen'
 import { subPenType } from '@fditor/core'
+import { util } from 'fabric'
 
 // todo: 拖拽放置到存在的点时，合并点
 
@@ -41,6 +42,7 @@ export default class SubSelect extends BaseSubPen {
     if (hoverPenPoint) {
       hoverPenPoint.hover = true
     }
+    this._render(pen)
   }
   onMouseUp(pen: BasePen, point: Point): void {
     this.dragPoint = null
@@ -63,6 +65,7 @@ export default class SubSelect extends BaseSubPen {
     ctx.lineCap = pen.strokeLineCap
     ctx.miterLimit = pen.strokeMiterLimit
     ctx.lineJoin = pen.strokeLineJoin
+
     // 画线段
     // 设置样式
     // this._setStyles(ctx)
@@ -123,6 +126,5 @@ export default class SubSelect extends BaseSubPen {
       }
     }
     ctx.restore()
-    console.log('render pen')
   }
 }

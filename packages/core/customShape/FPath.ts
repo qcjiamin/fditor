@@ -240,7 +240,6 @@ export class FPath extends Path {
     const _path = util.makePathSimpler(util.parsePath(newPathStr))
     //! setBoundingBox 影响width height pathOffset。 理论上这里只重新计算圆角，不影响bound，先不调用
     // this.setBoundingBox(adjustPosition);
-    console.log(_path)
     const l = -this.pathOffset.x,
       t = -this.pathOffset.y
 

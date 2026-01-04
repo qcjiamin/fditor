@@ -1,4 +1,5 @@
-import { Canvas, TPointerEvent } from 'fabric'
+// todo: 支持触摸事件，参考 fabric.js 中的实现
+import { Canvas, TPointerEvent, util } from 'fabric'
 import BasePen from './basePen'
 import { Editor } from '@fditor/core'
 import { penPoint, penSegment } from './type'
@@ -73,6 +74,7 @@ const originMouseDown = Canvas.prototype.__onMouseDown
 Canvas.prototype.__onMouseDown = function (e: TPointerEvent) {
   if (this.pen) {
     this._onMouseDownInPenMode(e)
+    this._resetTransformEventData()
     return
   } else {
     originMouseDown.call(this, e)
@@ -82,6 +84,8 @@ const originMouseMove = Canvas.prototype.__onMouseMove
 Canvas.prototype.__onMouseMove = function (e: TPointerEvent) {
   if (this.pen) {
     this._onMouseMoveInPenMode(e)
+    //! 重要，originMouseMove 后一定会调用的方法，这里也需要手动调用
+    this._resetTransformEventData()
     return
   } else {
     originMouseMove.call(this, e)
@@ -91,6 +95,7 @@ const originMouseUp = Canvas.prototype.__onMouseUp
 Canvas.prototype.__onMouseUp = function (e: TPointerEvent) {
   if (this.pen) {
     this._onMouseUpInPenMode(e)
+    this._resetTransformEventData()
     return
   } else {
     console.log('upupup')
@@ -109,6 +114,8 @@ declare module '@fditor/core' {
 
 Editor.prototype.enterPenMode = function () {
   this.emit('enter:penMode', undefined)
+  this.stage.discardActiveObject()
+  this.stage.renderAll()
   this.stage.pen = new BasePen(this.stage, 'pen')
 }
 
@@ -144,6 +151,7 @@ declare module '@fditor/core' {
 }
 
 FPenPath.prototype.enterSelectMode = function () {
+  console.log('enterSelectMode')
   if (!this.canvas) {
     throw Error('enterSelectMode: no canvas')
   }
@@ -152,7 +160,20 @@ FPenPath.prototype.enterSelectMode = function () {
   }
   // 恢复鼠标样式
   this.canvas.setCursor('default')
-  const pen = new BasePen(this.canvas, 'select')
+  const style = {
+    stroke: this.stroke as string,
+    strokeWidth: this.strokeWidth as number
+  }
+
+  const matrix = this.calcOwnMatrix()
+  this.points.forEach((point) => {
+    const localX = point.x - this.pathOffset.x
+    const localY = point.y - this.pathOffset.y
+    const newPoint = util.transformPoint({ x: localX, y: localY }, matrix)
+    point.x = newPoint.x
+    point.y = newPoint.y
+  })
+  const pen = new BasePen(this.canvas, 'select', style, matrix)
   pen.points = this.points
   pen.segments = this.segments
   this.canvas.pen = pen

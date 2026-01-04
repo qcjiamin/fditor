@@ -33,7 +33,14 @@
       editor.stage.freeDrawingBrush.width = editorStore.brushStyle.lineWidth
       editor.stage.freeDrawingBrush.color = editorStore.brushStyle.color
     } else if (mode === 'pen') {
+      if (canvasMode.value === 'move') {
+        editor.stage.discardActiveObject()
+      } else if (canvasMode.value === 'pen') {
+        editor.leavePenMode()
+      }
       editor.enterPenMode()
+    } else if (mode === 'move') {
+      editor.render()
     }
 
     console.log(`Canvas mode changed to: ${mode}`)

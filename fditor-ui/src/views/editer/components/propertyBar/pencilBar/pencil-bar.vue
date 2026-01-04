@@ -9,6 +9,8 @@
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { watch } from 'vue'
+  import { Close } from '@element-plus/icons-vue'
+  import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
 
@@ -37,14 +39,18 @@
       editor.stage.freeDrawingBrush.color = val
     }
   )
+  function exitPencil() {
+    editor.leavePencilMode()
+  }
 </script>
 
 <template>
   <div class="figmaClipBar">
     <fill-property :color="brushColorInfo" :enable-gradient="false" @update:color="setBrushColor"></fill-property>
     <linewidth-property></linewidth-property>
-    <!-- <button @click="confirmClip">confirm</button>
-    <button @click="cancelClip">cancel</button> -->
+    <propertyNormalItem tip="finish" @click="exitPencil">
+      <Close></Close>
+    </propertyNormalItem>
   </div>
 </template>
 

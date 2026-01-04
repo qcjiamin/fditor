@@ -18,7 +18,6 @@
   function exitPen() {
     if (!editor.stage.pen) return
     editor.leavePenMode()
-    editorStore.canvasMode = 'move'
   }
 </script>
 
