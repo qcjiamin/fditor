@@ -1,7 +1,7 @@
 // 三角形起始点和终点是2个点，只是值完全相同，移动一个点时，与其相同的点全部要一起移动，以此实现节点的变化
 // 拖动点，要实现吸附效果成为必然，它能保证点的值相同
 // 钢笔状态下，hover的点从最后一个找。 绘制控制点时从最后一个开始绘制。因为hover和selected都挂载最后的点上，如果从前往后，控制点绘制时去重会使状态绘制不出来
-import { Canvas, Point, TBrushEventData, TMat2D } from 'fabric'
+import { Canvas, Point, TBrushEventData, TMat2D, util } from 'fabric'
 import type { penPoint, penSegment } from './type'
 import { BaseSubPen } from './baseSubPen'
 import SubPen from './subPen'
@@ -17,6 +17,7 @@ export default class BasePen {
   segments: penSegment[] = []
   subtypes: Record<subPenType, BaseSubPen>
   objectTransformMatrix: TMat2D | null = null
+  pathOffset: Point = new Point(0, 0)
 
   strokeLineCap: CanvasLineCap = 'round'
   strokeLineJoin: CanvasLineJoin = 'round'
@@ -35,11 +36,15 @@ export default class BasePen {
     canvas: Canvas,
     subType: subPenType = 'pen',
     style?: { stroke: string; strokeWidth: number },
-    objectTransformMatrix?: TMat2D
+    objectTransformMatrix?: TMat2D,
+    pathOffset?: Point
   ) {
     this.canvas = canvas
     if (objectTransformMatrix) {
       this.objectTransformMatrix = objectTransformMatrix
+    }
+    if (pathOffset) {
+      this.pathOffset = pathOffset
     }
     // 初始化所有状态（依赖注入）
     this.subtypes = {
@@ -114,7 +119,16 @@ export default class BasePen {
     const anchorPoints = this.anchorPoints
     for (let i = anchorPoints.length - 1; i >= 0; i--) {
       const { x, y } = anchorPoints[i]
-      const p = new Point(x, y)
+      let p = new Point(x, y)
+      if (this.objectTransformMatrix) {
+        // p - offset
+        p.x -= this.pathOffset.x
+        p.y -= this.pathOffset.y
+        // inverse transform
+        // p = p.translate(new Point(-this.pathOffset.x, -this.pathOffset.y))
+        // transform
+        p = util.transformPoint(p, this.objectTransformMatrix)
+      }
       if (p.distanceFrom(point) < this.pointRadius + 2) {
         return anchorPoints[i]
       }

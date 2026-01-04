@@ -165,15 +165,7 @@ FPenPath.prototype.enterSelectMode = function () {
     strokeWidth: this.strokeWidth as number
   }
 
-  const matrix = this.calcOwnMatrix()
-  this.points.forEach((point) => {
-    const localX = point.x - this.pathOffset.x
-    const localY = point.y - this.pathOffset.y
-    const newPoint = util.transformPoint({ x: localX, y: localY }, matrix)
-    point.x = newPoint.x
-    point.y = newPoint.y
-  })
-  const pen = new BasePen(this.canvas, 'select', style, matrix)
+  const pen = new BasePen(this.canvas, 'select', style, this.calcOwnMatrix(), this.pathOffset)
   pen.points = this.points
   pen.segments = this.segments
   this.canvas.pen = pen

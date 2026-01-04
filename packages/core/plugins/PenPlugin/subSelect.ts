@@ -28,12 +28,21 @@ export default class SubSelect extends BaseSubPen {
     pen.clearHover()
 
     if (this.dragPoint && this.startPoint) {
-      // 按照 startPoint 与当前鼠标位置，计算移动的距离
-      const deltaX = point.x - this.startPoint.x
-      const deltaY = point.y - this.startPoint.y
-      this.dragPoint.x += deltaX
-      this.dragPoint.y += deltaY
-      this.startPoint = new Point(this.dragPoint.x, this.dragPoint.y)
+      if (pen.objectTransformMatrix) {
+        const invMatrix = util.invertTransform(pen.objectTransformMatrix)
+        // 当前鼠标点转为本地坐标
+        const localPoint = util.transformPoint(point, invMatrix)
+        // 再加上 offset 得到 raw 坐标
+        this.dragPoint.x = localPoint.x + pen.pathOffset.x
+        this.dragPoint.y = localPoint.y + pen.pathOffset.y
+      } else {
+        const deltaX = point.x - this.startPoint.x
+        const deltaY = point.y - this.startPoint.y
+        this.dragPoint.x += deltaX
+        this.dragPoint.y += deltaY
+        this.startPoint = new Point(this.dragPoint.x, this.dragPoint.y)
+      }
+
       this._render(pen)
       return
     }
@@ -59,6 +68,11 @@ export default class SubSelect extends BaseSubPen {
     // 绘制钢笔路线
     pen.canvas.clearContext(ctx)
     pen._saveAndTransform(ctx)
+    if (pen.objectTransformMatrix) {
+      const m = pen.objectTransformMatrix
+      ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5])
+      ctx.translate(-pen.pathOffset.x, -pen.pathOffset.y)
+    }
 
     ctx.strokeStyle = pen.color
     ctx.lineWidth = pen.width
