@@ -70,7 +70,6 @@ Canvas.prototype.__onMouseUp = function (e: TPointerEvent) {
     this._resetTransformEventData()
     return
   } else {
-    console.log('upupup')
     originMouseUp.call(this, e)
   }
 }

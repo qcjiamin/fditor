@@ -39,9 +39,9 @@ export default class BasePen {
     this.canvas = canvas
     // 初始化所有状态（依赖注入）
     this.subtypes = {
-      pen: new SubPen(),
-      select: new SubSelect(),
-      curve: new SubCurve()
+      pen: new SubPen(this),
+      select: new SubSelect(this),
+      curve: new SubCurve(this)
     }
     this.currentSubTool = this.subtypes[subType]
 

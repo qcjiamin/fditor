@@ -21,6 +21,9 @@ export default class SubPen extends BaseSubPen {
   /** 记录mouseMove 事件的点 */
   mousePoint: Point | null = null
 
+  constructor(pen: BasePen) {
+    super(pen)
+  }
   onMouseDown(pen: BasePen, point: Point): void {
     const hoverPenPoint = this.hoverPoint
     if (hoverPenPoint) {
@@ -86,6 +89,10 @@ export default class SubPen extends BaseSubPen {
     pen.clearSelcted()
   }
 
+  chengeState(to: penState) {
+    this.state = to
+    this._render(this.pen)
+  }
   _addPoint(pen: BasePen, point: Point, select: boolean = false) {
     let lastPoint = null
     if (this.state === 'line') {

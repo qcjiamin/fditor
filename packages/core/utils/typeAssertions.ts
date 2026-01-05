@@ -3,6 +3,9 @@
 import type { LinearGradient, RadialGradient } from '@fditor/core'
 import { ActiveSelection, FabricObject, FabricText, Gradient, Path, Pattern } from 'fabric'
 import type { Group, TFiller } from 'fabric'
+import { BaseSubPen } from '../plugins/PenPlugin/baseSubPen'
+import SubPen from '../plugins/PenPlugin/subPen'
+import SubSelect from '../plugins/PenPlugin/subSelect'
 
 export const isFiller = (filler: TFiller | string | null): filler is TFiller => {
   return !!filler && (filler as TFiller).toLive !== undefined
@@ -37,4 +40,17 @@ export const isActiveSelection = (fabricObject?: FabricObject): fabricObject is 
 
 export function isGroup(obj: FabricObject | Group): obj is Group {
   return obj.type === 'group'
+}
+
+// 自定义
+export function isSubPen(tool: BaseSubPen): tool is SubPen {
+  // 使用 instanceof 检查，因为类方法定义在原型上，不是自有属性
+  // hasOwnProperty 只检查自有属性，会导致误判
+  return tool instanceof SubPen
+}
+
+export function isSubSelect(tool: BaseSubPen): tool is SubSelect {
+  // 使用 instanceof 检查，因为类方法定义在原型上，不是自有属性
+  // hasOwnProperty 只检查自有属性，会导致误判
+  return tool instanceof SubSelect
 }

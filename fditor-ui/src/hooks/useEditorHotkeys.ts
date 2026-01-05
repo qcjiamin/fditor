@@ -1,10 +1,12 @@
 import { useHotkeys } from './useHotkeys'
 import type { Editor } from '@fditor/core'
-import { isActiveSelection, isGroup } from '@fditor/core'
+import { isActiveSelection, isGroup, isSubPen } from '@fditor/core'
 import type { HotkeysEvent } from 'hotkeys-js'
 import hotkeys from 'hotkeys-js'
+import { useEditorStore } from '@/stores/editorStore'
 
 export function useEditorHotkeys(editor: Editor) {
+  const editorStore = useEditorStore()
   // 方向键移动
   useHotkeys('left, right, up, down', (_e: KeyboardEvent, handler: HotkeysEvent) => {
     const selected = editor.getActiveObject()
@@ -88,5 +90,31 @@ export function useEditorHotkeys(editor: Editor) {
     e.preventDefault()
     // e.stopPropagation()
     editor.paste()
+  })
+
+  useHotkeys('esc', (e) => {
+    e.preventDefault()
+    if (editorStore.canvasMode === 'move') {
+      if (editor.getActiveObject()) {
+        editor.stage.discardActiveObject()
+        editor.render()
+      }
+    } else if (editorStore.canvasMode === 'pen') {
+      const pen = editor.stage.pen
+      if (!pen) return
+      const subTool = pen.currentSubTool
+      if (!subTool) return
+      if (isSubPen(subTool)) {
+        if (subTool.state === 'line') {
+          subTool.chengeState('move')
+        } else if (subTool.state === 'move') {
+          editor.leavePenMode()
+        }
+      } else if (subTool.type === 'select') {
+        editor.leavePenMode()
+      }
+    } else if (editorStore.canvasMode === 'pencil') {
+      editor.leavePenMode()
+    }
   })
 }

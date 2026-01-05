@@ -33,6 +33,10 @@ export default class SubSelect extends BaseSubPen {
   dragPoint: penPoint | null = null
   startPoint: Point | null = null
 
+  constructor(pen: BasePen) {
+    super(pen)
+  }
+
   onMouseDown(pen: BasePen, point: Point): void {
     pen.clearSelcted()
     // 是否点在控制点

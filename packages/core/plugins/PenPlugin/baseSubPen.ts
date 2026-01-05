@@ -5,7 +5,11 @@ import { subPenType } from '@fditor/core'
 
 export abstract class BaseSubPen {
   abstract type: subPenType
+  pen: BasePen
 
+  constructor(pen: BasePen) {
+    this.pen = pen
+  }
   onMouseDown(pen: BasePen, point: Point): void {}
 
   onMouseMove(pen: BasePen, point: Point): void {}
