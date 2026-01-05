@@ -13,13 +13,16 @@
 // 1. 计算非常繁琐
 // 2. 需要频繁计算变换矩阵，性能未知
 
+// 利用fabric原生control的方案
+// 1. 可以在选择工具状态下复用元素的渲染逻辑
+// 2. 是否能实现贝塞尔手柄控制点？
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Point } from 'fabric'
 import BasePen from './basePen'
 import { penPoint } from './type'
 import { BaseSubPen } from './baseSubPen'
 import { subPenType } from '@fditor/core'
-import { util } from 'fabric'
 
 // todo: 拖拽放置到存在的点时，合并点
 
