@@ -21,7 +21,8 @@
     text: textBar,
     path: PathBar,
     activeselection: ActiveSelectionBar,
-    group: GroupBar
+    group: GroupBar,
+    fpenpath: PathBar
   }
   const showPublicRef = computed(() => editorStore.selectType !== 'bg')
 </script>

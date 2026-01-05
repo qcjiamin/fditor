@@ -18,11 +18,13 @@
 // 2. 是否能实现贝塞尔手柄控制点？
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Point } from 'fabric'
+import { Point, util } from 'fabric'
 import BasePen from './basePen'
 import { penPoint } from './type'
 import { BaseSubPen } from './baseSubPen'
 import { subPenType } from '@fditor/core'
+import { pathToFaces } from '../../utils/aboutPath'
+import { segmentsToPath } from '../../utils/penHelper'
 
 // todo: 拖拽放置到存在的点时，合并点
 
@@ -72,11 +74,43 @@ export default class SubSelect extends BaseSubPen {
   }
   exit(pen: BasePen): void {}
 
+  _renderFill(pen: BasePen): void {
+    const ctx = pen.canvas.contextTop
+    // 绘制填充
+    if (!pen.fill) {
+      return
+    }
+
+    ctx.save()
+    // todo: 支持渐变和图案填充
+    ctx.fillStyle = pen.fill
+    const pathstr = segmentsToPath(pen.segments, pen.points)
+    const path = util.makePathSimpler(util.parsePath(pathstr))
+    const inner = pathToFaces(path)
+    // 与FPenPath绘制填充一致，不同的是不需要转换为对象坐标系
+    for (const face of inner) {
+      ctx.beginPath()
+
+      const startPoint = new Point(face.points[0].x, face.points[0].y)
+      ctx.moveTo(startPoint.x, startPoint.y)
+      for (let i = 1; i < face.points.length; i++) {
+        const point = new Point(face.points[i].x, face.points[i].y)
+        ctx.lineTo(point.x, point.y)
+      }
+      ctx.closePath()
+      ctx.fill()
+    }
+
+    ctx.restore()
+  }
+
   _render(pen: BasePen): void {
     const ctx = pen.canvas.contextTop
     // 绘制钢笔路线
     pen.canvas.clearContext(ctx)
     pen._saveAndTransform(ctx)
+    // 绘制填充
+    this._renderFill(pen)
 
     ctx.strokeStyle = pen.color
     ctx.lineWidth = pen.width

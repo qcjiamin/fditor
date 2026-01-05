@@ -42,8 +42,6 @@ Canvas.prototype._onMouseUpInPenMode = function (e: TPointerEvent) {
   // this._handleEvent(e, 'up')
 }
 
-
-
 const originMouseDown = Canvas.prototype.__onMouseDown
 Canvas.prototype.__onMouseDown = function (e: TPointerEvent) {
   if (this.pen) {
@@ -106,7 +104,7 @@ Editor.prototype.leavePenMode = function () {
     const pathstr = segmentsToPath(pen.segments, pen.points)
     const path = new FPenPath(pathstr, {
       radiusAble: true,
-      fill: null,
+      fill: pen.fill,
       stroke: pen.color,
       strokeWidth: pen.width,
       strokeLineCap: pen.strokeLineCap,
@@ -138,7 +136,8 @@ FPenPath.prototype.enterSelectMode = function () {
   this.canvas.setCursor('default')
   const style = {
     stroke: this.stroke as string,
-    strokeWidth: this.strokeWidth as number
+    strokeWidth: this.strokeWidth as number,
+    fill: this.fill as string
   }
 
   const matrix = this.calcOwnMatrix()
@@ -149,7 +148,7 @@ FPenPath.prototype.enterSelectMode = function () {
     point.x = newPoint.x
     point.y = newPoint.y
   })
-  const pen = new BasePen(this.canvas, 'select', style, matrix)
+  const pen = new BasePen(this.canvas, 'select', style)
   pen.points = this.points
   pen.segments = this.segments
   this.canvas.pen = pen

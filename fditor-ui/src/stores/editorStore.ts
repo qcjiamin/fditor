@@ -17,7 +17,8 @@ const type2Type: Record<string, ElementTypes> = {
   ftextbox: 'text',
   fimage: 'image',
   group: 'group',
-  path: 'path'
+  path: 'path',
+  fpenpath: 'fpenpath'
 }
 
 // 主要用于管理画布的状态
@@ -38,12 +39,14 @@ export const useEditorStore = defineStore('editor', () => {
 
   const selected = ref<FabricObject | undefined>(undefined)
   function setSelected(val: FabricObject | undefined) {
+    console.log('selected change1', val)
     selected.value = val
   }
   const selectType = computed(() => {
     if (!selected.value) {
       return 'bg'
     } else {
+      console.log('selected change', selected.value.type)
       return type2Type[selected.value.type] as ElementTypes
     }
   })

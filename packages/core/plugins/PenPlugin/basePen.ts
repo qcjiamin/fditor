@@ -1,7 +1,7 @@
 // 三角形起始点和终点是2个点，只是值完全相同，移动一个点时，与其相同的点全部要一起移动，以此实现节点的变化
 // 拖动点，要实现吸附效果成为必然，它能保证点的值相同
 // 钢笔状态下，hover的点从最后一个找。 绘制控制点时从最后一个开始绘制。因为hover和selected都挂载最后的点上，如果从前往后，控制点绘制时去重会使状态绘制不出来
-import { Canvas, Point, TBrushEventData, TMat2D } from 'fabric'
+import { Canvas, Point, TBrushEventData } from 'fabric'
 import type { penPoint, penSegment } from './type'
 import { BaseSubPen } from './baseSubPen'
 import SubPen from './subPen'
@@ -11,15 +11,15 @@ import { subPenType } from '@fditor/core'
 export default class BasePen {
   #color: string = 'rgba(0, 0, 0, 1)'
   #width: number = 2
+  #fill: string = 'rgba(0, 0, 0, 0)'
   currentSubTool: BaseSubPen
   canvas: Canvas
   points: penPoint[] = []
   segments: penSegment[] = []
   subtypes: Record<subPenType, BaseSubPen>
-  objectTransformMatrix: TMat2D | null = null
 
-  strokeLineCap: CanvasLineCap = 'round'
-  strokeLineJoin: CanvasLineJoin = 'round'
+  strokeLineCap: CanvasLineCap = 'butt'
+  strokeLineJoin: CanvasLineJoin = 'miter'
   strokeMiterLimit = 10
 
   pointRadius = 10
@@ -34,13 +34,9 @@ export default class BasePen {
   constructor(
     canvas: Canvas,
     subType: subPenType = 'pen',
-    style?: { stroke: string; strokeWidth: number },
-    objectTransformMatrix?: TMat2D
+    style?: { stroke: string; strokeWidth: number; fill: string }
   ) {
     this.canvas = canvas
-    if (objectTransformMatrix) {
-      this.objectTransformMatrix = objectTransformMatrix
-    }
     // 初始化所有状态（依赖注入）
     this.subtypes = {
       pen: new SubPen(),
@@ -52,6 +48,7 @@ export default class BasePen {
     if (style) {
       this.color = style.stroke
       this.width = style.strokeWidth
+      this.fill = style.fill
     }
 
     this.currentSubTool.enter(this)
@@ -72,6 +69,15 @@ export default class BasePen {
     this.#width = val
     this.currentSubTool._render(this)
   }
+  get fill() {
+    return this.#fill
+  }
+  set fill(val: string) {
+    if (this.#fill === val) return
+    this.#fill = val
+    this.currentSubTool._render(this)
+  }
+
   /** 矩阵变换 */
   _saveAndTransform(ctx: CanvasRenderingContext2D) {
     const v = this.canvas.viewportTransform

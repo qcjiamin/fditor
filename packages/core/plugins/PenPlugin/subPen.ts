@@ -143,6 +143,8 @@ export default class SubPen extends BaseSubPen {
     const endPoint = this.mPoint ? this.mPoint : pen.points[pen.points.length - 1]
     if (endPoint && this.state === 'line') {
       ctx.save()
+      // 移动线的宽度固定
+      ctx.lineWidth = 2
       ctx.strokeStyle = pen.pointStroke
       ctx.moveTo(endPoint.x, endPoint.y)
       if (this.hoverPoint) {

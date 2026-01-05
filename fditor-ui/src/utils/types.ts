@@ -10,14 +10,15 @@ export enum ElementType {
   text = 'text',
   group = 'group',
   activeselection = 'activeselection',
-  path = 'path'
+  path = 'path',
+  fpenpath = 'fpenpath'
 }
 
 export const CanvasStateArr = ['normal', 'clip', 'pencil', 'pen'] as const
 /** 画布状态=>属性条位置显示的类型 */
 export type CanvasStates = (typeof CanvasStateArr)[number]
 
-export const ElementTypeArr = ['bg', 'Shape', 'image', 'text', 'activeselection', 'group', 'path'] as const
+export const ElementTypeArr = ['bg', 'Shape', 'image', 'text', 'activeselection', 'group', 'path', 'fpenpath'] as const
 /** 属性条属性类型 */
 export type ElementTypes = (typeof ElementTypeArr)[number]
 

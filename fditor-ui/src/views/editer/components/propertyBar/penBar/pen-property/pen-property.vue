@@ -1,11 +1,12 @@
 <script lang="ts" setup>
   import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
-  // import sliderProperty from '@/views/editer/components/propertyBar/components/slider-property.vue'
+  import sliderProperty from '@/views/editer/components/propertyBar/components/slider-property.vue'
   import { EditorKey } from '@/constants/injectKey'
   import { computed, inject, onMounted, ref, watch } from 'vue'
   import type { Editor } from '@fditor/core'
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import type { updateColorOptions } from '@/components/colorPicker/types'
+  import lineWidthIcon from '@/assets/icons/pencilbar/lineWidth.svg'
   const editor = inject(EditorKey) as Editor
   const stroke = ref<string>('rgba(0, 0, 0, 1)')
   const strokeWidth = ref<number>(2)
@@ -35,6 +36,13 @@
       }
     }
   }
+  function setStrokeWidth(val: number, { commit }: updateColorOptions) {
+    if (!editor.stage.pen) return
+    strokeWidth.value = val
+    if (commit) {
+      editor.stage.pen.width = val
+    }
+  }
 
   watch(
     () => strokeInfo.value,
@@ -43,23 +51,30 @@
       editor.stage.pen.color = val.value as string
     }
   )
+  watch(
+    () => strokeWidth.value,
+    (val) => {
+      if (!editor.stage.pen) return
+      editor.stage.pen.width = val
+    }
+  )
 </script>
 
 <template>
   <div class="box">
     <fill-property :color="strokeInfo" :enable-gradient="false" @update:color="setStroke"></fill-property>
-    <!-- <slider-property
-      :model-value="editorStore.brushStyle.lineWidth"
+    <slider-property
+      :model-value="strokeWidth"
       :tip="'lineWidth'"
       :min="1"
       :max="100"
       :step="1"
-      @change="changeLineWidth"
+      @change="setStrokeWidth"
     >
       <template #icon>
         <lineWidthIcon></lineWidthIcon>
       </template>
-    </slider-property> -->
+    </slider-property>
   </div>
 </template>
 
