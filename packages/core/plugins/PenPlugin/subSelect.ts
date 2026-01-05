@@ -1,3 +1,18 @@
+// 实现方案
+// 1. 基于points->segments->path->渲染
+// 2. 处理路径对象变换后，与points的映射问题：在进入选择工具状态时，将points应用对象的变换
+// 3. 继承FPath的mr等控制点方法，导致path与points分离的问题：重写FPenPath的4个中心点的控制方法[直接对所有点应用缩放倍数，然后由wrapWithFixedAnchor校正锚点位置，
+//   用mr举例，1-2 放大3倍变为 3-6，然后将left 3 移回 1 的位置]
+// 方案问题
+// 1. 每次进入选择工具后，退出都是创建的新的对象，会丢失旋转的角度
+
+// 其它方案
+// points从创建后就不变[同时也必须记录pathoffset]，渲染时计算变换矩阵，生成新的path进行渲染。
+// 类似isOverPoint 这样的判定，也都需要将所有点应用对象的变换矩阵后，再与鼠标点进行判定。
+// 方案问题
+// 1. 计算非常繁琐
+// 2. 需要频繁计算变换矩阵，性能未知
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Point } from 'fabric'
 import BasePen from './basePen'

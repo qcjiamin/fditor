@@ -5,6 +5,7 @@ import { Editor } from '@fditor/core'
 import { penPoint, penSegment } from './type'
 import { FPenPath } from '../../customShape/FPenPath'
 import { isFCanvas } from '../../utils/tsHelper'
+import { segmentsToPath } from '../../utils/penHelper'
 declare module 'fabric' {
   export interface Canvas {
     pen: BasePen | undefined
@@ -41,34 +42,7 @@ Canvas.prototype._onMouseUpInPenMode = function (e: TPointerEvent) {
   // this._handleEvent(e, 'up')
 }
 
-function segmentsToPath(segments: penSegment[], points: penPoint[]) {
-  let path = ''
-  let lastEndPointId: string = ''
-  console.log(segments, points)
-  for (let i = 0; i < segments.length; i++) {
-    const { type, from, to } = segments[i]
-    const fromPoint = points.find((point) => point.id === from) as penPoint
-    const toPoint = points.find((point) => point.id === to) as penPoint
-    if (!fromPoint || !toPoint) {
-      throw new Error('segmentsToPath: fromPoint or toPoint is null')
-    }
-    if (type === 'line') {
-      const isClose = toPoint.type === 'move'
-      if (lastEndPointId === fromPoint.id) {
-        if (isClose) {
-          path += 'Z'
-        } else {
-          path += `L${toPoint.x},${toPoint.y}`
-        }
-      } else {
-        path += `M${fromPoint.x},${fromPoint.y}`
-        path += `L${toPoint.x},${toPoint.y}`
-      }
-      lastEndPointId = toPoint.id
-    }
-  }
-  return path
-}
+
 
 const originMouseDown = Canvas.prototype.__onMouseDown
 Canvas.prototype.__onMouseDown = function (e: TPointerEvent) {
@@ -123,6 +97,8 @@ Editor.prototype.leavePenMode = function () {
   if (!this.stage.pen) return
 
   const pen = this.stage.pen
+  pen.clearHover()
+  pen.clearSelcted()
   this.stage.setCursor('default')
   this.stage.pen = undefined
   // 添加path到画布
