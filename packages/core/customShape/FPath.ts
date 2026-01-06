@@ -105,8 +105,14 @@ export class FPath extends Path {
   //   }
   // }
 
-  constructor(path: string, options: Partial<FPathProps> = {}) {
-    const _path = roundCorners(path, options.cornerRadius ?? 0).path
+  constructor(path: string | TSimplePathData, options: Partial<FPathProps> = {}) {
+    let pathStr = ''
+    if (Array.isArray(path)) {
+      pathStr = pathToPathStr(path)
+    } else {
+      pathStr = path
+    }
+    const _path = roundCorners(pathStr, options.cornerRadius ?? 0).path
     console.log(_path)
     super(_path, {
       radiusAble: false,
@@ -117,7 +123,7 @@ export class FPath extends Path {
       //todo rx ry 更新后， isCacheDirty 仍然为false,会导致不重绘，圆角显示不出来。 这里先不要缓存，后面重写 isCacheDirty
       objectCaching: false
     })
-    this.originPath = path
+    this.originPath = pathStr
     this.cornerRadius = options.cornerRadius ?? 0
     const box = getSvgPathBox(this.originPath)
     this.originWidth = box.width
