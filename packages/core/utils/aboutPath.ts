@@ -133,32 +133,100 @@ export function pathToFaces(path: TSimplePathData): Face[] {
   // 将每一条线段列出来
   const rawSegments: Segment[] = []
 
-  // 将所有的Z转换为L，不然拆分线段时会出错
-  // 可以和拆分线段放在一个循环里，这里为了逻辑清晰分开处理
-  const copyPath = path.slice()
-  let lastM = null
-  for (let i = 0; i < copyPath.length; i++) {
-    const item = copyPath[i]
-    if (item[0] === 'M') {
-      lastM = item
-    } else if (item[0] === 'Z') {
-      if (lastM) {
-        copyPath[i] = ['L', lastM[1], lastM[2]]
-      } else {
-        throw new Error('Z command must follow M command')
-      }
-    }
-  }
+  let lastX = 0
+  let lastY = 0
+  let startX = 0
+  let startY = 0
 
-  let a = null
-  let b = null
-  for (let i = 0; i < copyPath.length; i++) {
-    if (i > 0) {
-      const lastItem = copyPath[i - 1]
-      const item = copyPath[i]
-      a = { x: lastItem[1] as number, y: lastItem[2] as number }
-      b = { x: item[1] as number, y: item[2] as number }
-      rawSegments.push({ a, b })
+  for (let i = 0; i < path.length; i++) {
+    const command = path[i]
+    const type = command[0]
+
+    if (type === 'M') {
+      lastX = command[1] as number
+      lastY = command[2] as number
+      startX = lastX
+      startY = lastY
+    } else if (type === 'L') {
+      const x = command[1] as number
+      const y = command[2] as number
+      rawSegments.push({
+        a: { x: lastX, y: lastY },
+        b: { x, y }
+      })
+      lastX = x
+      lastY = y
+    } else if (type === 'Q') {
+      const x1 = command[1] as number
+      const y1 = command[2] as number
+      const x = command[3] as number
+      const y = command[4] as number
+
+      // Flatten Quadratic Bezier
+      // 估算曲线长度: P0->P1 + P1->P2
+      const len = Math.hypot(x1 - lastX, y1 - lastY) + Math.hypot(x - x1, y - y1)
+      const steps = Math.max(10, Math.ceil(len / 2)) // 每2px采样一次，最少10段
+
+      let prevX = lastX
+      let prevY = lastY
+
+      for (let j = 1; j <= steps; j++) {
+        const t = j / steps
+        const invT = 1 - t
+        const currX = invT * invT * lastX + 2 * invT * t * x1 + t * t * x
+        const currY = invT * invT * lastY + 2 * invT * t * y1 + t * t * y
+
+        rawSegments.push({
+          a: { x: prevX, y: prevY },
+          b: { x: currX, y: currY }
+        })
+        prevX = currX
+        prevY = currY
+      }
+      lastX = x
+      lastY = y
+    } else if (type === 'C') {
+      const x1 = command[1] as number
+      const y1 = command[2] as number
+      const x2 = command[3] as number
+      const y2 = command[4] as number
+      const x = command[5] as number
+      const y = command[6] as number
+
+      // Flatten Cubic Bezier
+      // 估算曲线长度
+      const len = Math.hypot(x1 - lastX, y1 - lastY) + Math.hypot(x2 - x1, y2 - y1) + Math.hypot(x - x2, y - y2)
+      const steps = Math.max(10, Math.ceil(len / 2))
+
+      let prevX = lastX
+      let prevY = lastY
+
+      for (let j = 1; j <= steps; j++) {
+        const t = j / steps
+        const invT = 1 - t
+        const currX =
+          invT * invT * invT * lastX + 3 * invT * invT * t * x1 + 3 * invT * t * t * x2 + t * t * t * x
+        const currY =
+          invT * invT * invT * lastY + 3 * invT * invT * t * y1 + 3 * invT * t * t * y2 + t * t * t * y
+
+        rawSegments.push({
+          a: { x: prevX, y: prevY },
+          b: { x: currX, y: currY }
+        })
+        prevX = currX
+        prevY = currY
+      }
+      lastX = x
+      lastY = y
+    } else if (type === 'Z') {
+      if (lastX !== startX || lastY !== startY) {
+        rawSegments.push({
+          a: { x: lastX, y: lastY },
+          b: { x: startX, y: startY }
+        })
+      }
+      lastX = startX
+      lastY = startY
     }
   }
   const split = splitSegments(rawSegments)
