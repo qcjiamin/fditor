@@ -17,9 +17,7 @@ export type penSegment = {
   from: string
   to: string
   type: segmentType
-  handleIn?: penPoint
-  handleOut?: penPoint
+  handleIn?: string
+  handleOut?: string
   selected: boolean
 }
-
-

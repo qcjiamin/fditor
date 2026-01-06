@@ -1,3 +1,5 @@
+import { NormalPoint } from '@fditor/core'
+
 /** 
  获取工作区按照容器宽高缩放度
  @param destination 工作区比例
@@ -33,4 +35,20 @@ export const removeFromArray = (array: any[], value: any) => {
  */
 export function isFirefox() {
   return navigator.userAgent.indexOf('Firefox') > -1
+}
+
+/** 求C相对于AB的中垂线的对称点 */
+export function mirrorPointByMidPerpendicular(A: NormalPoint, B: NormalPoint, C: NormalPoint) {
+  const dx = B.x - A.x
+  const dy = B.y - A.y
+
+  const mx = (A.x + B.x) / 2
+  const my = (A.y + B.y) / 2
+
+  const t = ((C.x - mx) * dx + (C.y - my) * dy) / (dx * dx + dy * dy)
+
+  return {
+    x: C.x - 2 * t * dx,
+    y: C.y - 2 * t * dy
+  }
 }

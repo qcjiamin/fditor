@@ -128,15 +128,42 @@ export default class SubSelect extends BaseSubPen {
     let lastPointId = ''
     ctx.beginPath()
     for (let i = 0; i < pen.segments.length; i++) {
-      const { from, to } = pen.segments[i]
+      const seg = pen.segments[i]
+      const { from, to, type } = seg
       const fromPoint = pen.points.find((point) => point.id === from) as penPoint
       const toPoint = pen.points.find((point) => point.id === to) as penPoint
       if (lastPointId === fromPoint.id) {
-        ctx.lineTo(toPoint.x, toPoint.y)
+        // continued path
       } else {
         ctx.moveTo(fromPoint.x, fromPoint.y)
+      }
+
+      // 如果有handleIn 或则 handleOut, 画贝塞尔曲线；否则画直线
+      if ((seg.handleIn && !seg.handleOut) || (seg.handleOut && !seg.handleIn)) {
+        let h = null
+        if (seg.handleIn) {
+          h = this.pen.points.find((p) => p.id === seg.handleIn)
+        } else if (seg.handleOut) {
+          h = this.pen.points.find((p) => p.id === seg.handleOut)
+        }
+        if (!h) throw new Error('Invalid point')
+        ctx.quadraticCurveTo(h.x, h.y, toPoint.x, toPoint.y)
+      } else if (seg.handleIn && seg.handleOut) {
+        const h1 = this.pen.points.find((p) => p.id === seg.handleOut)
+        const h2 = this.pen.points.find((p) => p.id === seg.handleIn)
+        if (!h1 || !h2) throw new Error('Invalid point')
+        ctx.bezierCurveTo(h1.x, h1.y, h2.x, h2.y, toPoint.x, toPoint.y)
+      } else {
         ctx.lineTo(toPoint.x, toPoint.y)
       }
+
+      // if (type === 'cubic') {
+      //     const h1 = seg.handleOut || fromPoint
+      //     const h2 = seg.handleIn || toPoint
+      //     ctx.bezierCurveTo(h1.x, h1.y, h2.x, h2.y, toPoint.x, toPoint.y)
+      // } else {
+      //     ctx.lineTo(toPoint.x, toPoint.y)
+      // }
       lastPointId = toPoint.id
     }
     ctx.stroke()

@@ -128,6 +128,17 @@ export default class BasePen {
     return null
   }
 
+  isOverHandlePoint(point: Point) {
+    const handlePoints = this.points.filter((point) => point.role === 'handle')
+    for (let i = handlePoints.length - 1; i >= 0; i--) {
+      const { x, y } = handlePoints[i]
+      const p = new Point(x, y)
+      if (p.distanceFrom(point) < this.pointRadius + 2) {
+        return handlePoints[i]
+      }
+    }
+  }
+
   clearSelcted() {
     this.points.forEach((point) => {
       point.selected = false
