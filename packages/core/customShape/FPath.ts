@@ -43,6 +43,8 @@ function getSvgPathBox(pathStr: string) {
  * @param pathStr
  * @returns
  */
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getMaxRadius(pathStr: string) {
   // 创建画布（离屏）
   paperFull.setup(new paperFull.Size(1000, 1000))
@@ -112,9 +114,7 @@ export class FPath extends Path {
     } else {
       pathStr = path
     }
-    const _path = roundCorners(pathStr, options.cornerRadius ?? 0).path
-    console.log(_path)
-    super(_path, {
+    super(path, {
       radiusAble: false,
       ...options,
       noScaleCache: false,
@@ -237,13 +237,17 @@ export class FPath extends Path {
   }
 
   _renderPathCommands(ctx: CanvasRenderingContext2D) {
+    let _path = null
     // 绘制前通过圆角重新计算 path
-    const pathStr = pathToPathStr(this.path)
-    const maxRadius = getMaxRadius(pathStr)
-    const toRadius = maxRadius * (this.cornerRadius / 100)
-    const newPathStr = roundCorners(pathStr, toRadius).path
-    // 解析为 TSimplePathData, 参考 Path._setPath
-    const _path = util.makePathSimpler(util.parsePath(newPathStr))
+    if (this.cornerRadius) {
+      const pathStr = pathToPathStr(this.path)
+      const toRadius = this.cornerRadius
+      const newPathStr = roundCorners(pathStr, toRadius).path
+      // 解析为 TSimplePathData, 参考 Path._setPath
+      _path = util.makePathSimpler(util.parsePath(newPathStr))
+    } else {
+      _path = this.path
+    }
     //! setBoundingBox 影响width height pathOffset。 理论上这里只重新计算圆角，不影响bound，先不调用
     // this.setBoundingBox(adjustPosition);
     const l = -this.pathOffset.x,
