@@ -39,6 +39,7 @@ export class FPenPath extends FPath {
     // 深拷贝一份初始点位
     this.originPoints = JSON.parse(JSON.stringify(this.points))
     this._initResizeControls()
+    this.radiusAble = true
   }
 
   _initResizeControls() {

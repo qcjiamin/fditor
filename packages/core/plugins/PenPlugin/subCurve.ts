@@ -3,11 +3,12 @@ import BasePen from './basePen'
 import { BaseSubPen } from './baseSubPen'
 import { subPenType } from '@fditor/core'
 import { penPoint } from './type'
-import { mirrorPointByMidPerpendicular } from '../../utils/common'
+import { computeProjectionsSafe, mirrorPointByMidPerpendicular } from '../../utils/common'
 
 export default class SubCurve extends BaseSubPen {
   type: subPenType = 'curve'
   dragPoint: penPoint | null = null
+  clickAnchor: penPoint | null = null
 
   // 记录当前操作的手柄相关的锚点（用于对称计算等）
   // activeAnchor: penPoint | null = null
@@ -26,14 +27,13 @@ export default class SubCurve extends BaseSubPen {
       return
     }
 
-    pen.clearSelcted()
-    // 2. 检测锚点点击
+    // pen.clearSelcted()
+    // // 2. 检测锚点点击
     const hoverPenPoint = pen.isOverPoint(point)
     if (hoverPenPoint) {
-      hoverPenPoint.selected = true
-      this._initHandlesForAnchor(pen, hoverPenPoint)
+      this.clickAnchor = hoverPenPoint
     }
-    this._render(pen)
+    // this._render(pen)
   }
 
   onMouseMove(pen: BasePen, point: Point): void {
@@ -62,9 +62,38 @@ export default class SubCurve extends BaseSubPen {
     this._render(pen)
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onMouseUp(pen: BasePen, point: Point): void {
+    // 点击空白处，清空选中
+    if (!this.dragPoint && !this.clickAnchor) {
+      pen.clearSelcted()
+    }
+
     this.dragPoint = null
+    const hoverPenPoint = pen.isOverPoint(point)
+    // 确定点击发生
+    if (hoverPenPoint && this.clickAnchor && hoverPenPoint.id === this.clickAnchor.id) {
+      // 如果被点击的点本身处于选中状态，将其选中状态清空，并且移除该点关联线段的handle. 即取消该点的曲线效果
+      if (hoverPenPoint.selected) {
+        const fromSegs = this.pen.segments.filter((s) => s.from === hoverPenPoint.id)
+        const toSegs = this.pen.segments.filter((s) => s.to === hoverPenPoint.id)
+        fromSegs.forEach((s) => {
+          delete s.handleOut
+        })
+        toSegs.forEach((s) => {
+          delete s.handleIn
+        })
+        hoverPenPoint.selected = false
+        this._render(pen)
+        return
+      } else {
+        // 点在被点击时不是选中状态，清空其他选中，设置选中该点，然后初始化handle点，渲染
+        pen.clearSelcted()
+        hoverPenPoint.selected = true
+        this._initHandlesForAnchor(pen, hoverPenPoint)
+        this._render(pen)
+      }
+    }
+    this.clickAnchor = null
   }
 
   enter(pen: BasePen): void {
@@ -75,7 +104,70 @@ export default class SubCurve extends BaseSubPen {
   _initHandlesForAnchor(pen: BasePen, anchor: penPoint) {
     // 1. Find segment where anchor is FROM (Segment A) -> A.handleOut
     // const segOut = pen.segments.find(s => s.from === anchor.id)
-    const segOuts = pen.segments.filter((s) => s.from === anchor.id)
+    const segOuts = this.pen.segments.filter((s) => s.from === anchor.id)
+    const segIns = this.pen.segments.filter((s) => s.to === anchor.id)
+    // 点只对应2条边
+    const isAngle = segOuts.length + segIns.length === 2
+    if (isAngle) {
+      const segs = [...segOuts, ...segIns]
+      const segA = segs[0]
+      const segB = segs[1]
+      let pointA = null
+      let pointB = null
+      if (segA.from === anchor.id) {
+        pointA = segA.to
+      } else {
+        pointA = segA.from
+      }
+      if (segB.from === anchor.id) {
+        pointB = segB.to
+      } else {
+        pointB = segB.from
+      }
+      const A = this.pen.points.find((p) => p.id === pointA)
+      const B = this.pen.points.find((p) => p.id === pointB)
+      if (!A || !B) {
+        throw new Error('Invalid point')
+      }
+      const { handleA, handleB } = computeProjectionsSafe(A, anchor, B)
+      // 将控制点添加到points中
+      const handlePointA: penPoint = {
+        id: window.crypto.randomUUID() as string,
+        type: 'move', // 借用 move 状态? 还是 'line'? penPoint type 定义是 penState
+        x: handleA.x,
+        y: handleA.y,
+        hover: false,
+        selected: false,
+        role: 'handle',
+        ownerSegmentId: segA.id
+      }
+      this.pen.points.push(handlePointA)
+      const handlePointB: penPoint = {
+        id: window.crypto.randomUUID() as string,
+        type: 'move', // 借用 move 状态? 还是 'line'? penPoint type 定义是 penState
+        x: handleB.x,
+        y: handleB.y,
+        hover: false,
+        selected: false,
+        role: 'handle',
+        ownerSegmentId: segB.id
+      }
+      this.pen.points.push(handlePointB)
+
+      if (segA.from === anchor.id) {
+        segA.handleOut = handlePointA.id
+      } else {
+        segA.handleIn = handlePointA.id
+      }
+      if (segB.from === anchor.id) {
+        segB.handleOut = handlePointB.id
+      } else {
+        segB.handleIn = handlePointB.id
+      }
+
+      return
+    }
+
     if (segOuts.length > 0) {
       let posX: number
       let posY: number
@@ -118,7 +210,6 @@ export default class SubCurve extends BaseSubPen {
     }
 
     //2. 找到所有将点击的点作为终点的线段
-    const segIns = this.pen.segments.filter((s) => s.to === anchor.id)
     if (segIns.length > 0) {
       let posX: number
       let posY: number
