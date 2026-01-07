@@ -17,6 +17,7 @@ import { createLinearGradient, createRadialGradient, wrapWithFireEvent, wrapWith
 import { switchPointFromLocalToContainer } from '../utils/mat'
 import svgPath from 'svgpath'
 import { roundCorners } from 'svg-round-corners'
+// import { roundPathCorners } from '../utils/roundPath'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
 import { isFiller, isPattern } from '../utils/typeAssertions'
@@ -108,11 +109,11 @@ export class FPath extends Path {
   // }
 
   constructor(path: string | TSimplePathData, options: Partial<FPathProps> = {}) {
-    let pathStr = ''
+    let pathStr: TSimplePathData
     if (Array.isArray(path)) {
-      pathStr = pathToPathStr(path)
-    } else {
       pathStr = path
+    } else {
+      pathStr = util.makePathSimpler(util.parsePath(path))
     }
     super(path, {
       radiusAble: false,
@@ -123,7 +124,7 @@ export class FPath extends Path {
       //todo rx ry 更新后， isCacheDirty 仍然为false,会导致不重绘，圆角显示不出来。 这里先不要缓存，后面重写 isCacheDirty
       objectCaching: false
     })
-    this.originPath = pathStr
+    this.originPath = pathToPathStr(pathStr)
     this.cornerRadius = options.cornerRadius ?? 0
     const box = getSvgPathBox(this.originPath)
     this.originWidth = box.width
@@ -241,8 +242,8 @@ export class FPath extends Path {
     // 绘制前通过圆角重新计算 path
     if (this.cornerRadius) {
       const pathStr = pathToPathStr(this.path)
-      const toRadius = this.cornerRadius
-      const newPathStr = roundCorners(pathStr, toRadius).path
+      const newPathStr = roundCorners(pathStr, this.cornerRadius).path
+      // const newPathStr = roundPathCorners(this.path, this.cornerRadius)
       // 解析为 TSimplePathData, 参考 Path._setPath
       _path = util.makePathSimpler(util.parsePath(newPathStr))
     } else {

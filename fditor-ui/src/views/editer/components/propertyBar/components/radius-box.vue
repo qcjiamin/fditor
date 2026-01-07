@@ -38,11 +38,11 @@
         show-input
         :show-input-controls="false"
         size="small"
-        :max="100"
+        :max="500"
         :min="0"
+        class="figma-slider"
         @input="inputRadius"
         @change="updateRadius"
-        class="figma-slider"
       />
     </div>
   </div>

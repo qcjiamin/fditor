@@ -10,7 +10,7 @@
   import { colorInstance2Info } from '@/utils/common'
   import type { FabricObjectProps } from 'fabric'
   import type { updateColorOptions } from '@/components/colorPicker/types'
-  import radiusProperty from '@/views/editer/components/propertyBar/shapeBar/radius-property.vue'
+  import radiusProperty from '@/views/editer/components/propertyBar/components/radius-property.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import { isShape } from '@/utils/guard'
   // const props = defineProps<{

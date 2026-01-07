@@ -2,7 +2,7 @@
   import propertyItem from '@/views/editer/components/propertyBar/components/property-item.vue'
   import RadiusIcon from '@/assets/icons/shapebar/radius.svg'
   import type { updateColorOptions } from '@/components/colorPicker/types'
-  import radiusBox from '@/views/editer/components/propertyBar/shapeBar/radius-box.vue'
+  import radiusBox from './radius-box.vue'
 
   const emit = defineEmits<{
     'update:radius': [number, options: updateColorOptions]
