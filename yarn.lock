@@ -2024,6 +2024,13 @@ levn@^0.4.1:
     prelude-ls "^1.2.1"
     type-check "~0.4.0"
 
+line-utils@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/line-utils/-/line-utils-0.0.3.tgz#2c9a9c8663c475dd6fb1384b07c8eb469b9fdc57"
+  integrity sha512-wIcJ/wt2U3tGoNpUTH/6J8LJerdoM6HfaVDJBXPkB12l9P3P+ptWHjjYhOIJ2KBFigA3muAou9QpTLmrZuFp5Q==
+  dependencies:
+    mathzz "^0.0.4"
+
 local-pkg@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/local-pkg/-/local-pkg-1.1.1.tgz#f5fe74a97a3bd3c165788ee08ca9fbe998dc58dd"
@@ -2088,6 +2095,16 @@ math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
   integrity sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==
+
+mathzz@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/mathzz/-/mathzz-0.0.3.tgz#37ae3c9f171847be71bddd50d373448acf80a3c3"
+  integrity sha512-sFx66Qi22E2E9kIqMuVTvNTCLztepGTdauNvC/QlUWGkdlXqBzeM4G5EY9EckvJb+a7c/wpHPilDa+9tkJPXUg==
+
+mathzz@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/mathzz/-/mathzz-0.0.4.tgz#8ce7b555741bf988ff2149d6b46da298d4e8a04a"
+  integrity sha512-sDbfF9XvK/wYP5wloHwTcbxws3jItk2Aue0XfExui2lZ5lfNGMOhg6rSK7OospDB/dpzBMIA8a7zzz5t8yeyzw==
 
 mdn-data@2.0.28:
   version "2.0.28"
@@ -2309,10 +2326,27 @@ p-locate@^5.0.0:
   dependencies:
     p-limit "^3.0.2"
 
-paper@^0.12.18:
+paper@^0.12.17, paper@^0.12.18, paper@^0.12.4:
   version "0.12.18"
   resolved "https://registry.yarnpkg.com/paper/-/paper-0.12.18.tgz#e024056217a35c36e2b5fda4629310fdc7025c91"
   integrity sha512-ZSLIEejQTJZuYHhSSqAf4jXOnii0kPhCJGAnYAANtdS72aNwXJ9cP95tZHgq1tnNpvEwgQhggy+4OarviqTCGw==
+
+paperjs-offset@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/paperjs-offset/-/paperjs-offset-1.0.8.tgz#3ddb297785a45b99126e3da3bca852e3612b3d68"
+  integrity sha512-rUXMtHH4bTNVrCgDcu+x71qyGoPe+01yZtrPD7bowji4VfWiDWzl4EUdRxiZnG5ooPg7b07mk6jVx33hNSojaA==
+  dependencies:
+    paper "^0.12.4"
+
+paperjs-round-corners@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/paperjs-round-corners/-/paperjs-round-corners-0.0.10.tgz#92983cfefacd836b9cf08be04a4473aa2c49078a"
+  integrity sha512-VeI+yZHGbtyNjmtfWsjUx6oR0H0sOKou6wY923pVVWTHNlCgKKH8NmtW9fDSYQAkNtZz2HEsWm7NVCrCYZuKBg==
+  dependencies:
+    line-utils "^0.0.3"
+    mathzz "^0.0.3"
+    paper "^0.12.17"
+    paperjs-offset "^1.0.8"
 
 parent-module@^1.0.0:
   version "1.0.1"
