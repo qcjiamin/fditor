@@ -166,7 +166,6 @@ export default class BasePen {
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onMouseUp(point: Point, { e }: TBrushEventData) {
-    console.log('mouseup in pen mode')
     this.currentSubTool.onMouseUp(this, point)
   }
   //todo 样式设置

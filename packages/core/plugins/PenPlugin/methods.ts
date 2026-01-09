@@ -2,7 +2,6 @@
 import { Canvas, TPointerEvent, util } from 'fabric'
 import BasePen from './basePen'
 import { Editor } from '@fditor/core'
-import { penPoint, penSegment } from './type'
 import { FPenPath } from '../../customShape/FPenPath'
 import { isFCanvas } from '../../utils/tsHelper'
 import { segmentsToPath } from '../../utils/penHelper'

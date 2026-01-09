@@ -112,7 +112,6 @@ export default class SubPen extends BaseSubPen {
       selected: select
     })
     if (this.state === 'line') {
-      console.log(this.mPoint)
       pen.segments.push({
         id: window.crypto.randomUUID() as string,
         from: this.mPoint ? this.mPoint.id : lastPoint!.id,
@@ -252,6 +251,5 @@ export default class SubPen extends BaseSubPen {
       }
     }
     ctx.restore()
-    console.log('render pen')
   }
 }
