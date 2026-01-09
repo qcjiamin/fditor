@@ -89,14 +89,14 @@ function roundPath(path: paper.Path, radius: number, eps = 1e-6): paper.Path {
 
     const seg1 = new paperFull.Segment(
       p1,
-      null,
+      undefined,
       d1.multiply(-handleLen) // handleOut towards corner
     )
 
     const seg2 = new paperFull.Segment(
       p2,
       d2.multiply(-handleLen), // handleIn towards corner
-      null
+      undefined
     )
 
     dst.add(seg1)
@@ -132,47 +132,96 @@ export function roundPathWithCurves(path: paper.Path, radius: number, flatness =
   return rounded
 }
 
+/**
+ * Calculate the maximum corner radius for a path
+ * Considers that each segment can have corners at both endpoints
+ * @param path Paper.js path object
+ * @returns Maximum safe radius for all corners
+ */
+function calculateMaxRadiusForPath(path: paper.Path): number {
+  const segments = path.segments
+  const count = segments.length
+
+  if (count < 3) {
+    return 0 // Need at least 3 points to form a corner
+  }
+
+  const maxRadii: number[] = []
+
+  for (let i = 0; i < count; i++) {
+    const curr = segments[i]
+    const prev = segments[(i - 1 + count) % count]
+    const next = segments[(i + 1) % count]
+
+    // Skip endpoints for open paths
+    if (!path.closed && (i === 0 || i === count - 1)) {
+      continue
+    }
+
+    // Calculate edge lengths
+    const len1 = curr.point.getDistance(prev.point)
+    const len2 = curr.point.getDistance(next.point)
+
+    // Maximum radius is half the minimum edge length
+    // This accounts for the case where both endpoints of an edge have corners
+    const maxR = Math.min(len1, len2) / 2
+
+    if (maxR > 0) {
+      maxRadii.push(maxR)
+    }
+  }
+
+  // Return the minimum of all maximum radii (most restrictive)
+  return maxRadii.length > 0 ? Math.min(...maxRadii) : 0
+}
+
 export function roundPathCorners(pathStr: string, radius: number) {
   // 1. 初始化 Paper.js 画布（确保每次调用都是独立的，避免冲突）
   // 注意：如果是浏览器环境，也可以用 offscreenCanvas 或固定画布，这里用 Size 初始化更通用
   paperFull.setup(new paperFull.Size(1000, 1000))
 
   try {
-    // 2. 创建原始路径（解析传入的 pathStr）
+    // 2. 创建原始路径(解析传入的 pathStr)
     const path = new paperFull.Path(pathStr)
 
-    // const roundness = 20 // Adjust the roundness value as needed
-    const options = { method: 'cubic' } // Choose the desired rounding method
+    // 3. 计算该路径的最大可用圆角半径
+    const maxRadius = calculateMaxRadiusForPath(path)
 
-    // Round a single segment
-    // PaperRoundCorners.round(path.segments[0], roundness, options);
+    // 4. 将输入的半径限制在最大值范围内
+    const clampedRadius = Math.min(radius, maxRadius)
 
-    // Round multiple segments
-    PaperRoundCorners.roundMany(path.segments, radius, options)
+    // 如果半径被限制了,在开发环境下输出提示信息
+    if (clampedRadius < radius && process.env.NODE_ENV === 'development') {
+      console.warn(
+        `Corner radius ${radius} exceeds maximum ${maxRadius.toFixed(2)}, clamped to ${clampedRadius.toFixed(2)}`
+      )
+    }
 
-    // const roundedPath = roundPathWithCurves(path, radius)
+    // 5. 应用圆角(使用限制后的半径)
+    PaperRoundCorners.roundMany(path.segments, clampedRadius, { method: 'cubic' })
 
-    // 3. 克隆路径并添加圆角
-    // const roundedPath = path.clone()
-    // roundedPath.smooth({
-    //   // type: 'circular', // 圆弧型圆角（核心）
-    //   // radius: radius // 圆角半径，支持外部传入更灵活
-    //   type: 'continuous'
-    // })
+    function isSVGElement(svg: string | SVGElement) {
+      return svg instanceof SVGElement
+    }
 
-    // 4. 关键：将 Paper.js 路径对象转换为 SVG path 字符串
+    // 6. 关键：将 Paper.js 路径对象转换为 SVG path 字符串
     // exportSVG() 会生成包含 path 标签的 SVG 片段，提取其中的 d 属性值
     const svgFragment = path.exportSVG({
       precision: 2, // 控制坐标精度，避免过多小数，可选
       asString: false // 返回 SVGElement 对象，方便提取 d 属性
     })
-    const roundedPathStr = svgFragment.getAttribute('d')
-    console.log(roundedPathStr)
-    // 5. 清理 Paper.js 内部状态（避免内存泄漏）
+    let roundedPathStr = ''
+    if (isSVGElement(svgFragment)) {
+      roundedPathStr = svgFragment.getAttribute('d')!
+    } else {
+      roundedPathStr = svgFragment
+    }
+    // const roundedPathStr = svgFragment.getAttribute('d')
+    // 7. 清理 Paper.js 内部状态（避免内存泄漏）
     paperFull.project.clear()
     paperFull.view.remove()
 
-    // 6. 返回处理后的路径字符串
+    // 8. 返回处理后的路径字符串
     return roundedPathStr
   } catch (error) {
     console.error('路径圆角处理失败：', error)

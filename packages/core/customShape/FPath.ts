@@ -17,7 +17,7 @@ import { createLinearGradient, createRadialGradient, wrapWithFireEvent, wrapWith
 import { switchPointFromLocalToContainer } from '../utils/mat'
 import svgPath from 'svgpath'
 
-import { roundCorners } from 'svg-round-corners'
+// import { roundCorners } from 'svg-round-corners'
 // import { roundPathCorners } from '../utils/roundPath'
 import { SVG } from '@svgdotjs/svg.js'
 import paperFull from 'paper/dist/paper-core'
@@ -246,6 +246,9 @@ export class FPath extends Path {
       const pathStr = pathToPathStr(this.path)
       // const newPathStr = roundCorners(pathStr, this.cornerRadius).path
       const newPathStr = roundPathCorners(pathStr, this.cornerRadius)
+      if (!newPathStr) {
+        throw new Error('roundPathCorners error')
+      }
       // 解析为 TSimplePathData, 参考 Path._setPath
       _path = util.makePathSimpler(util.parsePath(newPathStr))
     } else {

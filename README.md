@@ -95,3 +95,9 @@ Learn more about the recommended Project Setup and IDE Support in the [Vue Docs 
 | | 强制结束当前路径 | **Enter** 或 **Esc** 或 **Ctrl+点击空白** | 路径未闭合但需停止绘制 |
 | **高级控制** | 重新连接路径末端 | 移至末端锚点出现“/”时 **点击** | 之前路径已断开且当前选中钢笔 |
 | | 橡皮带预览（预看线条） | 在首选项中开启“启用橡皮带” | 无 |
+
+曲线圆角实现方案
+目前版本：
+ 使用paper.js 及其插件 paperjs-round-corners 实现 f(path, radius)=>newpath
+ 使用ai生成的获取path的最大圆角来限制 f 方法的圆角半径参数，避免其本身的当超出做大圆角时，
+ 被处理为无圆角的情况
