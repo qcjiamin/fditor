@@ -110,10 +110,6 @@
         // 保存完成
       }, timeout)
     })
-    // 配置自动保存
-    editor.on('history:update', () => {
-      eventBus.emit('config:save', 2000)
-    })
     await editor.useAll(
       WorkspacePlugin,
       SelectionPlugin,

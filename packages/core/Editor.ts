@@ -105,7 +105,6 @@ class Editor extends EventBus<EditorEventMap> {
       }
       this.stage.requestRenderAll()
       this.emit('node:modified', { target })
-      this.emit('history:update', undefined)
     })
     // 对象移动，缩放，文字编辑完成
     this.stage.on('object:modified', (options) => {
@@ -114,14 +113,12 @@ class Editor extends EventBus<EditorEventMap> {
         return
       }
       this.emit('node:modified', { target: options.target })
-      this.emit('history:update', undefined)
     })
     this.stage.on('object:added', () => {
       if (this.isSilence) {
         console.log('%cobject:added but silence', 'color: rgba(255, 0, 0); font-weight: bold')
         return
       }
-      this.emit('history:update', undefined)
     })
     this.stage.on('confirm:clip', async (clipFrame: ClipFrame) => {
       await this.confirmClip(clipFrame)
@@ -142,13 +139,11 @@ class Editor extends EventBus<EditorEventMap> {
 
     this.on('node:add', (target) => {
       this.emit('node:modified', { target })
-      this.emit('history:update', undefined)
     })
     // 删除使用自定义的事件
     this.on('node:remove', () => {
       //! 不同于属性修改，删除只需要更新history, 属性条修改会被 selection:clear 处理
       // this.emit('node:modified', { target })
-      this.emit('history:update', undefined)
     })
 
     // 自由会话时的鼠标样式继承父级元素的样式
@@ -252,7 +247,6 @@ class Editor extends EventBus<EditorEventMap> {
     if (!(selected instanceof ClipFrame)) return
     await selected.belong.confirmClip()
     this.emit('node:modified', { target: this.stage })
-    this.emit('history:update', undefined)
   }
   /** 取消裁剪 */
   public async cancelClip() {
