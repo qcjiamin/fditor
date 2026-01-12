@@ -7,7 +7,10 @@
   import { loadImage } from '@/utils/common'
   import { FImage, type Editor } from '@fditor/core'
   import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
+  import { useAddAndDeleteElement } from '@/stores/commands/addAndRemoveElement'
+  const { addElement } = useAddAndDeleteElement()
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const editor = inject(EditorKey) as Editor
   onMounted(async () => {})
   onBeforeUpdate(() => {
@@ -37,12 +40,14 @@
     const imgEl = await loadImage(src)
 
     const image = new FImage(imgEl)
+    image.scaleToWidth(300)
+    await addElement(image)
 
     // const image = new FImage(imgEl)
 
     // const image = new FabricImage(imgEl, {})
-    image.scaleToWidth(300)
-    editor.add(image)
+    // image.scaleToWidth(300)
+    // editor.add(image)
   }
 </script>
 

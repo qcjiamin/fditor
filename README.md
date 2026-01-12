@@ -101,3 +101,10 @@ Learn more about the recommended Project Setup and IDE Support in the [Vue Docs 
  使用paper.js 及其插件 paperjs-round-corners 实现 f(path, radius)=>newpath
  使用ai生成的获取path的最大圆角来限制 f 方法的圆角半径参数，避免其本身的当超出做大圆角时，
  被处理为无圆角的情况
+
+
+历史记录优化方案
+  当前逻辑：执行功能 -> 修改事件 -> history:update 添加histroy; 工程配置保存
+  修改逻辑：命令模式，将功能执行包装为命令
+           需要支持历史记录的状态放入统一的 reactive 来管理
+           do undo 需要处理异常的情况

@@ -1,11 +1,15 @@
+import type { Command, UndoableStates } from '@/stores/type'
 import type { BrushStyle, CanvasMode } from '@/types'
 import type { SaveState } from '@/utils/constants'
+import { isError } from '@/utils/typeHelper'
 import type { CanvasStates, ElementTypes } from '@/utils/types'
 import type { TabName } from '@/views/editer/components/sidebar/types'
 import type { subPenType } from '@fditor/core'
 import type { FabricObject } from 'fabric'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
+// import { undoableStates } from './undoableStates'
+
 const type2Type: Record<string, ElementTypes> = {
   circle: 'Shape',
   rect: 'Shape',
@@ -23,6 +27,88 @@ const type2Type: Record<string, ElementTypes> = {
 
 // 主要用于管理画布的状态
 export const useEditorStore = defineStore('editor', () => {
+  // const editor = inject(EditorKey) as Editor
+  // const canvas = editor.stage
+
+  const undoableStates: UndoableStates = reactive({
+    selectedId: '',
+    fillColor: '#ffffff',
+    strokeColor: '#000000'
+  })
+
+  const commandStack = ref<Command[]>([])
+  const currentIndex = ref(-1)
+  const maxHistory = ref(50)
+  const canUndo = computed(() => currentIndex.value >= 0)
+  const canRedo = computed(() => currentIndex.value < commandStack.value.length - 1)
+
+  watch(canUndo, (canUndo) => {
+    console.log('canUndo change', canUndo)
+  })
+
+  // todo 选中的元素只标记id。命令中不能保存深拷贝的对象
+  // const selected = computed(() => {
+  //   if (!undoableStates.selectedId || !canvas) return undefined
+  //   return canvas.getObjects().find((obj) => obj.id === undoableStates.selectedId)
+  // })
+
+  const takeSnapshot = () => ({ ...undoableStates })
+  const restoreSnapshot = (snap: UndoableStates) => Object.assign(undoableStates, snap)
+  /** 注册命令，并执行do */
+  const registerCommand = async (command: Command) => {
+    // ------ 步骤1：执行前准备：1.截断redo脏命令 2.生成【执行前全局快照】 3.初始化执行状态 ------
+    const isExecSuccess = ref(false) // 标记do是否执行成功
+    const preExecuteSnapshot = takeSnapshot() // ✅ 执行前全局状态快照：用于失败后回滚
+    // 原有逻辑：撤销后新增操作，截断指针后的redo命令
+    if (currentIndex.value < commandStack.value.length - 1) {
+      commandStack.value = commandStack.value.slice(0, currentIndex.value + 1)
+    }
+
+    try {
+      // ------ 步骤2：执行命令的do方法 ------
+      await command.do()
+      isExecSuccess.value = true // 执行成功，标记为true
+    } catch (error) {
+      // ------ 步骤3：捕获do执行失败的异常【核心兜底】 ------
+      isExecSuccess.value = false
+      console.error(`【命令执行失败】`, isError(error) ? error.message : error, command)
+      // ✅ 关键：执行失败 → 一键回滚到【执行前的所有状态】，无任何残留
+      restoreSnapshot(preExecuteSnapshot)
+      // ✅ 可选：抛出错误给业务层，方便组件做用户提示（如Toast）
+      throw new Error(`操作失败：${isError(error) ? error.message : error}`)
+    } finally {
+      // ------ 步骤4：最终判断：只有执行成功的命令，才推入命令栈！失败则拦截，不入库！ ------
+      if (isExecSuccess.value) {
+        commandStack.value.push(command)
+        // 原有逻辑：限制最大历史记录数
+        if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
+        currentIndex.value = commandStack.value.length - 1
+      }
+      // 执行失败：什么都不做，命令不会入栈，状态已回滚，无任何副作用
+    }
+  }
+  const undo = async () => {
+    if (!canUndo.value) return
+    const cmd = commandStack.value[currentIndex.value]
+    try {
+      await cmd.undo()
+    } catch (error) {
+      console.error(`【撤销失败】`, error)
+    }
+    currentIndex.value--
+  }
+  const redo = async () => {
+    if (!canRedo.value) return
+    currentIndex.value++
+    const cmd = commandStack.value[currentIndex.value]
+    // 可选：对redo也做异常捕获
+    try {
+      await cmd.do()
+    } catch (error) {
+      console.error(`【重做失败】`, error)
+    }
+  }
+
   const projectID = ref<number>()
   function setProjectID(val: number) {
     projectID.value = val
@@ -132,6 +218,14 @@ export const useEditorStore = defineStore('editor', () => {
     brushStyle,
     setBrushStyleByKey,
     penSubType,
-    setPenSubType
+    setPenSubType,
+    undoableStates,
+    canUndo,
+    canRedo,
+    takeSnapshot,
+    restoreSnapshot,
+    registerCommand,
+    undo,
+    redo
   }
 })

@@ -18,6 +18,7 @@
     PenPlugin
   } from '@fditor/core'
   import { useEditorStore } from '@/stores/editorStore'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   import HistoryPlugin from '@/pluginForEditor/HistoryPlugin/HistoryPlugin.ts'
   import CropPlugin from '@/pluginForEditor/CropPlugin/CropPlugin'
   import type { CanvasStates } from '@/utils/types'
@@ -116,7 +117,7 @@
     await editor.useAll(
       WorkspacePlugin,
       SelectionPlugin,
-      HistoryPlugin,
+      // HistoryPlugin,
       CropPlugin,
       LockPlugin,
       SnapPlugin,
