@@ -21,16 +21,6 @@ export default class SelectionPlugin extends BasePlugin {
     this.editor.stage.on('selection:created', () => this.handleSelectEvent())
     this.editor.stage.on('selection:updated', () => this.handleSelectEvent())
     this.editor.stage.on('selection:cleared', () => this.handleSelectEvent())
-
-    // this.editor.on('node:remove', (nodes) => {
-    //   console.log(nodes)
-    //   const nodesNow = this.tr.nodes()
-    //   this.tr.nodes(
-    //     nodes.filter((node) => {
-    //       return !nodesNow.includes(node)
-    //     })
-    //   )
-    // })
   }
 
   handleSelectEvent() {

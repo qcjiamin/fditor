@@ -13,6 +13,7 @@ import BasePlugin from './plugins/BasePlugin'
 import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, objectCommonProperties } from './utils/constant'
 import { isFirefox } from './utils/common'
 import { isFPenPath } from './utils/tsHelper'
+import { v4 as uuidv4 } from 'uuid'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
@@ -95,6 +96,8 @@ class Editor extends EventBus<EditorEventMap> {
       showGuideLine: true
     })
     // 6. 绑定事件
+    // def:modified object:modified => node:modified => 触发属性条修改
+
     // 事件分为 对fabric内部的事件代理 和业务事件
     //todo: 多场景的话，切换场景时动态绑定监听事件; 事件的绑定统一到方法中
     // 将添加、删除、旋转，统一触发自定义的修改事件
@@ -106,12 +109,13 @@ class Editor extends EventBus<EditorEventMap> {
       this.stage.requestRenderAll()
       this.emit('node:modified', { target })
     })
-    // 对象移动，缩放，文字编辑完成
+    // 对象移动，缩放,文字编辑完成
     this.stage.on('object:modified', (options) => {
       if (this.isSilence) {
         console.log('%cobject:modified but silence', 'color: rgba(255, 0, 0); font-weight: bold')
         return
       }
+      console.log(options)
       this.emit('node:modified', { target: options.target })
     })
     this.stage.on('object:added', () => {
@@ -135,15 +139,6 @@ class Editor extends EventBus<EditorEventMap> {
         this.emit('enter:penMode', undefined)
         options.target.enterSelectMode()
       }
-    })
-
-    this.on('node:add', (target) => {
-      this.emit('node:modified', { target })
-    })
-    // 删除使用自定义的事件
-    this.on('node:remove', () => {
-      //! 不同于属性修改，删除只需要更新history, 属性条修改会被 selection:clear 处理
-      // this.emit('node:modified', { target })
     })
 
     // 自由会话时的鼠标样式继承父级元素的样式
@@ -211,24 +206,21 @@ class Editor extends EventBus<EditorEventMap> {
 
   /** 业务逻辑方法，添加并选中元素 */
   public add(obj: FabricObject) {
-    // 添加
-    // this.stage.add(obj)
-    // 选中
-    // this.stage.setActiveObject(obj)
-    this._add(obj)
-    // this.stage._activeObject = obj
+    //! 临时绑定id, 目的是验证属性修改
+    obj.id = uuidv4()
+    this.stage.add(obj)
     this.stage.setActiveObject(obj)
-    // 触发修改事件和历史记录更新
-    this.emit('node:add', [obj])
     return this
   }
 
   /** 删除选中的对象 */
   public remove() {
+    //? 删除对象在history以命令模式重构后似乎不需要发出事件了，属性条切换会被select:change事件触发
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const removed = this.stage._removeSelected()
-    if (removed) {
-      this.emit('node:remove', removed)
-    }
+    // if (removed) {
+    //   this.emit('node:remove', removed)
+    // }
   }
 
   /**------ 裁剪方法 start ----- */
@@ -406,8 +398,6 @@ class Editor extends EventBus<EditorEventMap> {
       activeSelectionObj.setCoords()
       this.stage.setActiveObject(activeSelectionObj)
       this.render()
-      // 触发修改
-      this.emit('node:add', [])
     } else {
       this.add(instance as FabricObject)
     }

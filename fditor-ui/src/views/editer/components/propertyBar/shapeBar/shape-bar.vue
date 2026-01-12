@@ -8,11 +8,13 @@
   // todo 将core中定义的类型导出
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import { colorInstance2Info } from '@/utils/common'
-  import type { FabricObjectProps } from 'fabric'
+  import type { FabricObject, FabricObjectProps } from 'fabric'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import radiusProperty from '@/views/editer/components/propertyBar/components/radius-property.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import { isShape } from '@/utils/guard'
+  // import { useAttrModify } from '@/stores/commands/attrModify'
+  import { useModifyColor } from '@/stores/commands/modifyColor'
   // const props = defineProps<{
   //   foo?: string
   // }>()
@@ -67,11 +69,24 @@
   // 属性获取目前是在bar上，统一获取，分散到单一组件中，单独获取？
   useGetAttrs(getAttrs)
 
+  // const { modifyElementAttr } = useAttrModify()
+  const { modifyFill } = useModifyColor()
+  // 普通颜色修改
+  function changeColor(obj: FabricObject, type: 'fill' | 'stroke', val: colorVal) {
+    console.log('changeColor', val)
+    //? 第三个参数使用更新前的颜色值，刚好满足需求，因为其值在发生修改前是不变的
+    // modifyFill(obj, { [type]: val }, { [type]: attrs[type].value })
+    if (type === 'fill') {
+      modifyFill(obj, val, attrs.fill.value as colorVal)
+    }
+  }
+
   function updateFill(info: ColorInfo, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
     if (info.type === 'solid') {
       if (commit) {
-        shape.eset('fill', info.value, false)
+        // shape.eset('fill', info.value, false)
+        changeColor(shape, 'fill', info.value)
       } else {
         shape.set('fill', info.value)
       }
@@ -87,7 +102,8 @@
           ...gradientInfo.colors
         )
         if (commit) {
-          shape.eset('fill', gradient, false)
+          // shape.eset('fill', gradient, false)
+          changeColor(shape, 'fill', gradient)
         } else {
           shape.set('fill', gradient)
         }
@@ -100,7 +116,8 @@
           ...gradientInfo.colors
         )
         if (commit) {
-          shape.eset('fill', gradient, false)
+          // shape.eset('fill', gradient, false)
+          changeColor(shape, 'fill', gradient)
         } else {
           shape.set('fill', gradient)
         }

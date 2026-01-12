@@ -108,3 +108,4 @@ Learn more about the recommended Project Setup and IDE Support in the [Vue Docs 
   修改逻辑：命令模式，将功能执行包装为命令
            需要支持历史记录的状态放入统一的 reactive 来管理
            do undo 需要处理异常的情况
+           属性的修改分为被动和主动修改

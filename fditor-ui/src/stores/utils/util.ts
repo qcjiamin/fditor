@@ -17,3 +17,20 @@ export const isElementValid = (obj: FabricObject, canvas: FCanvas) => {
   const isObjInCanvas = canvas.getObjects().some((item) => item.id === obj.id)
   return isObjInCanvas
 }
+
+export function cloneValue<T>(value: T): T {
+  if (value == null) return value
+  if (typeof value !== 'object') return value
+
+  // 数组类型，序列化
+  if (Array.isArray(value)) {
+    return value.map(cloneValue) as T
+  }
+
+  // Fabric filter / shadow 等, 使用单独的方法
+  if ('toObject' in value) {
+    throw new Error('cloneValue: value is object')
+  }
+
+  return JSON.parse(JSON.stringify(value))
+}
