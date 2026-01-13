@@ -4,10 +4,10 @@
   import strokeProperty from '@/views/editer/components/propertyBar/components/stroke-property.vue'
   import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
-  import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
+  import { type colorVal, type Editor } from '@fditor/core'
   // todo 将core中定义的类型导出
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
-  import { colorInstance2Info } from '@/utils/common'
+  import { color2Instance, colorInstance2Info } from '@/utils/common'
   import type { FabricObject, FabricObjectProps } from 'fabric'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import radiusProperty from '@/views/editer/components/propertyBar/components/radius-property.vue'
@@ -15,6 +15,7 @@
   import { isShape } from '@/utils/guard'
   // import { useAttrModify } from '@/stores/commands/attrModify'
   import { useModifyColor } from '@/stores/commands/modifyColor'
+  import { useAttrModify } from '@/stores/commands/attrModify'
   // const props = defineProps<{
   //   foo?: string
   // }>()
@@ -70,99 +71,38 @@
   useGetAttrs(getAttrs)
 
   // const { modifyElementAttr } = useAttrModify()
-  const { modifyFill } = useModifyColor()
+  const { modifyFill, modifyStroke } = useModifyColor()
+  const { modifyElementAttr } = useAttrModify()
   // 普通颜色修改
   function changeColor(obj: FabricObject, type: 'fill' | 'stroke', val: colorVal) {
     console.log('changeColor', val)
     //? 第三个参数使用更新前的颜色值，刚好满足需求，因为其值在发生修改前是不变的
-    // modifyFill(obj, { [type]: val }, { [type]: attrs[type].value })
     if (type === 'fill') {
-      modifyFill(obj, val, attrs.fill.value as colorVal)
+      const oldVal = color2Instance(attrs.fill, obj.width, obj.height)
+      modifyFill(obj, val, oldVal)
+    } else if (type === 'stroke') {
+      const oldVal = color2Instance(attrs.stroke, obj.width, obj.height)
+      modifyStroke(obj, val, oldVal)
     }
   }
 
   function updateFill(info: ColorInfo, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
-    if (info.type === 'solid') {
-      if (commit) {
-        // shape.eset('fill', info.value, false)
-        changeColor(shape, 'fill', info.value)
-      } else {
-        shape.set('fill', info.value)
-      }
-    } else if (info.type === 'gradient') {
-      // 渐变，获取宽高后，重新设置其coords
-      const gradientInfo = info.value
-      if (gradientInfo.type === 'linear') {
-        const gradient = createLinearGradient(
-          'pixels',
-          gradientInfo.degree,
-          shape.width,
-          shape.height,
-          ...gradientInfo.colors
-        )
-        if (commit) {
-          // shape.eset('fill', gradient, false)
-          changeColor(shape, 'fill', gradient)
-        } else {
-          shape.set('fill', gradient)
-        }
-      } else if (gradientInfo.type === 'radial') {
-        const gradient = createRadialGradient(
-          'pixels',
-          gradientInfo.percent,
-          shape.width,
-          shape.height,
-          ...gradientInfo.colors
-        )
-        if (commit) {
-          // shape.eset('fill', gradient, false)
-          changeColor(shape, 'fill', gradient)
-        } else {
-          shape.set('fill', gradient)
-        }
-      }
+    const colorInstance = color2Instance(info, shape.width, shape.height)
+    if (commit) {
+      changeColor(shape, 'fill', colorInstance)
+    } else {
+      shape.set('fill', colorInstance)
     }
     editor.render()
   }
   function updateStroke(info: ColorInfo, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
-    if (info.type === 'solid') {
-      if (commit) {
-        shape.eset('stroke', info.value, false)
-      } else {
-        shape.set('stroke', info.value)
-      }
-    } else if (info.type === 'gradient') {
-      // 渐变，获取宽高后，重新设置其coords
-      const gradientInfo = info.value
-      if (gradientInfo.type === 'linear') {
-        const gradient = createLinearGradient(
-          'pixels',
-          gradientInfo.degree,
-          shape.width,
-          shape.height,
-          ...gradientInfo.colors
-        )
-        if (commit) {
-          shape.eset('stroke', gradient, false)
-        } else {
-          shape.set('stroke', gradient)
-        }
-      } else if (gradientInfo.type === 'radial') {
-        const gradient = createRadialGradient(
-          'pixels',
-          gradientInfo.percent,
-          shape.width,
-          shape.height,
-          ...gradientInfo.colors
-        )
-        if (commit) {
-          shape.eset('stroke', gradient, false)
-        } else {
-          shape.set('stroke', gradient)
-        }
-      }
+    const colorInstance = color2Instance(info, shape.width, shape.height)
+    if (commit) {
+      changeColor(shape, 'stroke', colorInstance)
+    } else {
+      shape.set('stroke', colorInstance)
     }
     editor.render()
   }
@@ -171,9 +111,7 @@
     const toAttrs: Partial<FabricObjectProps> = {}
     if (_dash[0] === -1) {
       // 删除stroke
-      toAttrs.strokeDashArray = null
-      toAttrs.stroke = null
-      toAttrs.strokeWidth = 0
+      modifyElementAttr(shape, { strokeDashArray: null, stroke: null, strokeWidth: 0 })
     } else {
       toAttrs.strokeDashArray = _dash
       if (!shape.stroke) {
@@ -184,8 +122,8 @@
         const w = Math.min(shape.width / 2, 2)
         toAttrs.strokeWidth = w
       }
+      modifyElementAttr(shape, toAttrs)
     }
-    shape.eset(toAttrs)
     editor.render()
   }
   function updateStrokeWidth(_strokeWidth: number, { commit }: updateColorOptions) {
@@ -205,8 +143,14 @@
       toAttrs.strokeDashArray = [-1]
     }
     if (commit) {
+      const oldVal = {
+        strokeDashArray: JSON.parse(JSON.stringify(attrs.dash)),
+        stroke: attrs.stroke.value,
+        strokeWidth: attrs.strokeWidth
+      } as unknown as Partial<FabricObjectProps>
       // preview set 会让要设置的值已经设置，强制不检查change
-      shape.eset(toAttrs, false)
+      // shape.eset(toAttrs, false)
+      modifyElementAttr(shape, toAttrs, oldVal, false)
     } else {
       shape.set(toAttrs)
     }

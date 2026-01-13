@@ -1,6 +1,14 @@
 import { AbortReason } from '@/utils/constants'
+import type { DefGradientOptions } from '@/utils/types'
 import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
-import { createLinearGradient, createRadialGradient, type colorVal } from '@fditor/core'
+import {
+  createLinearGradient,
+  createRadialGradient,
+  type colorVal,
+  type LinearGradient,
+  type RadialGradient
+} from '@fditor/core'
+import { Gradient } from 'fabric'
 import { mat3, vec2 } from 'gl-matrix'
 function add(a: number, b: number) {
   // const aa = 'abc'
@@ -72,9 +80,10 @@ export function colorInstance2Info(instance: colorVal): ColorInfo {
     }
   } else {
     if (instance.type === 'linear') {
-      const colors = instance.colorStops.map((val) => val.color)
-      const units = instance.gradientUnits
-      const degree = instance._degree
+      const linearGradient = instance as LinearGradient
+      const colors = linearGradient.colorStops.map((val) => val.color)
+      const units = linearGradient.gradientUnits
+      const degree = linearGradient._degree
       return {
         type: 'gradient',
         value: {
@@ -85,9 +94,10 @@ export function colorInstance2Info(instance: colorVal): ColorInfo {
         }
       }
     } else if (instance.type === 'radial') {
-      const colors = instance.colorStops.map((val) => val.color)
-      const units = instance.gradientUnits
-      const percent = instance._percent
+      const radialGradient = instance as RadialGradient
+      const colors = radialGradient.colorStops.map((val) => val.color)
+      const units = radialGradient.gradientUnits
+      const percent = radialGradient._percent
       return {
         type: 'gradient',
         value: {
@@ -136,6 +146,37 @@ export function createCssLinearGradient(angle = 0, ...colors: string[]) {
  */
 export function createCssRadialGradient(percent: number, ...colors: string[]) {
   return `radial-gradient(circle at ${percent * 100}% ${percent * 100}% ,${colors.toString()})`
+}
+
+/**
+ * 根据配置创建线性渐变对象，并挂载 _degree 属性
+ */
+export async function createGradientFromObject(obj: DefGradientOptions<'linear'>): Promise<LinearGradient>
+
+/**
+ * 根据配置创建径向渐变对象，并挂载 _percent 属性
+ */
+export async function createGradientFromObject(obj: DefGradientOptions<'radial'>): Promise<RadialGradient>
+
+/**
+ * 根据配置创建渐变对象（线性或径向）
+ */
+export async function createGradientFromObject(
+  obj: DefGradientOptions<'linear'> | DefGradientOptions<'radial'>
+): Promise<LinearGradient | RadialGradient> {
+  if (obj.type === 'linear') {
+    const linearObj = obj as DefGradientOptions<'linear'>
+    const gradient = (await Gradient.fromObject(linearObj)) as unknown as LinearGradient
+    // 为线性渐变挂载 _degree 属性
+    gradient._degree = linearObj._degree ?? 90
+    return gradient
+  } else {
+    const radialObj = obj as DefGradientOptions<'radial'>
+    const gradient = (await Gradient.fromObject(radialObj)) as unknown as RadialGradient
+    // 为径向渐变挂载 _percent 属性
+    gradient._percent = radialObj._percent ?? 0.5
+    return gradient
+  }
 }
 
 /**

@@ -1,6 +1,6 @@
 import { fontWeightMap } from '@/utils/constants'
 import { fontInfo } from '@/utils/fontinfo'
-import { FabricObject } from 'fabric'
+import { FabricObject, type GradientOptions, type GradientType } from 'fabric'
 
 export type Selected = FabricObject | undefined
 export enum ElementType {
@@ -25,6 +25,14 @@ export type ElementTypes = (typeof ElementTypeArr)[number]
 export const GradientTypeArr = ['linear90', 'linear180', 'linear135', 'radial50', 'radial0'] as const
 /** 渐变色预定义类型 */
 export type GradientTypes = (typeof GradientTypeArr)[number]
+
+type GradientExtraMap = {
+  linear: { _degree?: number }
+  radial: { _percent?: number }
+}
+
+/**  渐变对象序列化后的配置类型 */
+export type DefGradientOptions<T extends GradientType> = GradientOptions<T> & GradientExtraMap[T]
 
 // 从一个json对象，生成一个带类型提示的对象
 export type FontFamilyName = keyof typeof fontInfo
