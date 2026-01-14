@@ -56,7 +56,7 @@ export const useEditorStore = defineStore('editor', () => {
   const takeSnapshot = () => ({ ...undoableStates })
   const restoreSnapshot = (snap: UndoableStates) => Object.assign(undoableStates, snap)
   /** 注册命令，并执行do */
-  const registerCommand = async (command: Command) => {
+  const registerCommand = async (command: Command, immediately: boolean = true) => {
     // ------ 步骤1：执行前准备：1.截断redo脏命令 2.生成【执行前全局快照】 3.初始化执行状态 ------
     let isExecSuccess = false // 标记do是否执行成功
     const preExecuteSnapshot = takeSnapshot() // ✅ 执行前全局状态快照：用于失败后回滚
@@ -64,30 +64,39 @@ export const useEditorStore = defineStore('editor', () => {
     if (currentIndex.value < commandStack.value.length - 1) {
       commandStack.value = commandStack.value.slice(0, currentIndex.value + 1)
     }
-
-    try {
-      // ------ 步骤2：执行命令的do方法 ------
-      await command.do()
-      isExecSuccess = true // 执行成功，标记为true
-    } catch (error) {
-      // ------ 步骤3：捕获do执行失败的异常【核心兜底】 ------
-      isExecSuccess = false
-      console.error(`【命令执行失败】`, isError(error) ? error.message : error, command)
-      // ✅ 关键：执行失败 → 一键回滚到【执行前的所有状态】，无任何残留
-      restoreSnapshot(preExecuteSnapshot)
-      // ✅ 可选：抛出错误给业务层，方便组件做用户提示（如Toast）
-      throw new Error(`操作失败：${isError(error) ? error.message : error}`)
-    } finally {
-      // ------ 步骤4：最终判断：只有执行成功的命令，才推入命令栈！失败则拦截，不入库！ ------
-      if (isExecSuccess) {
-        commandStack.value.push(command)
-        // 原有逻辑：限制最大历史记录数
-        if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
-        currentIndex.value = commandStack.value.length - 1
-        //? 执行完成一次需要undo的操作后，一定需要触发保存工程配置事件
-        eventBus.emit('config:save', 2000)
+    if (immediately) {
+      try {
+        // ------ 步骤2：执行命令的do方法 ------
+        await command.do()
+        isExecSuccess = true // 执行成功，标记为true
+      } catch (error) {
+        // ------ 步骤3：捕获do执行失败的异常【核心兜底】 ------
+        isExecSuccess = false
+        console.error(`【命令执行失败】`, isError(error) ? error.message : error, command)
+        // ✅ 关键：执行失败 → 一键回滚到【执行前的所有状态】，无任何残留
+        restoreSnapshot(preExecuteSnapshot)
+        // ✅ 可选：抛出错误给业务层，方便组件做用户提示（如Toast）
+        throw new Error(`操作失败：${isError(error) ? error.message : error}`)
+      } finally {
+        // ------ 步骤4：最终判断：只有执行成功的命令，才推入命令栈！失败则拦截，不入库！ ------
+        if (isExecSuccess) {
+          commandStack.value.push(command)
+          // 原有逻辑：限制最大历史记录数
+          if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
+          currentIndex.value = commandStack.value.length - 1
+          //? 执行完成一次需要undo的操作后，一定需要触发保存工程配置事件
+          eventBus.emit('config:save', 2000)
+        }
+        // 执行失败：什么都不做，命令不会入栈，状态已回滚，无任何副作用
       }
-      // 执行失败：什么都不做，命令不会入栈，状态已回滚，无任何副作用
+    } else {
+      commandStack.value.push(command)
+      // 原有逻辑：限制最大历史记录数
+      if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
+      currentIndex.value = commandStack.value.length - 1
+      //? 执行完成一次需要undo的操作后，一定需要触发保存工程配置事件
+      //todo 选择事件不需要触发修改事件
+      eventBus.emit('config:save', 2000)
     }
   }
   const undo = async () => {

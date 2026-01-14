@@ -16,8 +16,6 @@
 
   function doGroup() {
     ;(editor.getActiveObject() as ActiveSelection).toGroup()
-    // 选中事件，修改事件
-    // editor.emit('selected:change', editor.getActiveObject())
     editor.render()
   }
 </script>

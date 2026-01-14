@@ -21,11 +21,6 @@ export const useEditor = () => {
     console.log(`%c${plugin.name} installed`, 'color: green')
   })
 
-  // editor.on('selected:change', (args) => {
-  //   console.log(args)
-  //   selected.value = args.now
-  //   // 通知当前选中的元素修改了
-  // })
   editor.use(WorkspacePlugin)
   // editor.use(SelectionPlugin)
   // editor.use(AlignPlugin)

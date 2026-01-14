@@ -32,11 +32,16 @@
   import PencilBar from '@/views/editer/components/propertyBar/pencilBar/pencil-bar.vue'
   import PenBar from '@/views/editer/components/propertyBar/penBar/pen-bar.vue'
   import { cursorMap } from '@/utils/cursor'
+  import { useSelect } from '@/stores/commands/useSelect'
+  import type { FabricObject } from 'fabric'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
 
   const editor = new Editor()
+  //! 注入editor实例放在前的位置，因为选择命令会用到editor实例
+  provide(EditorKey, editor)
+  const { setSelect } = useSelect(editor)
   let handler: ReturnType<typeof setTimeout>
   window.editor = editor
   onMounted(async () => {
@@ -52,12 +57,28 @@
     editor.on('layout:change', () => {
       editor.autoSize(containerSize.width, containerSize.height)
     })
+    console.log('绑定方法')
     // 选择事件
     editor.on('selected:change', (selected) => {
-      console.log('selected:change', selected)
       eventBus.emit('fontFamily:load:cancel')
+      const before = editorStore.selected as FabricObject | undefined
       editorStore.setSelected(selected)
+      //? 如果是undo redo 触发的选中事件，那么不处理
+      if (editor.isSilence) {
+        return
+      }
+      // 先记录之前选择的
+      // 再获取当前选择的
+      setSelect(before, selected)
+      // editorStore.setSelected(selected)
     })
+
+    // editor.on('selected:change', ({ after, before }) => {
+    //   console.log(after, before)
+    //   eventBus.emit('fontFamily:load:cancel')
+    //   const selected = Array.isArray(after) ? after[0] : after
+    //   editorStore.setSelected(selected)
+    // })
 
     editor.on('confirm:clip', () => {
       editorStore.setCvsState('normal')
@@ -149,7 +170,6 @@
   onUnmounted(() => {
     editor.dispose()
   })
-  provide(EditorKey, editor)
 
   const barTypeComponents: Record<CanvasStates, Component> = {
     normal: propertyBar,

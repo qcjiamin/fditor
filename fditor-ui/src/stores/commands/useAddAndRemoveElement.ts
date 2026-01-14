@@ -18,15 +18,24 @@ export const useAddAndDeleteElement = () => {
 
     editorStore.registerCommand({
       do: async () => {
-        editor.add(fabricObj)
+        // editor.add(fabricObj)
+        canvas.add(fabricObj)
+        canvas._setActiveObject(fabricObj)
+        editorStore.setSelected(fabricObj)
+        editor.render()
+
         // canvas.add(fabricObj)
         // canvas.setActiveObject(fabricObj)
         // editorStore.undoableStates.selectedId = fabricObj.id
         // editorStore.undoableStates.cvsState = 'edit'
       },
       undo: async () => {
-        canvas.remove(fabricObj)
-        // editorStore.restoreSnapshot(preSnap)
+        canvas._remove(fabricObj)
+        canvas._discardActiveObject()
+        editorStore.setSelected(undefined)
+        editor.render()
+
+        // canvas.remove(fabricObj)
       }
     })
   }

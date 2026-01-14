@@ -41,6 +41,7 @@ export const layoutDimensions: Record<Layout, { width: number; height: number }>
 }
 
 export interface EditorEventMap {
+  // 'selected:change': { after: FabricObject[] | FabricObject | null; before: FabricObject[] | FabricObject | null }
   'selected:change': FabricObject | undefined
   // 'canvas:resize': { width: number; height: number }
   'node:add': FabricObject[]
