@@ -1,17 +1,16 @@
 <script lang="ts" setup>
-  import { EditorKey } from '@/constants/injectKey'
-  import { FTextBox, type Editor } from '@fditor/core'
+  import { FTextBox } from '@fditor/core'
   import { FabricObject } from 'fabric'
-  import { inject } from 'vue'
   import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
+  import { useAddAndDeleteElement } from '@/stores/commands/useAddAndRemoveElement'
 
-  const editor = inject(EditorKey) as Editor
+  const { addElement } = useAddAndDeleteElement()
   function addText() {
     const text = new FTextBox('TEXT', {
       fontFamily: 'Noto Sans',
       fontSize: 100
     })
-    editor.add(text as FabricObject)
+    addElement(text as FabricObject)
   }
 </script>
 

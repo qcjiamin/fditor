@@ -12,8 +12,10 @@
     type SerializedLineProps
   } from 'fabric'
   import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
+  import { useAddAndDeleteElement } from '@/stores/commands/useAddAndRemoveElement'
 
   const editor = inject(EditorKey) as Editor
+  const { addElement } = useAddAndDeleteElement()
 
   type ShapeName = 'Rect' | 'Circle' | 'Line' | 'Triangle' | 'Hexagon'
 
@@ -53,7 +55,7 @@
   }
 
   function addShape(name: ShapeName) {
-    const config: Partial<CircleProps & RectProps & SerializedLineProps> = {
+    let config: Partial<CircleProps & RectProps & SerializedLineProps> = {
       fill: 'rgba(0, 255, 0, 1)',
       strokeWidth: 0
     }
@@ -70,51 +72,20 @@
         fill: 'rgba(255,0,0,1)'
       })
       editor.add(shape)
-      // const line = new Line([100, 100, 200, 100], {
-      //   stroke: 'blue',
-      //   strokeWidth: 10,
-      //   strokeUniform: true
-      // })
-      // editor.add(line)
       return
     } else if (name === 'Rect') {
-      const shape = new FRect({
-        fill: 'rgba(255,0,0,1)',
-        left: 100,
-        top: 100,
-        width: 400,
-        height: 200
-        // cornerRadius: 20
-      })
-      editor.add(shape)
-      return
+      config = { ...config, left: 100, top: 100, width: 300, height: 300 }
     } else if (name === 'Triangle') {
-      const shape = new FTriangle({
-        fill: 'rgba(255,0,0,1)',
-        left: 100,
-        top: 100,
-        width: 300,
-        height: 300
-        // cornerRadius: 20
-      })
-      editor.add(shape)
-      return
+      config = { ...config, left: 100, top: 100, width: 300, height: 300 }
     } else if (name === 'Hexagon') {
-      const shape = new FHexagon({
-        fill: 'rgba(255,0,0,1)',
-        left: 100,
-        top: 100
-        // cornerRadius: 20
-      })
-      editor.add(shape)
-      return
+      config = { ...config, left: 100, top: 100, width: 300, height: 300 }
     } else {
       config.width = 300
       config.height = 300
     }
 
     const shape = new shapeFactory[name](config)
-    editor.add(shape)
+    addElement(shape)
   }
 </script>
 

@@ -7,7 +7,7 @@
   import { loadImage } from '@/utils/common'
   import { FImage, type Editor } from '@fditor/core'
   import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
-  import { useAddAndDeleteElement } from '@/stores/commands/addAndRemoveElement'
+  import { useAddAndDeleteElement } from '@/stores/commands/useAddAndRemoveElement'
   const { addElement } = useAddAndDeleteElement()
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

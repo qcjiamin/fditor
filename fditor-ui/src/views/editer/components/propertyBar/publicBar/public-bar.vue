@@ -10,6 +10,9 @@
   import { Lock, Unlock, Delete, Orange } from '@element-plus/icons-vue'
   import positionProperty from '@/views/editer/components/propertyBar/publicBar/position-property.vue'
   import hotkeys from 'hotkeys-js'
+  import { useAlign } from '@/stores/commands/useAlign'
+
+  const { setAlign } = useAlign()
 
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
@@ -79,7 +82,9 @@
     const selected = editor.getActiveObject()
     //todo: 这里需要处理没有选中对象的异常
     if (!selected) return
-    selected.setAlign(type)
+
+    // selected.setAlign(type)
+    setAlign(selected, type, { left: selected.left, top: selected.top })
   }
 
   onMounted(() => {

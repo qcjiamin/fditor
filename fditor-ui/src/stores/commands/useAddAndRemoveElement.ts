@@ -9,7 +9,7 @@ import { inject } from 'vue'
 export const useAddAndDeleteElement = () => {
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
-  // ✅ 添加元素命令（你的核心场景）
+  // ✅ 添加元素命令
   const addElement = (fabricObj: FabricObject) => {
     const canvas = editor.stage
 
@@ -18,7 +18,8 @@ export const useAddAndDeleteElement = () => {
 
     editorStore.registerCommand({
       do: async () => {
-        canvas.add(fabricObj)
+        editor.add(fabricObj)
+        // canvas.add(fabricObj)
         // canvas.setActiveObject(fabricObj)
         // editorStore.undoableStates.selectedId = fabricObj.id
         // editorStore.undoableStates.cvsState = 'edit'

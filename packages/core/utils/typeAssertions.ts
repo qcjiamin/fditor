@@ -10,10 +10,10 @@ import SubSelect from '../plugins/PenPlugin/subSelect'
 export const isFiller = (filler: TFiller | string | null): filler is TFiller => {
   return !!filler && (filler as TFiller).toLive !== undefined
 }
-export function isRadialGradient(gradient: Gradient<'radial', 'radial'>): gradient is RadialGradient {
+export function isRadialGradient(gradient: Gradient<'radial'>): gradient is RadialGradient {
   return gradient.type === 'radial'
 }
-export function isLinearGradient(gradient: Gradient<'linear', 'linear'>): gradient is LinearGradient {
+export function isLinearGradient(gradient: Gradient<'linear'>): gradient is LinearGradient {
   return gradient.type === 'linear'
 }
 

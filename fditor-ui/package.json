@@ -19,6 +19,7 @@
     "fabric": "^6.6.4",
     "gl-matrix": "^3.4.3",
     "hotkeys-js": "^3.13.14",
+    "lodash": "^4.17.21",
     "mockjs": "^1.1.0",
     "paperjs-round-corners": "^0.0.10",
     "pinia": "^3.0.2",

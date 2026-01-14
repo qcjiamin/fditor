@@ -1,21 +1,18 @@
 <script lang="ts" setup>
   import { EditorKey } from '@/constants/injectKey'
-  import { computed, inject, reactive } from 'vue'
+  import { computed, inject, reactive, toRaw } from 'vue'
   import strokeProperty from '@/views/editer/components/propertyBar/components/stroke-property.vue'
   import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
   import { useGetAttrs } from '@/hooks/useGetAttrs'
-  import { type colorVal, type Editor } from '@fditor/core'
-  // todo 将core中定义的类型导出
+  import { FPath, type colorVal, type Editor } from '@fditor/core'
   import type { ColorInfo } from '@/views/editer/components/propertyBar/types'
   import { color2Instance, colorInstance2Info } from '@/utils/common'
-  import type { FabricObject, FabricObjectProps } from 'fabric'
+  import type { FabricObject } from 'fabric'
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import radiusProperty from '@/views/editer/components/propertyBar/components/radius-property.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import { isShape } from '@/utils/guard'
-  // import { useAttrModify } from '@/stores/commands/attrModify'
-  import { useModifyColor } from '@/stores/commands/modifyColor'
-  import { useAttrModify } from '@/stores/commands/attrModify'
+  import { useAttrModify } from '@/stores/commands/useModifyAttr'
   // const props = defineProps<{
   //   foo?: string
   // }>()
@@ -47,7 +44,8 @@
     radius: 0
   })
   const showStroke = computed(() => {
-    return Boolean(attrs.stroke.value)
+    // return Boolean(attrs.stroke.value)
+    return attrs.strokeWidth > 0
   })
   const showRadius = computed(() => {
     if (editorStore.selectType !== 'Shape') return false
@@ -70,19 +68,15 @@
   // 属性获取目前是在bar上，统一获取，分散到单一组件中，单独获取？
   useGetAttrs(getAttrs)
 
-  // const { modifyElementAttr } = useAttrModify()
-  const { modifyFill, modifyStroke } = useModifyColor()
-  const { modifyElementAttr } = useAttrModify()
-  // 普通颜色修改
+  const { modifyAttr } = useAttrModify()
   function changeColor(obj: FabricObject, type: 'fill' | 'stroke', val: colorVal) {
-    console.log('changeColor', val)
     //? 第三个参数使用更新前的颜色值，刚好满足需求，因为其值在发生修改前是不变的
     if (type === 'fill') {
       const oldVal = color2Instance(attrs.fill, obj.width, obj.height)
-      modifyFill(obj, val, oldVal)
+      modifyAttr(obj, { fill: val }, { fill: oldVal }, false)
     } else if (type === 'stroke') {
       const oldVal = color2Instance(attrs.stroke, obj.width, obj.height)
-      modifyStroke(obj, val, oldVal)
+      modifyAttr(obj, { stroke: val }, { stroke: oldVal }, false)
     }
   }
 
@@ -108,10 +102,11 @@
   }
   function updateDash(_dash: number[]) {
     const shape = editor.stage.getActiveObject()!
-    const toAttrs: Partial<FabricObjectProps> = {}
+    const toAttrs: Partial<FPath> = {}
     if (_dash[0] === -1) {
       // 删除stroke
-      modifyElementAttr(shape, { strokeDashArray: null, stroke: null, strokeWidth: 0 })
+      // modifyAttr(shape, { strokeDashArray: null, stroke: null, strokeWidth: 0 })
+      modifyAttr(shape, { strokeDashArray: null, strokeWidth: 0 })
     } else {
       toAttrs.strokeDashArray = _dash
       if (!shape.stroke) {
@@ -122,15 +117,15 @@
         const w = Math.min(shape.width / 2, 2)
         toAttrs.strokeWidth = w
       }
-      modifyElementAttr(shape, toAttrs)
+      modifyAttr(shape, toAttrs)
     }
     editor.render()
   }
   function updateStrokeWidth(_strokeWidth: number, { commit }: updateColorOptions) {
-    console.log(commit)
     const old = attrs.strokeWidth
     const shape = editor.stage.getActiveObject()!
-    const toAttrs: Partial<FabricObjectProps> = {}
+    if (!isShape(shape)) return
+    const toAttrs: Partial<FPath> = {}
     toAttrs.strokeWidth = _strokeWidth
     if (old === 0) {
       toAttrs.strokeDashArray = [0]
@@ -139,18 +134,20 @@
     if (_strokeWidth === 0) {
       //todo: 保留上一次的颜色值, 不要恢复成黑色
       // 清理掉stroke
-      toAttrs.stroke = null
+      // toAttrs.stroke = null
       toAttrs.strokeDashArray = [-1]
     }
     if (commit) {
-      const oldVal = {
-        strokeDashArray: JSON.parse(JSON.stringify(attrs.dash)),
-        stroke: attrs.stroke.value,
+      // stroke需要转换为颜色值
+      const oldStroke = color2Instance(attrs.stroke, shape.width, shape.height)
+      const oldVal: Partial<FPath> = {
+        strokeDashArray: toRaw(attrs.dash),
+        stroke: oldStroke,
         strokeWidth: attrs.strokeWidth
-      } as unknown as Partial<FabricObjectProps>
+      }
       // preview set 会让要设置的值已经设置，强制不检查change
       // shape.eset(toAttrs, false)
-      modifyElementAttr(shape, toAttrs, oldVal, false)
+      modifyAttr(shape, toAttrs, oldVal, false)
     } else {
       shape.set(toAttrs)
     }
@@ -159,8 +156,12 @@
   function updateRadius(val: number, { commit }: updateColorOptions) {
     console.log(val, commit)
     const shape = editor.stage.getActiveObject()!
+    if (!isShape(shape)) return
     if (commit) {
-      shape.eset('cornerRadius', val, false)
+      const oldVal: Partial<FPath> = {
+        cornerRadius: attrs.radius
+      }
+      modifyAttr(shape, { cornerRadius: val }, oldVal, false)
     } else {
       shape.set('cornerRadius', val)
     }
