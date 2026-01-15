@@ -1,3 +1,4 @@
+import { EditorKey } from '@/constants/injectKey'
 import { eventBus } from '@/events/eventBus'
 import type { Command, UndoableStates } from '@/stores/type'
 import type { BrushStyle, CanvasMode } from '@/types'
@@ -8,7 +9,9 @@ import type { TabName } from '@/views/editer/components/sidebar/types'
 import type { subPenType } from '@fditor/core'
 import type { FabricObject } from 'fabric'
 import { defineStore } from 'pinia'
+import { inject } from 'vue'
 import { computed, reactive, ref } from 'vue'
+import type Editor from '../../../packages/core/Editor'
 // import { undoableStates } from './undoableStates'
 
 const type2Type: Record<string, ElementTypes> = {
@@ -28,11 +31,12 @@ const type2Type: Record<string, ElementTypes> = {
 
 // 主要用于管理画布的状态
 export const useEditorStore = defineStore('editor', () => {
-  // const editor = inject(EditorKey) as Editor
-  // const canvas = editor.stage
+  const editor = inject(EditorKey) as Editor
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const canvas = editor.stage
 
   const undoableStates: UndoableStates = reactive({
-    selectedId: '',
+    selectedIds: [],
     fillColor: '#ffffff',
     strokeColor: '#000000'
   })
@@ -43,14 +47,10 @@ export const useEditorStore = defineStore('editor', () => {
   const canUndo = computed(() => currentIndex.value >= 0)
   const canRedo = computed(() => currentIndex.value < commandStack.value.length - 1)
 
-  // watch(canUndo, (canUndo) => {
-  //   console.log('canUndo change', canUndo)
-  // })
-
   // todo 选中的元素只标记id。命令中不能保存深拷贝的对象
   // const selected = computed(() => {
-  //   if (!undoableStates.selectedId || !canvas) return undefined
-  //   return canvas.getObjects().find((obj) => obj.id === undoableStates.selectedId)
+  //   if (!undoableStates.selectedIds.length || !canvas) return undefined
+  //   return canvas.getActiveObjectbyId
   // })
 
   const takeSnapshot = () => ({ ...undoableStates })

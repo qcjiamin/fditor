@@ -64,15 +64,7 @@
       // 先记录之前选择的
       // 再获取当前选择的
       setSelect(before, selected)
-      // editorStore.setSelected(selected)
     })
-
-    // editor.on('selected:change', ({ after, before }) => {
-    //   console.log(after, before)
-    //   eventBus.emit('fontFamily:load:cancel')
-    //   const selected = Array.isArray(after) ? after[0] : after
-    //   editorStore.setSelected(selected)
-    // })
 
     editor.on('confirm:clip', () => {
       editorStore.setCvsState('normal')

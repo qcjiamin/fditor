@@ -123,4 +123,5 @@ Learn more about the recommended Project Setup and IDE Support in the [Vue Docs 
      1. 命令的执行位置如果与editor的构建位置再同一个单元，需要传入editor，如useSelect
      2. editor的canvas是异步创建的，命令里要使用时，需要注意是否创建完成， 蓉useSelect, 需要在undo,redo 里动态获取canvas
      3. 如果有多场景的情况，stage需要参考activeSelection,保存id? 目前想到的是需要把场景切换加入栈
+     4. 如果要把对象保存到命令的闭包中，主要不要直接使用ref.value, 要使用toRaw拿到原始值
   选择方案3，优雅、方便、安全，且改动量小

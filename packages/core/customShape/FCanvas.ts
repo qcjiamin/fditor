@@ -108,6 +108,14 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
   getObjectByZIndex(idx: number) {
     return this.getObjects().find((obj) => obj.getZIndex() === idx) || null
   }
+  /** 查询id对应的元素，兼容多选对象 */
+  getObjectById(id: string): FabricObject | null {
+    const activeObj = this.getActiveObject()
+    if (activeObj && activeObj.id === id) {
+      return activeObj
+    }
+    return this.getObjects().find((obj) => obj.id === id) || null
+  }
   /** 插入元素，无事件触发 */
   _insertBefore(obj: FabricObject, desObj: FabricObject | null): FCanvas {
     const objects = this._objects

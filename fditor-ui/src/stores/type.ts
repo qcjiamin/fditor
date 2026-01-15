@@ -1,5 +1,5 @@
 export interface UndoableStates {
-  selectedId: string
+  selectedIds: string[]
   fillColor: string
   strokeColor: string
 }
