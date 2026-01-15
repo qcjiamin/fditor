@@ -13,7 +13,6 @@ import BasePlugin from './plugins/BasePlugin'
 import { DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE, objectCommonProperties } from './utils/constant'
 import { isFirefox } from './utils/common'
 import { isFPenPath } from './utils/tsHelper'
-import { v4 as uuidv4 } from 'uuid'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PluginConstructor<T extends BasePlugin = BasePlugin> = new (...args: any[]) => T
@@ -206,8 +205,6 @@ class Editor extends EventBus<EditorEventMap> {
 
   /** 业务逻辑方法，添加并选中元素 */
   public add(obj: FabricObject) {
-    //! 临时绑定id, 目的是验证属性修改
-    obj.id = uuidv4()
     this.stage.add(obj)
     this.stage.setActiveObject(obj)
     return this
@@ -280,7 +277,6 @@ class Editor extends EventBus<EditorEventMap> {
   public render(): void {
     const activeObj = this.stage.getActiveObject()
     if (activeObj) {
-      console.log('set coords')
       activeObj.setCoords()
     }
     this.stage.renderAll()

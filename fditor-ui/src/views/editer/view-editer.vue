@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { onMounted, onUnmounted, ref, useTemplateRef, watch, type Component } from 'vue'
+  import { onMounted, onUnmounted, ref, toRaw, useTemplateRef, watch, type Component } from 'vue'
   import editerHeader from './components/editer-header.vue'
   import editerSidebar from './components/sidebar/editer-sidebar.vue'
   import workspaceMain from './components/workspace/workspace-main.vue'
@@ -33,13 +33,12 @@
   import PenBar from '@/views/editer/components/propertyBar/penBar/pen-bar.vue'
   import { cursorMap } from '@/utils/cursor'
   import { useSelect } from '@/stores/commands/useSelect'
-  import type { FabricObject } from 'fabric'
+  import { FabricObject } from 'fabric'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
   const editorStore = useEditorStore()
 
   const editor = new Editor()
-  //! 注入editor实例放在前的位置，因为选择命令会用到editor实例
   provide(EditorKey, editor)
   const { setSelect } = useSelect(editor)
   let handler: ReturnType<typeof setTimeout>
@@ -57,16 +56,11 @@
     editor.on('layout:change', () => {
       editor.autoSize(containerSize.width, containerSize.height)
     })
-    console.log('绑定方法')
     // 选择事件
     editor.on('selected:change', (selected) => {
       eventBus.emit('fontFamily:load:cancel')
-      const before = editorStore.selected as FabricObject | undefined
+      const before = toRaw(editorStore.selected) as FabricObject | undefined
       editorStore.setSelected(selected)
-      //? 如果是undo redo 触发的选中事件，那么不处理
-      if (editor.isSilence) {
-        return
-      }
       // 先记录之前选择的
       // 再获取当前选择的
       setSelect(before, selected)
@@ -160,7 +154,6 @@
     // historyPlugin 添加第一条记录也用到此消息
     //! 画布的工作区调整之后，在记录初始历史
     setTimeout(() => {
-      console.log('ready')
       editor.emit('canvas:ready', null)
     }, 0)
   })
@@ -180,7 +173,6 @@
 
   const workspaceRef = useTemplateRef<HTMLElement>('workspace')
   onClickOutside(workspaceRef, () => {
-    console.log('click outside')
     if (editorStore.cvsState === 'clip') {
       editor.confirmClip()
       editorStore.setCvsState('normal')

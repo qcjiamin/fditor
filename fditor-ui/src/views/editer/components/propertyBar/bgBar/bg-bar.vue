@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { inject, onMounted, onUnmounted, onUpdated, reactive } from 'vue'
+  import { inject, onMounted, onUnmounted, reactive } from 'vue'
   import fillProperty from '@/views/editer/components/propertyBar/components/fill-property.vue'
   import { createLinearGradient, createRadialGradient, type colorVal, type Editor } from '@fditor/core'
   import { EditorKey } from '@/constants/injectKey'
@@ -20,7 +20,6 @@
   function getAttrs() {
     //! editor.stage 在初次进入时可能为空
     if (!editor.stage) return
-    console.log('get bg color')
     attrs.color = colorInstance2Info(editor.stage?.backgroundColor as colorVal)
   }
   useGetAttrs(getAttrs)
@@ -77,9 +76,6 @@
     getAttrs()
     editor.stage.renderAll()
   }
-  onUpdated(() => {
-    console.log(attrs.color)
-  })
 </script>
 
 <template>

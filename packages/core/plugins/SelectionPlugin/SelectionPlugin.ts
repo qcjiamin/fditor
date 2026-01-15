@@ -18,21 +18,24 @@ export default class SelectionPlugin extends BasePlugin {
     this.editor = editor
     this.editor.emit('plugin:installed', this)
 
-    this.editor.stage.on('selection:created', () => this.handleSelectEvent())
-    this.editor.stage.on('selection:updated', () => this.handleSelectEvent())
-    this.editor.stage.on('selection:cleared', () => this.handleSelectEvent())
-    // this.editor.stage.on('selection:created', ({ selected }) => {
-    //   console.log('selection:created', selected)
-    //   this.editor.emit('selected:change', { after: selected, before: null })
-    // })
-    // this.editor.stage.on('selection:updated', ({ selected, deselected }) => {
-    //   console.log('selection:updated', selected, deselected)
-    //   this.editor.emit('selected:change', { after: selected, before: deselected })
-    // })
-    // this.editor.stage.on('selection:cleared', ({ deselected }) => {
-    //   console.log('selection:cleared', deselected)
-    //   this.editor.emit('selected:change', { after: null, before: deselected })
-    // })
+    // this.editor.stage.on('selection:created', () => this.handleSelectEvent())
+    // this.editor.stage.on('selection:updated', () => this.handleSelectEvent())
+    // this.editor.stage.on('selection:cleared', () => this.handleSelectEvent())
+    this.editor.stage.on('selection:created', ({ selected }) => {
+      console.log('selection:created', selected)
+      this.handleSelectEvent()
+      // this.editor.emit('selected:change', { after: selected, before: null })
+    })
+    this.editor.stage.on('selection:updated', ({ selected, deselected }) => {
+      console.log('selection:updated', selected, deselected)
+      this.handleSelectEvent()
+      // this.editor.emit('selected:change', { after: selected, before: deselected })
+    })
+    this.editor.stage.on('selection:cleared', ({ deselected }) => {
+      console.log('selection:cleared', deselected)
+      this.handleSelectEvent()
+      // this.editor.emit('selected:change', { after: null, before: deselected })
+    })
   }
 
   handleSelectEvent() {

@@ -4,35 +4,37 @@ import type { Editor } from '@fditor/core'
 import { EditorKey } from '@/constants/injectKey'
 import { useEditorStore } from '@/stores/editorStore'
 import { type FabricObject } from 'fabric'
+import { getIdsFromObject, restoreSelection } from '@/stores/utils/util'
 
 // type ModifyAttrs = Partial<FabricObjectProps>
 export const useSelect = (instance?: Editor) => {
   const editorStore = useEditorStore()
   const editor = instance || (inject(EditorKey) as Editor)
-  // const canvas = editor.stage
-  //! 功能执行不能触发选择事件，不然会死循环，再次添加到历史记录中
+  // // 辅助函数：从对象中提取 ID 列表
   const setSelect = async (before: FabricObject | undefined, after: FabricObject | undefined) => {
+    // 1. 在命令创建时就提取 ID，而不是保存对象引用
+    const beforeIds = getIdsFromObject(before)
+    const afterIds = getIdsFromObject(after)
+
     editorStore.registerCommand(
       {
         do: async () => {
-          await editor.withSilence(() => {
-            if (after === undefined) {
-              editor.stage.discardActiveObject()
-            } else {
-              editor.stage.setActiveObject(after)
-            }
-            editor.render()
-          })
+          const obj = restoreSelection(afterIds, editor.stage)
+          if (obj) {
+            editor.stage.setActiveObject(obj)
+          } else {
+            editor.stage.discardActiveObject()
+          }
+          editor.stage.requestRenderAll()
         },
         undo: async () => {
-          await editor.withSilence(() => {
-            if (before === undefined) {
-              editor.stage.discardActiveObject()
-            } else {
-              editor.stage.setActiveObject(before)
-            }
-            editor.render()
-          })
+          const obj = restoreSelection(beforeIds, editor.stage)
+          if (obj) {
+            editor.stage.setActiveObject(obj)
+          } else {
+            editor.stage.discardActiveObject()
+          }
+          editor.stage.requestRenderAll()
         }
       },
       false

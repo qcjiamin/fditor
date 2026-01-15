@@ -17,7 +17,6 @@ import { predefineControlStyle, predefineOptions } from '../utils/aboutControl'
 import { FTextBox } from './FTextBox'
 import { initAligningGuidelines } from '../lib/aligning_guidelines'
 import { initCenteringGuidelines } from '../lib/centering_guidelines'
-import { v4 as uuidv4 } from 'uuid'
 
 // 排除 undefined 的 Partial
 type ControlNames = keyof ReturnType<typeof controlsUtils.createObjectDefaultControls> & string
@@ -93,10 +92,6 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
     this._objectsToRender = undefined
     this._objects.push(...objs)
     objs.forEach((obj) => {
-      //! 所有进入画布的对象都添加上 id, 每次使用 _add 都全新赋予 id, 避免复制粘贴导致重复的 id 产生
-      // if (!obj.id) {
-      obj.id = uuidv4()
-      // }
       obj.canvas = this as FCanvas
       obj.setCoords()
     })
@@ -121,10 +116,6 @@ export class FCanvas extends Canvas implements UniqueFCanvsProps {
     } else {
       const idx = desObj.getZIndex()
       objects.splice(idx, 0, obj)
-    }
-    //! 所有进入画布的对象都添加上 id
-    if (!obj.id) {
-      obj.id = uuidv4()
     }
     obj._set('canvas', this)
     obj.setCoords()

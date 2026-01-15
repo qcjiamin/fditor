@@ -18,7 +18,6 @@ export const useGetAttrs = (getAttrs: () => void) => {
   watch(
     () => editorStore.selected,
     () => {
-      console.log('selectedchange getattrs')
       getAttrs()
     }
   )

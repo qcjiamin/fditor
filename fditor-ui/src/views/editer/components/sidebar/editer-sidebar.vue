@@ -39,7 +39,6 @@
 
   // 切换tab 和 切换选中元素时，清理属性页设置
   watch([() => editorStore.selected, resourceRef], () => {
-    console.log('selectedchange clear setSidebarShowTab')
     editorStore.setSidebarShowTab('resource')
   })
   const positionStyle = reactive<CSSProperties>({

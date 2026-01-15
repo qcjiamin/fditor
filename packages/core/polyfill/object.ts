@@ -3,6 +3,7 @@ import type { HorizontalAlign, VerticalAlign } from '@fditor/core'
 import { FabricObject, Point } from 'fabric'
 import { isActiveSelection } from '../utils/typeAssertions'
 import { removeFromArray } from '../utils/common'
+import { v4 as uuidv4 } from 'uuid'
 
 declare module 'fabric' {
   export interface FabricObject {
@@ -17,6 +18,22 @@ declare module 'fabric' {
     bringForward(): void
     sendToBack(): void
     sendBackwards(): void
+  }
+}
+
+/** 重写FabricObject 构造函数一定会调用的setOptions, 让对象在构造时默认添加id 属性；
+ * 由于其本身是protected方法，因此转为any来绕过ts检测
+ */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore or cast to any to access protected method
+const originalSetOptions = (FabricObject.prototype as any).setOptions
+;(FabricObject.prototype as any).setOptions = function (options: Record<string, any>) {
+  // Call original method
+  originalSetOptions.call(this, options)
+
+  // Auto-generate ID if missing
+  if (!this.id) {
+    this.id = uuidv4()
   }
 }
 

@@ -8,7 +8,7 @@ import type { TabName } from '@/views/editer/components/sidebar/types'
 import type { subPenType } from '@fditor/core'
 import type { FabricObject } from 'fabric'
 import { defineStore } from 'pinia'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref } from 'vue'
 // import { undoableStates } from './undoableStates'
 
 const type2Type: Record<string, ElementTypes> = {
@@ -43,9 +43,9 @@ export const useEditorStore = defineStore('editor', () => {
   const canUndo = computed(() => currentIndex.value >= 0)
   const canRedo = computed(() => currentIndex.value < commandStack.value.length - 1)
 
-  watch(canUndo, (canUndo) => {
-    console.log('canUndo change', canUndo)
-  })
+  // watch(canUndo, (canUndo) => {
+  //   console.log('canUndo change', canUndo)
+  // })
 
   // todo 选中的元素只标记id。命令中不能保存深拷贝的对象
   // const selected = computed(() => {
@@ -55,52 +55,69 @@ export const useEditorStore = defineStore('editor', () => {
 
   const takeSnapshot = () => ({ ...undoableStates })
   const restoreSnapshot = (snap: UndoableStates) => Object.assign(undoableStates, snap)
+  /** 内部状态：是否正在执行命令（用于拦截副作用命令入栈） */
+  const isHistoryLocked = ref(false)
+
   /** 注册命令，并执行do */
   const registerCommand = async (command: Command, immediately: boolean = true) => {
-    // ------ 步骤1：执行前准备：1.截断redo脏命令 2.生成【执行前全局快照】 3.初始化执行状态 ------
-    let isExecSuccess = false // 标记do是否执行成功
-    const preExecuteSnapshot = takeSnapshot() // ✅ 执行前全局状态快照：用于失败后回滚
-    // 原有逻辑：撤销后新增操作，截断指针后的redo命令
+    // ------ 情况1：如果处于历史锁定期（即正在执行父命令），直接执行子命令但不入栈 ------
+    // if (isHistoryLocked.value) {
+    //   // 直接执行副作用命令（例如 setSelect），不记录历史，不触发保存
+    //   try {
+    //     await command.do()
+    //     console.log('⚡ 拦截副作用命令不入栈:', command)
+    //   } catch (error) {
+    //     // 副作用执行失败，通常不应中断主流程，但需记录
+    //     console.warn('⚡ 副作用命令执行失败:', error)
+    //   }
+    //   return // 直接返回，不走后续入栈逻辑
+    // }
+    if (isHistoryLocked.value) {
+      console.log('⚡ 拦截副作用命令不入栈:', command)
+      return
+    }
+
+    // ------ 情况2：正常执行主命令 ------
+    // 1. 上锁：标记开始执行
+    isHistoryLocked.value = true
+
+    // 2. 执行前准备：截断redo脏命令、生成快照
+    let isExecSuccess = false
+    const preExecuteSnapshot = takeSnapshot()
     if (currentIndex.value < commandStack.value.length - 1) {
       commandStack.value = commandStack.value.slice(0, currentIndex.value + 1)
     }
-    if (immediately) {
-      try {
-        // ------ 步骤2：执行命令的do方法 ------
+
+    try {
+      if (immediately) {
+        // 3. 执行命令的do方法
         await command.do()
-        isExecSuccess = true // 执行成功，标记为true
-      } catch (error) {
-        // ------ 步骤3：捕获do执行失败的异常【核心兜底】 ------
-        isExecSuccess = false
-        console.error(`【命令执行失败】`, isError(error) ? error.message : error, command)
-        // ✅ 关键：执行失败 → 一键回滚到【执行前的所有状态】，无任何残留
-        restoreSnapshot(preExecuteSnapshot)
-        // ✅ 可选：抛出错误给业务层，方便组件做用户提示（如Toast）
-        throw new Error(`操作失败：${isError(error) ? error.message : error}`)
-      } finally {
-        // ------ 步骤4：最终判断：只有执行成功的命令，才推入命令栈！失败则拦截，不入库！ ------
-        if (isExecSuccess) {
-          commandStack.value.push(command)
-          // 原有逻辑：限制最大历史记录数
-          if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
-          currentIndex.value = commandStack.value.length - 1
-          //? 执行完成一次需要undo的操作后，一定需要触发保存工程配置事件
-          eventBus.emit('config:save', 2000)
-        }
-        // 执行失败：什么都不做，命令不会入栈，状态已回滚，无任何副作用
       }
-    } else {
-      commandStack.value.push(command)
-      // 原有逻辑：限制最大历史记录数
-      if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
-      currentIndex.value = commandStack.value.length - 1
-      //? 执行完成一次需要undo的操作后，一定需要触发保存工程配置事件
-      //todo 选择事件不需要触发修改事件
-      eventBus.emit('config:save', 2000)
+      isExecSuccess = true
+    } catch (error) {
+      // 4. 捕获异常与回滚
+      isExecSuccess = false
+      console.error(`【命令执行失败】`, isError(error) ? error.message : error, command)
+      restoreSnapshot(preExecuteSnapshot)
+      throw new Error(`操作失败：${isError(error) ? error.message : error}`)
+    } finally {
+      // 5. 解锁：无论成功失败，必须释放锁
+      isHistoryLocked.value = false
+
+      // 6. 成功入栈
+      if (isExecSuccess) {
+        commandStack.value.push(command)
+        console.log('push commandStack', commandStack.value, command)
+        if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
+        currentIndex.value = commandStack.value.length - 1
+        eventBus.emit('config:save', 2000)
+      }
     }
   }
   const undo = async () => {
     if (!canUndo.value) return
+    // 锁定历史栈
+    isHistoryLocked.value = true
     const cmd = commandStack.value[currentIndex.value]
     let isExecSuccess = false
     try {
@@ -113,18 +130,31 @@ export const useEditorStore = defineStore('editor', () => {
       if (isExecSuccess) {
         eventBus.emit('config:save', 2000)
       }
+      // 解锁
+      isHistoryLocked.value = false
     }
     currentIndex.value--
   }
   const redo = async () => {
     if (!canRedo.value) return
+
     currentIndex.value++
     const cmd = commandStack.value[currentIndex.value]
-    // 可选：对redo也做异常捕获
+    // 锁定历史栈
+    isHistoryLocked.value = true
+    let isExecSuccess = false
     try {
       await cmd.do()
+      isExecSuccess = true
     } catch (error) {
+      isExecSuccess = false
       console.error(`【重做失败】`, error)
+    } finally {
+      if (isExecSuccess) {
+        eventBus.emit('config:save', 2000)
+      }
+      // 解锁
+      isHistoryLocked.value = false
     }
   }
 
@@ -144,14 +174,12 @@ export const useEditorStore = defineStore('editor', () => {
 
   const selected = ref<FabricObject | undefined>(undefined)
   function setSelected(val: FabricObject | undefined) {
-    console.log('selected change1', val)
     selected.value = val
   }
   const selectType = computed(() => {
     if (!selected.value) {
       return 'bg'
     } else {
-      console.log('selected change', selected.value.type)
       return type2Type[selected.value.type] as ElementTypes
     }
   })

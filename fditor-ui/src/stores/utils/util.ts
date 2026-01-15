@@ -1,7 +1,7 @@
 // src/fabric/utils/fabricUtil.js ✅ 纯工具函数，无组合式调用
 import { isGradient } from '@/utils/typeHelper'
-import { type FCanvas, type LinearGradient, type RadialGradient } from '@fditor/core'
-import { classRegistry, FabricObject } from 'fabric'
+import { isActiveSelection, type FCanvas, type LinearGradient, type RadialGradient } from '@fditor/core'
+import { ActiveSelection, Canvas, classRegistry, FabricObject } from 'fabric'
 import { cloneDeep } from 'lodash'
 
 // 画布校验 → 入参传入canvas，不再内部调用store
@@ -16,6 +16,10 @@ export const isCanvasReady = (canvas: FCanvas) => {
 // 元素校验 → 入参传入canvas和obj
 export const isElementValid = (obj: FabricObject, canvas: FCanvas) => {
   if (!obj || typeof obj.set !== 'function' || !obj.id) return false
+  //? AS在画布中不能用id查到
+  if (isActiveSelection(obj)) {
+    return true
+  }
   const isObjInCanvas = canvas.getObjects().some((item) => item.id === obj.id)
   return isObjInCanvas
 }
@@ -77,4 +81,41 @@ export const activateObject = async (value: any): Promise<any> => {
   }
   // 4. 默认处理：返回原始值
   return value
+}
+
+//! 针对多选对象的命令，需要保存id列表，执行功能时创建新的activeSelection对象
+/** 从对象中提取 ID 列表 */
+export const getIdsFromObject = (obj: FabricObject | undefined): string[] => {
+  if (!obj) return []
+  if (obj instanceof ActiveSelection) {
+    return obj.getObjects().map((o) => o.id)
+  }
+  return [obj.id]
+}
+
+// 辅助函数：根据 ID 列表恢复选中状态
+export const restoreSelection = (ids: string[], canvas: Canvas) => {
+  // 1. 找到所有存活的对象
+  const objects = canvas.getObjects().filter((obj) => ids.includes(obj.id))
+  if (objects.length === 0) {
+    return null
+  } else if (objects.length === 1) {
+    return objects[0]
+  } else {
+    // 2. 重建 ActiveSelection
+    const selection = new ActiveSelection(objects, { canvas })
+    return selection
+    // canvas.setActiveObject(selection)
+  }
+
+  // if (objects.length === 0) {
+  //   canvas.discardActiveObject()
+  // } else if (objects.length === 1) {
+  //   canvas.setActiveObject(objects[0])
+  // } else {
+  //   // 2. 重建 ActiveSelection
+  //   const selection = new ActiveSelection(objects, { canvas })
+  //   canvas.setActiveObject(selection)
+  // }
+  // canvas.requestRenderAll()
 }
