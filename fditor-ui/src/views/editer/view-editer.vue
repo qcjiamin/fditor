@@ -33,13 +33,14 @@
   import PenBar from '@/views/editer/components/propertyBar/penBar/pen-bar.vue'
   import { cursorMap } from '@/utils/cursor'
   import { useSelect } from '@/stores/commands/useSelect'
-  import { FabricObject } from 'fabric'
+  import { getIdsFromObject } from '@/stores/utils/util'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
-  const editorStore = useEditorStore()
 
   const editor = new Editor()
   provide(EditorKey, editor)
+  const editorStore = useEditorStore()
+  editorStore.setEditor(editor)
   const { setSelect } = useSelect(editor)
   let handler: ReturnType<typeof setTimeout>
   window.editor = editor
@@ -59,11 +60,14 @@
     // 选择事件
     editor.on('selected:change', (selected) => {
       eventBus.emit('fontFamily:load:cancel')
-      const before = toRaw(editorStore.selected) as FabricObject | undefined
-      editorStore.setSelected(selected)
+      const seletedIds = getIdsFromObject(selected)
+      const beforeIds = toRaw(editorStore.undoableStates.selectedIds)
+      if (!editorStore.isHistoryLocked) {
+        editorStore.setSelected(seletedIds)
+      }
       // 先记录之前选择的
       // 再获取当前选择的
-      setSelect(before, selected)
+      setSelect(beforeIds, seletedIds)
     })
 
     editor.on('confirm:clip', () => {

@@ -20,9 +20,12 @@ export const useAddAndDeleteElement = () => {
       do: async () => {
         editor.add(fabricObj)
         editor.render()
+        //? 添加的副作用-选中状态在selected:change中被锁拦截，需要主动做store切换
+        editorStore.setSelected([fabricObj.id])
       },
       undo: async () => {
         canvas.remove(fabricObj)
+        editorStore.setSelected([])
       }
     })
   }

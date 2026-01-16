@@ -1,4 +1,3 @@
-import { EditorKey } from '@/constants/injectKey'
 import { eventBus } from '@/events/eventBus'
 import type { Command, UndoableStates } from '@/stores/type'
 import type { BrushStyle, CanvasMode } from '@/types'
@@ -7,11 +6,11 @@ import { isError } from '@/utils/typeHelper'
 import type { CanvasStates, ElementTypes } from '@/utils/types'
 import type { TabName } from '@/views/editer/components/sidebar/types'
 import type { subPenType } from '@fditor/core'
-import type { FabricObject } from 'fabric'
 import { defineStore } from 'pinia'
-import { inject } from 'vue'
+import { shallowRef } from 'vue'
 import { computed, reactive, ref } from 'vue'
 import type Editor from '../../../packages/core/Editor'
+import { cloneDeep } from 'lodash'
 // import { undoableStates } from './undoableStates'
 
 const type2Type: Record<string, ElementTypes> = {
@@ -31,15 +30,22 @@ const type2Type: Record<string, ElementTypes> = {
 
 // 主要用于管理画布的状态
 export const useEditorStore = defineStore('editor', () => {
-  const editor = inject(EditorKey) as Editor
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const canvas = editor.stage
+  const editor = shallowRef<Editor | null>(null)
+  function setEditor(_editor: Editor) {
+    editor.value = _editor
+  }
 
-  const undoableStates: UndoableStates = reactive({
+  const undoableStates = reactive<UndoableStates>({
     selectedIds: [],
     fillColor: '#ffffff',
     strokeColor: '#000000'
   })
+  function setUndoableStates(val: Partial<UndoableStates>) {
+    Object.assign(undoableStates, val)
+  }
+  function setSelected(ids: string[]) {
+    undoableStates.selectedIds = cloneDeep(ids)
+  }
 
   const commandStack = ref<Command[]>([])
   const currentIndex = ref(-1)
@@ -47,11 +53,21 @@ export const useEditorStore = defineStore('editor', () => {
   const canUndo = computed(() => currentIndex.value >= 0)
   const canRedo = computed(() => currentIndex.value < commandStack.value.length - 1)
 
-  // todo 选中的元素只标记id。命令中不能保存深拷贝的对象
-  // const selected = computed(() => {
-  //   if (!undoableStates.selectedIds.length || !canvas) return undefined
-  //   return canvas.getActiveObjectbyId
-  // })
+  const selected = computed(() => {
+    if (!editor.value) return null
+    const canvas = editor.value.stage
+    if (!undoableStates.selectedIds.length || !canvas) return null
+    const id = undoableStates.selectedIds[0]
+    if (undoableStates.selectedIds.length === 1) {
+      return canvas.getObjectById(id)
+    } else {
+      // activeSelection
+      const obj = canvas.getObjectById(id)
+      if (!obj) return null
+      const group = obj.group
+      return group
+    }
+  })
 
   const takeSnapshot = () => ({ ...undoableStates })
   const restoreSnapshot = (snap: UndoableStates) => Object.assign(undoableStates, snap)
@@ -172,10 +188,10 @@ export const useEditorStore = defineStore('editor', () => {
     cvsState.value = val
   }
 
-  const selected = ref<FabricObject | undefined>(undefined)
-  function setSelected(val: FabricObject | undefined) {
-    selected.value = val
-  }
+  // const selected = ref<FabricObject | undefined>(undefined)
+  // function setSelected(val: FabricObject | undefined) {
+  //   selected.value = val
+  // }
   const selectType = computed(() => {
     if (!selected.value) {
       return 'bg'
@@ -246,6 +262,7 @@ export const useEditorStore = defineStore('editor', () => {
     cvsState,
     setCvsState,
     selected,
+    setUndoableStates,
     setSelected,
     selectType,
     inContinueModity,
@@ -273,6 +290,8 @@ export const useEditorStore = defineStore('editor', () => {
     restoreSnapshot,
     registerCommand,
     undo,
-    redo
+    redo,
+    isHistoryLocked,
+    setEditor
   }
 })
