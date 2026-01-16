@@ -11,6 +11,7 @@
   import positionProperty from '@/views/editer/components/propertyBar/publicBar/position-property.vue'
   import hotkeys from 'hotkeys-js'
   import { useAlign } from '@/stores/commands/useAlign'
+  import { useAttrModify } from '@/stores/commands/useModifyAttr'
 
   const { setAlign } = useAlign()
 
@@ -42,11 +43,15 @@
     attrs.vertical = positionInfo.v
   }
   useGetAttrs(getAttrs)
+  const { modifyAttr } = useAttrModify()
 
   function updateOpacity(_opacity: number, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
+    // const selectIds = editorStore.selected
+
     if (commit) {
-      shape.eset('opacity', _opacity, false)
+      modifyAttr(shape, { opacity: _opacity })
+      // shape.eset('opacity', _opacity, false)
     } else {
       shape.set('opacity', _opacity)
     }
