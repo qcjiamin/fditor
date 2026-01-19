@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import type { updateColorOptions } from '@/components/colorPicker/types'
   import { EditorKey } from '@/constants/injectKey'
-  import type { Editor, HorizontalAlign, VerticalAlign } from '@fditor/core'
+  import { isActiveSelection, isGroup, type Editor, type HorizontalAlign, type VerticalAlign } from '@fditor/core'
   import { computed, inject, onMounted, onUnmounted, reactive } from 'vue'
   import opacityProperty from '@/views/editer/components/propertyBar/publicBar/opacity-property.vue'
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
@@ -53,7 +53,11 @@
       modifyAttr(shape, { opacity: _opacity })
       // shape.eset('opacity', _opacity, false)
     } else {
-      shape.set('opacity', _opacity)
+      if (isActiveSelection(shape) || isGroup(shape)) {
+        shape.mapset('opacity', _opacity)
+      } else {
+        shape.set('opacity', _opacity)
+      }
     }
     editor.render()
   }

@@ -8,6 +8,13 @@ declare module 'fabric' {
     /** 解组，无事件触发。根据组上有无canvas,决定是否插入画布。插入位置为原组Zindex */
     _unGroup: () => void
     toActiveSelection: () => ActiveSelection
+    getSubObjsTypes: () => string[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mapset: (key: string, value: any) => this
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mapget: (key: string) => any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    emapset: (key: string, value: any) => this
   }
   // 扩展 Group 静态方法
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -18,6 +25,53 @@ declare module 'fabric' {
 
 function isGroup(obj: FabricObject | Group): obj is Group {
   return obj.type === 'group'
+}
+
+Group.prototype.getSubObjsTypes = function () {
+  const objs = this._objects || []
+  const types = objs.map((obj) => obj.type)
+  // 去重
+  return [...new Set(types)]
+}
+/* 将属性设置到组下的子对象上 */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+Group.prototype.mapset = function (key: string, value: any) {
+  const types = this.getSubObjsTypes()
+  if (types.length > 1) {
+    throw new Error('多选不同类型对象时不能设置属性')
+  }
+  const objs = this._objects || []
+  objs.forEach((obj) => {
+    obj._set(key, value)
+  })
+  return this
+}
+
+/** 多选或组批量设置属性到子元素，发出自定义修改事件 */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+Group.prototype.emapset = function (key: string, value: any) {
+  this.mapset(key, value)
+  if (this.canvas) {
+    // 设置定位或宽高之类的属性，需要重新计算范围矩阵
+    this.setCoords()
+    this.canvas.fire('def:modified', { target: this })
+  }
+  return this
+}
+
+/** 获取组下子元素的指定属性， 去重后返回*/
+Group.prototype.mapget = function (key: string) {
+  const types = this.getSubObjsTypes()
+  if (types.length > 1) {
+    throw new Error('多选不同类型对象时不能获取属性')
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const vals: any[] = []
+  const objs = this._objects || []
+  objs.forEach(function (object) {
+    vals.push(object.get(key))
+  })
+  return [...new Set(vals)]
 }
 
 Group.prototype._unGroup = function () {

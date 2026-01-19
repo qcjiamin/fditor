@@ -37,7 +37,6 @@ export const useAttrModify = () => {
 
     // 获取需要修改的对象列表
     const objects = isActiveSelection(targetObj) ? targetObj.getObjects() : [targetObj]
-
     // 1. 准备阶段：生成所有对象的变更快照
     for (const obj of objects) {
       if (!isElementValid(obj, canvas)) continue
@@ -57,6 +56,7 @@ export const useAttrModify = () => {
           _oldAttrSnapshot[key] = await serializeFabricValue(oldAttr[key as keyof FabricObject])
         }
       } else {
+        //todo 传入旧值， 理论上是数组，归一化，单个元素时也传入数组
         // 自动读取当前值作为旧值
         const keys = Object.keys(newAttr) as string[]
         for (const key of keys) {
@@ -83,8 +83,11 @@ export const useAttrModify = () => {
           for (const key in newAttr) {
             _activeNew[key] = await activateObject(newAttr[key])
           }
-          target.eset(_activeNew, checkChange)
+          target.set(_activeNew, checkChange)
+          // target.eset(_activeNew, checkChange)
         }
+        const _target = changes[0].target
+        canvas.fire('def:modified', { target: _target.group ? _target.group : _target })
         canvas.requestRenderAll()
       },
       undo: async () => {
@@ -94,8 +97,11 @@ export const useAttrModify = () => {
           for (const key in oldAttr) {
             _activeOld[key] = await activateObject(oldAttr[key])
           }
-          target.eset(_activeOld, checkChange)
+          // target.eset(_activeOld, checkChange)
+          target.set(_activeOld, checkChange)
         }
+        const _target = changes[0].target
+        canvas.fire('def:modified', { target: _target.group ? _target.group : _target })
         canvas.requestRenderAll()
       }
     })
