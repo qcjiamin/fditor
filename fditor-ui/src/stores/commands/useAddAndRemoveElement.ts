@@ -2,7 +2,7 @@
 import { EditorKey } from '@/constants/injectKey'
 import { useEditorStore } from '@/stores/editorStore'
 import { isCanvasReady, isElementValid } from '@/stores/utils/util'
-import type { Editor } from '@fditor/core'
+import { isActiveSelection, type Editor } from '@fditor/core'
 import type { FabricObject } from 'fabric'
 import { inject } from 'vue'
 
@@ -36,6 +36,9 @@ export const useAddAndDeleteElement = () => {
 
     if (!isCanvasReady(canvas) || !isElementValid(targetObj, canvas)) return
     // const preSnap = editorStore.takeSnapshot()
+    if (isActiveSelection(targetObj)) {
+      console.log('1')
+    }
 
     editorStore.registerCommand({
       do: async () => {

@@ -57,52 +57,6 @@ export const useAlign = () => {
         }
       }
     })
-
-    if (!ids.length) return
-    // if (ids.lengt === 1) {
-    // } else if (ids.length > 1) {
-    // }
-
-    if (targetObj instanceof ActiveSelection) {
-      const selection = targetObj as ActiveSelection
-      const objects = selection.getObjects()
-      const oldPositions = objects.map((obj) => ({
-        left: obj.left,
-        top: obj.top
-      }))
-
-      editorStore.registerCommand({
-        do: async () => {
-          // const selection = new ActiveSelection(objects, { canvas })
-          // canvas.setActiveObject(selection)
-          selection.setAlign(newAttr)
-        },
-        undo: async () => {
-          objects.forEach((obj, index) => {
-            const pos = oldPositions[index]
-            if (pos) {
-              obj.left = pos.left
-              obj.top = pos.top
-              obj.setCoords()
-            }
-          })
-          const selection = new ActiveSelection(objects, { canvas })
-          canvas.setActiveObject(selection)
-          canvas.requestRenderAll()
-        }
-      })
-      return
-    }
-
-    //! 属性都被序列化了，执行功能时再活化, 不能将对象保存在命令中
-    editorStore.registerCommand({
-      do: async () => {
-        targetObj.setAlign(newAttr)
-      },
-      undo: async () => {
-        targetObj.eset(oldAttr, checkChange)
-      }
-    })
   }
   return { setAlign }
 }

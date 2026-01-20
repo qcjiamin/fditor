@@ -12,14 +12,18 @@
   import hotkeys from 'hotkeys-js'
   import { useAlign } from '@/stores/commands/useAlign'
   import { useAttrModify } from '@/stores/commands/useModifyAttr'
+  import { useLock } from '@/stores/commands/useLock'
+  import { useAddAndDeleteElement } from '@/stores/commands/useAddAndRemoveElement'
 
   const { setAlign } = useAlign()
+  const { toggleLock } = useLock()
+  const { deleteElement } = useAddAndDeleteElement()
 
   const editorStore = useEditorStore()
   const editor = inject(EditorKey) as Editor
 
   interface PublicAttrs {
-    opacity: number
+    opacity: number | number[]
     lock: boolean
     horizontal: HorizontalAlign | ''
     vertical: VerticalAlign | ''
@@ -36,7 +40,7 @@
 
   function getAttrs() {
     const shape = editorStore.selected!
-    attrs.opacity = shape.opacity
+    attrs.opacity = isActiveSelection(shape) ? shape.mapget('opacity') : shape.opacity
     attrs.lock = shape.isLock()
     const positionInfo = shape.getAlign()
     attrs.horizontal = positionInfo.h
@@ -50,7 +54,15 @@
     // const selectIds = editorStore.selected
 
     if (commit) {
-      modifyAttr(shape, { opacity: _opacity })
+      let oldAttrs: number | { opacity: number }[] = 0
+      if (Array.isArray(attrs.opacity)) {
+        oldAttrs = attrs.opacity.map((val) => {
+          return { opacity: val }
+        })
+      } else {
+        oldAttrs = attrs.opacity
+      }
+      modifyAttr(shape, { opacity: _opacity }, oldAttrs)
       // shape.eset('opacity', _opacity, false)
     } else {
       if (isActiveSelection(shape) || isGroup(shape)) {
@@ -71,20 +83,17 @@
     }
   }
 
-  function toggleLock() {
+  function doToggleLock() {
     const selected = editorStore.selected
     if (!selected) {
       throw new Error('testLeft, but no object was selected ')
     }
-    if (selected.isLock()) {
-      selected.unlock()
-    } else {
-      selected.lock()
-    }
+    toggleLock(selected)
     // editor.render()
   }
   async function deleteObj() {
-    editor.remove()
+    deleteElement(editor.getActiveObject()!)
+    // editor.remove()
   }
 
   function updateAlign(type: HorizontalAlign | VerticalAlign) {
@@ -114,7 +123,11 @@
       :vertical="attrs.vertical"
       @update:align="updateAlign"
     ></position-property>
-    <opacity-property :opacity="attrs.opacity" tip="opacity" @update:opacity="updateOpacity"></opacity-property>
+    <opacity-property
+      :opacity="Array.isArray(attrs.opacity) ? attrs.opacity[0] : attrs.opacity"
+      tip="opacity"
+      @update:opacity="updateOpacity"
+    ></opacity-property>
     <property-normal-item tip="animate" :active="openAni" @click="toggleAnimate">
       <el-icon size="20">
         <Orange class="figma-icon"></Orange>
@@ -124,7 +137,7 @@
       v-if="showLockIcon"
       :active="attrs.lock"
       :tip="attrs.lock ? 'unlock' : 'lock'"
-      @click="toggleLock"
+      @click="doToggleLock"
     >
       <el-icon v-if="attrs.lock" size="20" color="#409EFF">
         <Lock class="figma-icon"></Lock>

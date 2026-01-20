@@ -83,6 +83,7 @@
   function updateFill(info: ColorInfo, { commit }: updateColorOptions) {
     const shape = editor.stage.getActiveObject()!
     const colorInstance = color2Instance(info, shape.width, shape.height)
+
     if (commit) {
       changeColor(shape, 'fill', colorInstance)
     } else {

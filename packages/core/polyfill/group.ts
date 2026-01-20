@@ -59,7 +59,7 @@ Group.prototype.emapset = function (key: string, value: any) {
   return this
 }
 
-/** 获取组下子元素的指定属性， 去重后返回*/
+/** 获取组下子元素的指定属性*/
 Group.prototype.mapget = function (key: string) {
   const types = this.getSubObjsTypes()
   if (types.length > 1) {
@@ -71,7 +71,9 @@ Group.prototype.mapget = function (key: string) {
   objs.forEach(function (object) {
     vals.push(object.get(key))
   })
-  return [...new Set(vals)]
+  return vals
+  //? 作为旧数据的缓存，不去重，如果业务上需要去重，自行处理
+  // return [...new Set(vals)]
 }
 
 Group.prototype._unGroup = function () {

@@ -6,6 +6,7 @@ import { isFCanvas } from '../utils/tsHelper'
 declare module 'fabric' {
   export interface ActiveSelection {
     toGroup(): Group
+    getAlign(): { h: HorizontalAlign | ''; v: VerticalAlign | '' }
     setAlign(align: HorizontalAlign | VerticalAlign): void
     /** 解除多选 */
     _unGroup(): void
@@ -81,6 +82,13 @@ ActiveSelection.prototype._unGroup = function () {
   })
   this.canvas._activeObject = undefined
   this.canvas.renderAll()
+}
+
+ActiveSelection.prototype.getAlign = function () {
+  return {
+    h: '',
+    v: ''
+  }
 }
 
 ActiveSelection.prototype.setAlign = function (align) {

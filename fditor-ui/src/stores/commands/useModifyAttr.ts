@@ -21,7 +21,7 @@ export const useAttrModify = () => {
     targetObj: T,
 
     newAttr: Partial<T> & Record<string, any>,
-    oldAttr: Partial<T> | null = null,
+    oldAttr: Partial<T> | Array<Partial<T> | null> | null = null,
     checkChange: boolean = true
   ) => {
     if (!isCanvasReady(canvas) || !isElementValid(targetObj, canvas) || !newAttr) return
@@ -37,8 +37,19 @@ export const useAttrModify = () => {
 
     // 获取需要修改的对象列表
     const objects = isActiveSelection(targetObj) ? targetObj.getObjects() : [targetObj]
+    // 统一归一化 oldAttr 为数组
+    let sourceOldAttrs: (Partial<T> | null)[] = []
+    if (Array.isArray(oldAttr)) {
+      sourceOldAttrs = oldAttr
+    } else if (oldAttr) {
+      sourceOldAttrs = [oldAttr]
+    } else {
+      sourceOldAttrs = new Array(objects.length).fill(null)
+    }
+
     // 1. 准备阶段：生成所有对象的变更快照
-    for (const obj of objects) {
+    for (let i = 0; i < objects.length; i++) {
+      const obj = objects[i]
       if (!isElementValid(obj, canvas)) continue
 
       // A. 准备新值快照
@@ -49,14 +60,15 @@ export const useAttrModify = () => {
 
       // B. 准备旧值快照
       const _oldAttrSnapshot: Record<string, any> = {}
-      if (oldAttr && !isActiveSelection(targetObj)) {
-        // 如果显式传入了 oldAttr 且是单选模式，使用传入值（多选模式下 oldAttr 通常不准确，需各自读取）
-        const keys = Object.keys(oldAttr) as string[]
+
+      const sourceOldAttr = sourceOldAttrs[i]
+
+      if (sourceOldAttr) {
+        const keys = Object.keys(sourceOldAttr) as string[]
         for (const key of keys) {
-          _oldAttrSnapshot[key] = await serializeFabricValue(oldAttr[key as keyof FabricObject])
+          _oldAttrSnapshot[key] = await serializeFabricValue(sourceOldAttr[key as keyof FabricObject])
         }
       } else {
-        //todo 传入旧值， 理论上是数组，归一化，单个元素时也传入数组
         // 自动读取当前值作为旧值
         const keys = Object.keys(newAttr) as string[]
         for (const key of keys) {
