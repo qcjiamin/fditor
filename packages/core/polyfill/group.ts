@@ -61,10 +61,10 @@ Group.prototype.emapset = function (key: string, value: any) {
 
 /** 获取组下子元素的指定属性*/
 Group.prototype.mapget = function (key: string) {
-  const types = this.getSubObjsTypes()
-  if (types.length > 1) {
-    throw new Error('多选不同类型对象时不能获取属性')
-  }
+  // const types = this.getSubObjsTypes()
+  // if (types.length > 1) {
+  //   throw new Error('多选不同类型对象时不能获取属性')
+  // }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const vals: any[] = []
   const objs = this._objects || []
