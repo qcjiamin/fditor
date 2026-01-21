@@ -13,9 +13,9 @@ import type { FabricObject } from 'fabric'
 //对象实例	clipPath / filters / shadow	专用 command
 
 // type ModifyAttrs = Partial<FabricObjectProps>
-export const useAttrModify = () => {
+export const useAttrModify = (instance?: Editor) => {
   const editorStore = useEditorStore()
-  const editor = inject(EditorKey) as Editor
+  const editor = instance || (inject(EditorKey) as Editor)
   const canvas = editor.stage
   const modifyAttr = async <T extends FabricObject>(
     targetObj: T,

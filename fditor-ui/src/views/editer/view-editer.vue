@@ -35,6 +35,9 @@
   import { useSelect } from '@/stores/commands/useSelect'
   import { getIdsFromObject } from '@/stores/utils/util'
 
+  import { getMatchedObject } from '@/utils/common'
+  import { useModifyHandle } from '@/stores/commands/useModifyHandle'
+
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
 
   const editor = new Editor()
@@ -42,6 +45,8 @@
   const editorStore = useEditorStore()
   editorStore.setEditor(editor)
   const { setSelect } = useSelect(editor)
+
+  const { modifyCommand } = useModifyHandle(editor)
   let handler: ReturnType<typeof setTimeout>
   window.editor = editor
   onMounted(async () => {
@@ -69,7 +74,14 @@
       // 再获取当前选择的
       setSelect(beforeIds, seletedIds)
     })
-
+    // 移动、旋转、缩放、文字编辑完成事件
+    editor.stage.on('object:modified', (options) => {
+      if (options.action && (options.action === 'rotate' || options.action === 'scale' || options.action === 'drag')) {
+        // 从target中取出original的所有属性，当做当前的状态
+        const newState = getMatchedObject(options.target, options.transform!.original)
+        modifyCommand(options.target, newState, options.transform!.original)
+      }
+    })
     editor.on('confirm:clip', () => {
       editorStore.setCvsState('normal')
     })
@@ -121,6 +133,7 @@
         // 保存完成
       }, timeout)
     })
+
     await editor.useAll(
       WorkspacePlugin,
       SelectionPlugin,

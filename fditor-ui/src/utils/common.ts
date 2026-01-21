@@ -236,5 +236,22 @@ export function createAbortableTaskQueueRunner<T extends unknown[], R = void>() 
 export function getDefKey() {
   return Symbol()
 }
+/** 根据目标对象的 key，提取来源对象中相同的 key 和 value，返回新的对象 */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getMatchedObject = <T extends Record<string, any>, U extends Record<string, any>>(
+  sourceObj: T,
+  targetKeysObj: U
+): Partial<T> => {
+  const targetKeys = Object.keys(targetKeysObj)
+  const result = {} as Partial<T>
+  targetKeys.forEach((key) => {
+    // 仅当 sourceObj 中存在该键时才赋值，避免 undefined
+    if (Object.prototype.hasOwnProperty.call(sourceObj, key)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(result as any)[key] = (sourceObj as any)[key]
+    }
+  })
+  return result
+}
 
 export { add }
