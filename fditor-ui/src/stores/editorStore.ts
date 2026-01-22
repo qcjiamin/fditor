@@ -254,6 +254,15 @@ export const useEditorStore = defineStore('editor', () => {
     penSubType.value = val
   }
 
+  // todo 将历史记录功能提取出来，放入单独模块
+  /** 保存变换前元素的几何属性 */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const originProps = ref<Record<string, any>[]>([])
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function setOriginProps(val: Record<string, any>[]) {
+    originProps.value = val
+  }
+
   return {
     projectID,
     setProjectID,
@@ -292,6 +301,8 @@ export const useEditorStore = defineStore('editor', () => {
     undo,
     redo,
     isHistoryLocked,
-    setEditor
+    setEditor,
+    originProps,
+    setOriginProps
   }
 })

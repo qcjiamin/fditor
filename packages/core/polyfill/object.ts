@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { HorizontalAlign, VerticalAlign } from '@fditor/core'
+import { layoutProps, type HorizontalAlign, type VerticalAlign } from '@fditor/core'
 import { FabricObject, Point } from 'fabric'
 import { isActiveSelection } from '../utils/typeAssertions'
 import { removeFromArray } from '../utils/common'
 import { v4 as uuidv4 } from 'uuid'
+import { pick } from 'lodash'
+import { util } from 'fabric'
 
 declare module 'fabric' {
   export interface FabricObject {
@@ -18,6 +20,7 @@ declare module 'fabric' {
     bringForward(): void
     sendToBack(): void
     sendBackwards(): void
+    getLayoutProps(): Partial<FabricObject>
   }
 }
 
@@ -240,4 +243,20 @@ FabricObject.prototype.sendBackwards = function () {
     this.canvas.sendObjectBackwards(this)
   }
   this.canvas.fire('def:modified', { target: this })
+}
+
+FabricObject.prototype.getLayoutProps = function () {
+  if (this.group) {
+    // 将自己坐标恢复到画布坐标
+    const originalProps = pick(this, layoutProps)
+
+    util.addTransformToObject(this, this.group.calcOwnMatrix())
+    const toProps = pick(this, layoutProps)
+
+    // 将自己坐标恢复到组内坐标
+    this.set(originalProps)
+    return toProps
+  } else {
+    return pick(this, layoutProps)
+  }
 }

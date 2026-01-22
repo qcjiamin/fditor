@@ -105,3 +105,5 @@ export interface Face {
 
 /** 钢笔工具的子类型 */
 export type subPenType = 'pen' | 'select' | 'curve'
+/** transform时需要记录的几何属性 */
+export const layoutProps = ['angle', 'flipX', 'flipY', 'left', 'scaleX', 'scaleY', 'skewX', 'skewY', 'top']

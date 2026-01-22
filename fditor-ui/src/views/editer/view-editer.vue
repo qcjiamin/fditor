@@ -15,7 +15,8 @@
     SelectionPlugin,
     SnapPlugin,
     WorkspacePlugin,
-    PenPlugin
+    PenPlugin,
+    isActiveSelection
   } from '@fditor/core'
   import { useEditorStore } from '@/stores/editorStore'
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,8 +35,6 @@
   import { cursorMap } from '@/utils/cursor'
   import { useSelect } from '@/stores/commands/useSelect'
   import { getIdsFromObject } from '@/stores/utils/util'
-
-  import { getMatchedObject } from '@/utils/common'
   import { useModifyHandle } from '@/stores/commands/useModifyHandle'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
@@ -74,12 +73,35 @@
       // 再获取当前选择的
       setSelect(beforeIds, seletedIds)
     })
+    editor.stage.on('before:transform', (options) => {
+      console.log(options)
+      // 此时记录变换前的所有子元素的状态
+      // 但是这个变换可能并不会有后续
+      const target = options.transform.target
+      if (isActiveSelection(target)) {
+        const objs = target._objects
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const props: Record<string, any>[] = []
+        objs.forEach((obj) => {
+          const itemOrigin = obj.getLayoutProps()
+          props.push(itemOrigin)
+        })
+        editorStore.setOriginProps(props)
+      } else {
+        const itemOrigin = target.getLayoutProps()
+        editorStore.setOriginProps([itemOrigin])
+      }
+    })
+    editor.stage.on('text:editing:entered', (options) => {
+      console.log(options)
+      editorStore.setOriginProps([{ text: options.target.text }])
+    })
     // 移动、旋转、缩放、文字编辑完成事件
     editor.stage.on('object:modified', (options) => {
       if (options.action && (options.action === 'rotate' || options.action === 'scale' || options.action === 'drag')) {
-        // 从target中取出original的所有属性，当做当前的状态
-        const newState = getMatchedObject(options.target, options.transform!.original)
-        modifyCommand(options.target, newState, options.transform!.original)
+        modifyCommand(options.target, editorStore.originProps)
+      } else {
+        modifyCommand(options.target, editorStore.originProps, true)
       }
     })
     editor.on('confirm:clip', () => {

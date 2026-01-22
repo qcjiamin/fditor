@@ -37,3 +37,6 @@ export const SaveState2ShowString = {
   saving: 'saving'
 } as const
 export type SaveState = keyof typeof SaveState2ShowString
+
+/** transform时需要记录的几何属性 */
+export const layoutProps = ['angle', 'flipX', 'flipY', 'left', 'scaleX', 'scaleY', 'skewX', 'skewY', 'top']
