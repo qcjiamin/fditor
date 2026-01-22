@@ -50,6 +50,11 @@ TODO
   - [ ] 对称
   - [ ] 曲线直接变为圆的边 arc
 - [ ] stroke 设置外部、居中、内部
+- [ ] 历史记录功能
+  - [ ] 检查属性前后是否修改
+  - [ ] 组内子对象操作的历史记录
+  - [ ] 类管理
+  - [ ] 放入core
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制
