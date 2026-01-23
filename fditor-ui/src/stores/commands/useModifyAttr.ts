@@ -22,6 +22,7 @@ export const useAttrModify = (instance?: Editor) => {
 
     newAttr: Partial<T> & Record<string, any>,
     oldAttr: Partial<T> | Array<Partial<T> | null> | null = null,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     checkChange: boolean = true
   ) => {
     if (!isCanvasReady(canvas) || !isElementValid(targetObj, canvas) || !newAttr) return
@@ -86,6 +87,7 @@ export const useAttrModify = (instance?: Editor) => {
 
     if (changes.length === 0) return
 
+    //todo 检查变更前后是否真的改变，来决定是否加入新的命令
     // 2. 执行阶段：注册聚合命令
     editorStore.registerCommand({
       do: async () => {
@@ -95,8 +97,7 @@ export const useAttrModify = (instance?: Editor) => {
           for (const key in newAttr) {
             _activeNew[key] = await activateObject(newAttr[key])
           }
-          target.set(_activeNew, checkChange)
-          // target.eset(_activeNew, checkChange)
+          target.set(_activeNew)
         }
         const _target = changes[0].target
         canvas.fire('def:modified', { target: _target.group ? _target.group : _target })
@@ -110,7 +111,7 @@ export const useAttrModify = (instance?: Editor) => {
             _activeOld[key] = await activateObject(oldAttr[key])
           }
           // target.eset(_activeOld, checkChange)
-          target.set(_activeOld, checkChange)
+          target.set(_activeOld)
         }
         const _target = changes[0].target
         canvas.fire('def:modified', { target: _target.group ? _target.group : _target })
