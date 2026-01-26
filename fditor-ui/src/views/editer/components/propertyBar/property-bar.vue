@@ -4,7 +4,6 @@
   import { computed, type Component } from 'vue'
   import bgBar from '@/views/editer/components/propertyBar/bgBar/bg-bar.vue'
   import ShapeBar from '@/views/editer/components/propertyBar/shapeBar/shape-bar.vue'
-  import historyBox from '@/views/editer/components/propertyBar/historyBar/history-box.vue'
   import publicBar from '@/views/editer/components/propertyBar/publicBar/public-bar.vue'
   import { useEditorStore } from '@/stores/editorStore'
   import textBar from '@/views/editer/components/propertyBar/textBar/text-bar.vue'
@@ -29,7 +28,6 @@
 
 <template>
   <div class="propertyBar">
-    <history-box></history-box>
     <!-- 条件渲染当前选中元素, 用key当做重新渲染的条件，因为同类元素切换，bar组件不会变 -->
     <component :is="barComponents[editorStore.selectType]" :key="editorStore.selected"></component>
     <public-bar v-if="showPublicRef"></public-bar>

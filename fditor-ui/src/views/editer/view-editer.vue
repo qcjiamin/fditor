@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { onMounted, onUnmounted, ref, toRaw, useTemplateRef, watch, type Component } from 'vue'
-  import editerHeader from './components/editer-header.vue'
+  import editerHeader from './components/header/editer-header.vue'
   import editerSidebar from './components/sidebar/editer-sidebar.vue'
   import workspaceMain from './components/workspace/workspace-main.vue'
   // import workspaceTimeline from './components/workspace/workspace-timeline.vue'

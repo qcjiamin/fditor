@@ -5,6 +5,8 @@
   import { EditorKey } from '@/constants/injectKey'
   import { Layout } from '@fditor/core'
   import { ArrowDown, Check } from '@element-plus/icons-vue'
+  import historyBox from '@/views/editer/components/header/components/history-box.vue'
+  import tipLabel from '@/views/editer/components/propertyBar/components/tip-label.vue'
 
   const editorStore = useEditorStore()
   const editor = inject(EditorKey)
@@ -65,6 +67,12 @@
   <div class="header">
     <div class="header-left">
       <div class="name">{{ editorStore.projectName }}</div>
+      <historyBox></historyBox>
+      <tip-label tip="test" shortcut="ctrl+z">
+        <template #anchor>
+          <div class="fillAnchor"> test </div>
+        </template>
+      </tip-label>
       <div class="saveState">{{ SaveState2ShowString[editorStore.saveState] }}</div>
     </div>
     <div class="header-center">
@@ -234,7 +242,9 @@
     padding: 8px;
     border-radius: 8px !important; // More square corners
     min-width: 240px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); // Figma-style shadow
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06); // Figma-style shadow
     border: 1px solid #e5e7eb; // Subtle border
 
     .el-dropdown-menu__item {
