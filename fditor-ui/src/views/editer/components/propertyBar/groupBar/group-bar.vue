@@ -7,6 +7,7 @@
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   // 从 public 目录导入 SVG
   import unGroupIcon from '@/assets/icons/groupbar/ungroup.svg'
+  import { useGroup } from '@/stores/commands/useGroup'
   // const props = defineProps<{
   //   foo?: string
   // }>()
@@ -15,9 +16,9 @@
   const editor = inject(EditorKey) as Editor
   // const editorStore = useEditorStore()
 
+  const { executeUnGroup } = useGroup()
   function unGroup() {
-    ;(editor.getActiveObject() as Group).toActiveSelection()
-    editor.render()
+    executeUnGroup(editor.getActiveObject() as Group)
   }
 </script>
 

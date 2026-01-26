@@ -36,9 +36,7 @@ export const useEditorStore = defineStore('editor', () => {
   }
 
   const undoableStates = reactive<UndoableStates>({
-    selectedIds: [],
-    fillColor: '#ffffff',
-    strokeColor: '#000000'
+    selectedIds: []
   })
   function setUndoableStates(val: Partial<UndoableStates>) {
     Object.assign(undoableStates, val)
@@ -69,8 +67,8 @@ export const useEditorStore = defineStore('editor', () => {
     }
   })
 
-  const takeSnapshot = () => ({ ...undoableStates })
-  const restoreSnapshot = (snap: UndoableStates) => Object.assign(undoableStates, snap)
+  // const takeSnapshot = () => ({ ...undoableStates })
+  // const restoreSnapshot = (snap: UndoableStates) => Object.assign(undoableStates, snap)
   /** 内部状态：是否正在执行命令（用于拦截副作用命令入栈） */
   const isHistoryLocked = ref(false)
 
@@ -99,7 +97,7 @@ export const useEditorStore = defineStore('editor', () => {
 
     // 2. 执行前准备：截断redo脏命令、生成快照
     let isExecSuccess = false
-    const preExecuteSnapshot = takeSnapshot()
+    // const preExecuteSnapshot = takeSnapshot()
     if (currentIndex.value < commandStack.value.length - 1) {
       commandStack.value = commandStack.value.slice(0, currentIndex.value + 1)
     }
@@ -114,7 +112,7 @@ export const useEditorStore = defineStore('editor', () => {
       // 4. 捕获异常与回滚
       isExecSuccess = false
       console.error(`【命令执行失败】`, isError(error) ? error.message : error, command)
-      restoreSnapshot(preExecuteSnapshot)
+      // restoreSnapshot(preExecuteSnapshot)
       throw new Error(`操作失败：${isError(error) ? error.message : error}`)
     } finally {
       // 5. 解锁：无论成功失败，必须释放锁
@@ -295,8 +293,8 @@ export const useEditorStore = defineStore('editor', () => {
     undoableStates,
     canUndo,
     canRedo,
-    takeSnapshot,
-    restoreSnapshot,
+    // takeSnapshot,
+    // restoreSnapshot,
     registerCommand,
     undo,
     redo,

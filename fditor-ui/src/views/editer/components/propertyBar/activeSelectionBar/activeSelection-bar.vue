@@ -7,16 +7,18 @@
   import propertyNormalItem from '@/views/editer/components/propertyBar/components/property-normal-item.vue'
   // import groupIcon from '/images/group.svg'
   import groupIcon from '@/assets/icons/groupbar/group.svg'
+  import { useGroup } from '@/stores/commands/useGroup'
   // const props = defineProps<{
   //   foo?: string
   // }>()
   // 每次修改都重新选中当前元素，触发onMounted 获取属性
   // or 修改属性后通知当前组件直接更新
   const editor = inject(EditorKey) as Editor
-
+  const { executeGroup } = useGroup()
   function doGroup() {
-    ;(editor.getActiveObject() as ActiveSelection).toGroup()
-    editor.render()
+    executeGroup(editor.getActiveObject() as ActiveSelection)
+    // ;(editor.getActiveObject() as ActiveSelection).toGroup()
+    // editor.render()
   }
 </script>
 
