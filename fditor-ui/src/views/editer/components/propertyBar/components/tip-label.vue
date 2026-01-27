@@ -1,14 +1,15 @@
 <script lang="ts" setup>
   import { useFloating, shift, autoUpdate, offset, flip } from '@floating-ui/vue'
-  import { nextTick, ref } from 'vue'
+  import { computed, nextTick, ref } from 'vue'
   import { watch } from 'vue'
   interface IPropertyItemProps {
     tip?: string
     shortcut?: string
     showBorder?: boolean
+    disabled?: boolean
   }
   const open = ref(false)
-  const { tip = '', shortcut = '', showBorder = false } = defineProps<IPropertyItemProps>()
+  const { tip = '', shortcut = '', showBorder = false, disabled = false } = defineProps<IPropertyItemProps>()
   const anchor = ref<HTMLDivElement>()
   const popRef = ref<HTMLDivElement>()
   const { floatingStyles, update, placement } = useFloating(anchor, popRef, {
@@ -16,6 +17,13 @@
     middleware: [offset(8), flip(), shift()],
     whileElementsMounted: autoUpdate
   })
+  const showTip = computed(() => {
+    if (disabled) {
+      return false
+    }
+    return open.value
+  })
+
   async function toggleOpen(val: boolean) {
     open.value = val
   }
@@ -31,14 +39,14 @@
   <div
     ref="anchor"
     class="anchorBox"
-    :class="{ active: open, showBorder: showBorder }"
+    :class="{ active: showTip, showBorder: showBorder }"
     @mouseenter="toggleOpen(true)"
     @mouseleave="toggleOpen(false)"
   >
     <slot name="anchor"></slot>
   </div>
   <Teleport to="body">
-    <div v-if="open" ref="popRef" class="popupTip" :style="floatingStyles" :data-placement="placement">
+    <div ref="popRef" :class="['popupTip', { active: showTip }]" :style="floatingStyles" :data-placement="placement">
       <slot name="popup">
         <!-- 默认内容 -->
         <div class="tooltip">
@@ -53,20 +61,20 @@
 
 <style scoped lang="scss">
   .popupTip {
-    z-index: 9999;
+    z-index: 30;
+    &.active .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
     .tooltip {
-      // position: absolute;
-      // bottom: 100%;
-      // left: 50%;
-      // transform: translateX(-50%) translateY(0);
       background-color: #1f2937; /* Dark gray/black bg */
       color: #ffffff;
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 12px;
       white-space: nowrap;
-      // opacity: 0;
-      // visibility: hidden;
+      opacity: 0;
+      visibility: hidden;
       pointer-events: none;
       transition: all 0.2s ease;
       display: flex;
@@ -80,6 +88,13 @@
         position: absolute;
         border-width: 4px;
         border-style: solid;
+      }
+      .label {
+        font-weight: 500;
+      }
+      .shortcut {
+        color: #9ca3af; /* Light gray for shortcut */
+        font-size: 11px;
       }
     }
 

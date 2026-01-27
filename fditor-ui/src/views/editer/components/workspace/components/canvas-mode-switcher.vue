@@ -5,12 +5,14 @@
   import type { CanvasMode } from '@/types'
   import { useEditorStore } from '@/stores/editorStore'
   import { storeToRefs } from 'pinia'
-  import { inject } from 'vue'
+  import { inject, watch } from 'vue'
   import { EditorKey } from '@/constants/injectKey'
   import type { Editor } from '@fditor/core'
+  // import { useChangeTool } from '@/stores/commands/useChangeTool'
 
   const editorStore = useEditorStore()
   const { canvasMode } = storeToRefs(editorStore)
+  // const { changeTool } = useChangeTool()
 
   const editor = inject(EditorKey) as Editor
 
@@ -21,30 +23,36 @@
   ]
 
   function changeMode(mode: CanvasMode) {
-    if (mode === canvasMode.value) return
-    // 先离开原有模式
-    if (canvasMode.value === 'pencil') editor.leavePencilMode()
-    if (canvasMode.value === 'pen') editor.leavePenMode()
-    // 进入新模式
-    if (mode === 'pencil') {
-      editor.enterPencilMode(editorStore.brushStyle.brushType)
-      if (!editor.stage.freeDrawingBrush) return
-      // 业务逻辑：将笔触的style设置进去
-      editor.stage.freeDrawingBrush.width = editorStore.brushStyle.lineWidth
-      editor.stage.freeDrawingBrush.color = editorStore.brushStyle.color
-    } else if (mode === 'pen') {
-      if (canvasMode.value === 'move') {
-        editor.stage.discardActiveObject()
-      } else if (canvasMode.value === 'pen') {
-        editor.leavePenMode()
-      }
-      editor.enterPenMode()
-    } else if (mode === 'move') {
-      editor.render()
-    }
-
+    // changeTool(mode)
+    editorStore.setCanvasMode(mode)
     console.log(`Canvas mode changed to: ${mode}`)
   }
+
+  watch(
+    () => canvasMode.value,
+    (newMode, oldMode) => {
+      // 先离开原有模式
+      if (oldMode === 'pencil') editor.leavePencilMode()
+      if (oldMode === 'pen') editor.leavePenMode()
+      // 进入新模式
+      if (newMode === 'pencil') {
+        editor.enterPencilMode(editorStore.brushStyle.brushType)
+        if (!editor.stage.freeDrawingBrush) return
+        // 业务逻辑：将笔触的style设置进去
+        editor.stage.freeDrawingBrush.width = editorStore.brushStyle.lineWidth
+        editor.stage.freeDrawingBrush.color = editorStore.brushStyle.color
+      } else if (newMode === 'pen') {
+        if (canvasMode.value === 'move') {
+          editor.stage.discardActiveObject()
+        } else if (canvasMode.value === 'pen') {
+          editor.leavePenMode()
+        }
+        editor.enterPenMode()
+      } else if (newMode === 'move') {
+        editor.render()
+      }
+    }
+  )
 </script>
 
 <template>

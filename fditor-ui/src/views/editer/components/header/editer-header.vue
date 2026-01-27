@@ -6,7 +6,6 @@
   import { Layout } from '@fditor/core'
   import { ArrowDown, Check } from '@element-plus/icons-vue'
   import historyBox from '@/views/editer/components/header/components/history-box.vue'
-  import tipLabel from '@/views/editer/components/propertyBar/components/tip-label.vue'
 
   const editorStore = useEditorStore()
   const editor = inject(EditorKey)
@@ -68,11 +67,6 @@
     <div class="header-left">
       <div class="name">{{ editorStore.projectName }}</div>
       <historyBox></historyBox>
-      <tip-label tip="test" shortcut="ctrl+z">
-        <template #anchor>
-          <div class="fillAnchor"> test </div>
-        </template>
-      </tip-label>
       <div class="saveState">{{ SaveState2ShowString[editorStore.saveState] }}</div>
     </div>
     <div class="header-center">

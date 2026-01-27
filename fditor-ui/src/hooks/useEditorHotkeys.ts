@@ -114,7 +114,7 @@ export function useEditorHotkeys(editor: Editor) {
         editor.leavePenMode()
       }
     } else if (editorStore.canvasMode === 'pencil') {
-      editor.leavePenMode()
+      editorStore.setCanvasMode('move')
     }
   })
 }

@@ -3,11 +3,11 @@
   import redoIcon from '@/assets/icons/historybar/redo.svg'
   import { useEditorStore } from '@/stores/editorStore'
   import { computed } from 'vue'
+  import tipLabel from '@/views/editer/components/propertyBar/components/tip-label.vue'
+  import { useHotkeys } from '@/hooks/useHotkeys'
   const editorStore = useEditorStore()
   const disableUndo = computed(() => !editorStore.canUndo)
   const disableRedo = computed(() => !editorStore.canRedo)
-
-  console.log(disableRedo, disableUndo)
   function undo() {
     if (!editorStore.canUndo) return
     editorStore.undo()
@@ -16,12 +16,34 @@
     if (!editorStore.canRedo) return
     editorStore.redo()
   }
-  const keys = ['ctrl', 'z']
+
+  useHotkeys('ctrl+z', () => {
+    undo()
+  })
+  useHotkeys('ctrl+shift+z', () => {
+    redo()
+  })
 </script>
 
 <template>
   <div class="historyBox">
-    <el-tooltip content="Undo (ctrl+z)" :trigger-keys="keys" :disabled="!editorStore.canUndo">
+    <tip-label tip="Undo" shortcut="ctrl+z" :disabled="!editorStore.canUndo">
+      <template #anchor>
+        <div ref="anchor" class="anchorBox" :class="{ disable: disableUndo }" @click="undo">
+          <undoIcon class="figma-icon"></undoIcon>
+        </div>
+      </template>
+      <!-- <undoIcon class="figma-icon"></undoIcon> -->
+    </tip-label>
+    <tip-label tip="Redo" shortcut="ctrl+shift+z" :disabled="!editorStore.canRedo">
+      <template #anchor>
+        <div ref="anchor" class="anchorBox" :class="{ disable: disableRedo }" @click="redo">
+          <redoIcon class="figma-icon"></redoIcon>
+        </div>
+      </template>
+    </tip-label>
+
+    <!-- <el-tooltip content="Undo (ctrl+z)" :trigger-keys="keys" :disabled="!editorStore.canUndo">
       <div ref="anchor" class="anchorBox" :class="{ disable: disableUndo }" @click="undo">
         <undoIcon class="figma-icon"></undoIcon>
       </div>
@@ -30,7 +52,7 @@
       <div ref="anchor" class="anchorBox" :class="{ disable: disableRedo }" @click="redo">
         <redoIcon class="figma-icon"></redoIcon>
       </div>
-    </el-tooltip>
+    </el-tooltip> -->
   </div>
 </template>
 

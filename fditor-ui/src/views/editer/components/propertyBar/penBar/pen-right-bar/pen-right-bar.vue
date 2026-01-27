@@ -17,7 +17,8 @@
   }
   function exitPen() {
     if (!editor.stage.pen) return
-    editor.leavePenMode()
+    // editor.leavePenMode()
+    editorStore.setCanvasMode('move')
   }
 </script>
 

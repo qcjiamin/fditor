@@ -36,6 +36,7 @@
   import { useSelect } from '@/stores/commands/useSelect'
   import { getIdsFromObject } from '@/stores/utils/util'
   import { useModifyHandle } from '@/stores/commands/useModifyHandle'
+  import { useAddAndDeleteElement } from '@/stores/commands/useAddAndRemoveElement'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
 
@@ -46,6 +47,7 @@
   const { setSelect } = useSelect(editor)
 
   const { modifyCommand } = useModifyHandle(editor)
+  const { addElement } = useAddAndDeleteElement(editor)
   let handler: ReturnType<typeof setTimeout>
   window.editor = editor
   onMounted(async () => {
@@ -96,6 +98,9 @@
       console.log(options)
       editorStore.setOriginProps([{ text: options.target.text }])
     })
+    editor.stage.on('path:created', (options) => {
+      addElement(options.path, false)
+    })
     // 移动、旋转、缩放、文字编辑完成事件
     editor.stage.on('object:modified', (options) => {
       if (options.action && (options.action === 'rotate' || options.action === 'scale' || options.action === 'drag')) {
@@ -116,22 +121,13 @@
       }
       editorStore.setPenSubType(newType)
     })
-    editor.on('enter:penMode', () => {
-      editorStore.setCanvasMode('pen')
-    })
-    editor.on('exit:penMode', () => {
-      editorStore.setCanvasMode('move')
-    })
     editor.on('enter:pencilMode', () => {
       console.log('enter pencil mode')
       // 设置cursor样式
       // editor.stage.setCursor(cursorMap.pencil)
       //? 画笔模式设置父容器，因为原生的mousemove事件里会修改cursor样式
       editor.stage.upperCanvasEl.parentElement!.style.cursor = cursorMap.pencil
-      editorStore.setCanvasMode('pencil')
-    })
-    editor.on('exit:pencilMode', () => {
-      editorStore.setCanvasMode('move')
+      // editorStore.setCanvasMode('pencil')
     })
     eventBus.addListener('config:save', (timeout) => {
       if (handler) {

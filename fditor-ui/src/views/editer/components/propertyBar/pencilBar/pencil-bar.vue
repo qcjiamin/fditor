@@ -40,7 +40,8 @@
     }
   )
   function exitPencil() {
-    editor.leavePencilMode()
+    editorStore.setCanvasMode('move')
+    // editor.leavePencilMode()
   }
 </script>
 

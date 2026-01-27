@@ -139,7 +139,6 @@ class Editor extends EventBus<EditorEventMap> {
         options.target.enterSelectMode()
       }
     })
-
     // 自由会话时的鼠标样式继承父级元素的样式
     this.stage.freeDrawingCursor = 'inherit'
     // window.fab = this.stage

@@ -7,11 +7,11 @@ import { isActiveSelection, type Editor } from '@fditor/core'
 import { ActiveSelection, type FabricObject } from 'fabric'
 import { inject } from 'vue'
 
-export const useAddAndDeleteElement = () => {
+export const useAddAndDeleteElement = (instance?: Editor) => {
   const editorStore = useEditorStore()
-  const editor = inject(EditorKey) as Editor
+  const editor = instance || (inject(EditorKey) as Editor)
   // ✅ 添加元素命令
-  const addElement = (fabricObj: FabricObject) => {
+  const addElement = (fabricObj: FabricObject, immediately: boolean = true) => {
     const canvas = editor.stage
 
     // if (!isCanvasReady(canvas) || !fabricObj) return
@@ -26,40 +26,44 @@ export const useAddAndDeleteElement = () => {
     addObjsInfo.push(item)
 
     // 目前添加仅支持单元素添加，多元素添加暂时没有需求
-    editorStore.registerCommand({
-      do: async () => {
-        for (let i = 0; i < addObjsInfo.length; i++) {
-          const item = addObjsInfo[i]
-          const instance = item.target
-          if (instance) {
-            canvas.add(instance)
-          } else {
-            throw new Error('undo delete 时实例化对象失败')
+    editorStore.registerCommand(
+      {
+        do: async () => {
+          for (let i = 0; i < addObjsInfo.length; i++) {
+            const item = addObjsInfo[i]
+            const instance = item.target
+            if (instance) {
+              canvas.add(instance)
+            } else {
+              throw new Error('undo delete 时实例化对象失败')
+            }
           }
+
+          const ids = addObjsInfo.map((item) => item.id)
+          const obj = restoreSelection(ids, canvas)
+          if (editorStore.canvasMode === 'move') {
+            if (obj) canvas.setActiveObject(obj)
+            //? 添加的副作用-选中状态在selected:change中被锁拦截，需要主动做store切换
+            editorStore.setSelected(ids)
+          }
+          editor.render()
+        },
+        undo: async () => {
+          const deleteObjs = addObjsInfo
+            .map((item) => {
+              return canvas.getObjectById(item.id)
+            })
+            .filter((obj): obj is FabricObject => obj != null)
+
+          canvas.remove(...deleteObjs)
+          canvas.discardActiveObject()
+          canvas.requestRenderAll()
+
+          editorStore.setSelected([])
         }
-
-        const ids = addObjsInfo.map((item) => item.id)
-        const obj = restoreSelection(ids, canvas)
-        if (obj) canvas.setActiveObject(obj)
-
-        editor.render()
-        //? 添加的副作用-选中状态在selected:change中被锁拦截，需要主动做store切换
-        editorStore.setSelected(ids)
       },
-      undo: async () => {
-        const deleteObjs = addObjsInfo
-          .map((item) => {
-            return canvas.getObjectById(item.id)
-          })
-          .filter((obj): obj is FabricObject => obj != null)
-
-        canvas.remove(...deleteObjs)
-        canvas.discardActiveObject()
-        canvas.requestRenderAll()
-
-        editorStore.setSelected([])
-      }
-    })
+      immediately
+    )
   }
 
   // ✅ 删除元素命令
@@ -111,9 +115,11 @@ export const useAddAndDeleteElement = () => {
         }
         const deleteObjIds = deleteInfos.map((item) => item.id)
         const obj = restoreSelection(deleteObjIds, canvas)
-        if (obj) editor.stage.setActiveObject(obj)
-        //todo UI逻辑，如何剥离？
-        editorStore.setSelected([...deleteObjIds])
+        if (editorStore.canvasMode === 'move') {
+          if (obj) editor.stage.setActiveObject(obj)
+          //todo UI逻辑，如何剥离？
+          editorStore.setSelected([...deleteObjIds])
+        }
       }
     })
   }
