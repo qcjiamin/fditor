@@ -59,7 +59,7 @@ export interface EditorEventMap {
   'historyIndex:update': void
   'confirm:clip': void
   'subPenType:change': { newType: subPenType }
-  'exit:penMode': void
+  'exit:penMode': FabricObject | undefined
   'enter:penMode': void
   'exit:pencilMode': void
   'enter:pencilMode': void

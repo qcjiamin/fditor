@@ -57,10 +57,12 @@ export default class SubPen extends BaseSubPen {
           selected: false
         })
         this.state = 'move'
+        pen.pushHistory()
       }
     } else {
       pen.clearSelcted()
       this._addPoint(pen, point, true)
+      pen.pushHistory()
     }
   }
   onMouseMove(pen: BasePen, point: Point): void {

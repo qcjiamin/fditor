@@ -53,6 +53,7 @@ TODO
 - [ ] 历史记录功能
   - [ ] 检查属性前后是否修改
   - [ ] 组内子对象操作的历史记录
+- [ ] 元素增删， 组操作，通知layer更新
   
 
 > svg 删除path上的 fill, 在<svg> 上添加 fill=currentColor 来实现颜色同步； 删除width height, 实现大小由外部控制

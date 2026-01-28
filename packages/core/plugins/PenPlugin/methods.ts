@@ -84,7 +84,8 @@ declare module '@fditor/core' {
 
 Editor.prototype.enterPenMode = function () {
   this.emit('enter:penMode', undefined)
-  this.stage.discardActiveObject()
+  // 取消选中但不触发选择修改事件，因为不想切换模式导致自动添加一次选中命令
+  this.stage._discardActiveObject()
   this.stage.renderAll()
   this.stage.pen = new BasePen(this.stage, 'pen')
 }
@@ -97,6 +98,7 @@ Editor.prototype.leavePenMode = function () {
   pen.clearSelcted()
   this.stage.setCursor('default')
   this.stage.pen = undefined
+  let penPath = undefined
   // 添加path到画布
   if (pen.segments.length > 0) {
     const pathstr = segmentsToPath(pen.segments, pen.points)
@@ -111,9 +113,11 @@ Editor.prototype.leavePenMode = function () {
       points: pen.points,
       segments: pen.segments
     })
-    this.add(path)
+    // 提交到UI层通过命令添加到画布
+    // this.add(path)
+    penPath = path
   }
-  this.emit('exit:penMode', undefined)
+  this.emit('exit:penMode', penPath)
 }
 
 declare module '@fditor/core' {

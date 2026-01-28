@@ -14,6 +14,7 @@ import PenPlugin from './plugins/PenPlugin/penPlugin'
 export * from './types/common/types'
 export * from './helper/index'
 export * from './utils/typeAssertions'
+export * from './plugins/PenPlugin/type'
 
 export * from './customShape/FImage'
 export * from './customShape/FCanvas'

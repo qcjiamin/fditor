@@ -3,7 +3,6 @@
  * 事件任然正常使用
  */
 
-import { Canvas } from 'fabric'
 import { ClipFrame } from '../customShape/ClipFrame'
 import { subPenType } from '@fditor/core'
 // import { CanvasEvents } from 'fabric'
@@ -27,6 +26,7 @@ declare module 'fabric' {
     'canvas:resize': void
     /** 切换钢笔子类型 */
     'subPenType:change': { newType: subPenType }
+    'pen:change': void
   }
 }
 

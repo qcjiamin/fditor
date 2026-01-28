@@ -2,12 +2,13 @@
 // 拖动点，要实现吸附效果成为必然，它能保证点的值相同
 // 钢笔状态下，hover的点从最后一个找。 绘制控制点时从最后一个开始绘制。因为hover和selected都挂载最后的点上，如果从前往后，控制点绘制时去重会使状态绘制不出来
 import { Canvas, Point, TBrushEventData } from 'fabric'
-import type { penPoint, penSegment } from './type'
+import type { penData, penPoint, penSegment } from './type'
 import { BaseSubPen } from './baseSubPen'
 import SubPen from './subPen'
 import SubSelect from './subSelect'
 import SubCurve from './subCurve'
 import { subPenType } from '@fditor/core'
+import cloneDeep from 'lodash/cloneDeep'
 export default class BasePen {
   #color: string = 'rgba(0, 0, 0, 1)'
   #width: number = 2
@@ -17,6 +18,8 @@ export default class BasePen {
   points: penPoint[] = []
   segments: penSegment[] = []
   subtypes: Record<subPenType, BaseSubPen>
+  pathHistory: penData[] = []
+  historyIndex = -1
 
   strokeLineCap: CanvasLineCap = 'butt'
   strokeLineJoin: CanvasLineJoin = 'miter'
@@ -75,6 +78,12 @@ export default class BasePen {
   set fill(val: string) {
     if (this.#fill === val) return
     this.#fill = val
+    this.currentSubTool._render(this)
+  }
+
+  restorePointAandSegments({ points, segments }: penData) {
+    this.points = cloneDeep(points)
+    this.segments = cloneDeep(segments)
     this.currentSubTool._render(this)
   }
 
@@ -140,15 +149,49 @@ export default class BasePen {
   }
 
   clearSelcted() {
+    let cleared = false
     this.points.forEach((point) => {
-      point.selected = false
+      if (point.selected) {
+        point.selected = false
+        cleared = true
+      }
     })
+    return cleared
   }
   clearHover() {
     const anchorPoint = this.points.filter((point) => point.role === 'anchor')
     anchorPoint.forEach((point) => {
       point.hover = false
     })
+  }
+
+  pushHistory() {
+    if (this.historyIndex < this.pathHistory.length - 1) {
+      this.pathHistory = this.pathHistory.slice(0, this.historyIndex + 1)
+    }
+
+    const _points = this.points.map((point) => {
+      point.hover = false
+      return point
+    })
+    this.pathHistory.push({ points: cloneDeep(_points), segments: cloneDeep(this.segments) })
+    this.historyIndex = this.pathHistory.length - 1
+    this.canvas.fire('pen:change', undefined)
+  }
+
+  undo() {
+    if (this.historyIndex > 0) {
+      this.historyIndex--
+      const history = this.pathHistory[this.historyIndex]
+      this.restorePointAandSegments(history)
+    }
+  }
+  redo() {
+    if (this.historyIndex < this.pathHistory.length - 1) {
+      this.historyIndex++
+      const history = this.pathHistory[this.historyIndex]
+      this.restorePointAandSegments(history)
+    }
   }
 
   onMouseDown(point: Point, { e }: TBrushEventData) {

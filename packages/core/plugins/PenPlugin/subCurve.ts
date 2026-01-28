@@ -65,8 +65,12 @@ export default class SubCurve extends BaseSubPen {
   onMouseUp(pen: BasePen, point: Point): void {
     // 点击空白处，清空选中
     if (!this.dragPoint && !this.clickAnchor) {
-      pen.clearSelcted()
+      const cleared = pen.clearSelcted()
+      if (cleared) pen.pushHistory()
     }
+
+    /** 拖拽控制点完成标记 */
+    const isDragEnd = Boolean(this.dragPoint)
 
     this.dragPoint = null
     const hoverPenPoint = pen.isOverPoint(point)
@@ -84,7 +88,6 @@ export default class SubCurve extends BaseSubPen {
         })
         hoverPenPoint.selected = false
         this._render(pen)
-        return
       } else {
         // 点在被点击时不是选中状态，清空其他选中，设置选中该点，然后初始化handle点，渲染
         pen.clearSelcted()
@@ -92,8 +95,13 @@ export default class SubCurve extends BaseSubPen {
         this._initHandlesForAnchor(pen, hoverPenPoint)
         this._render(pen)
       }
+      this.pen.pushHistory()
     }
     this.clickAnchor = null
+
+    if (isDragEnd) {
+      this.pen.pushHistory()
+    }
   }
 
   enter(pen: BasePen): void {

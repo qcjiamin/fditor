@@ -74,6 +74,7 @@ export const useEditorStore = defineStore('editor', () => {
 
   /** 注册命令，并执行do */
   const registerCommand = async (command: Command, immediately: boolean = true) => {
+    const storedCommand: Command = { type: command.type ?? 'normal', ...command }
     // ------ 情况1：如果处于历史锁定期（即正在执行父命令），直接执行子命令但不入栈 ------
     // if (isHistoryLocked.value) {
     //   // 直接执行副作用命令（例如 setSelect），不记录历史，不触发保存
@@ -87,7 +88,7 @@ export const useEditorStore = defineStore('editor', () => {
     //   return // 直接返回，不走后续入栈逻辑
     // }
     if (isHistoryLocked.value) {
-      console.log('⚡ 拦截副作用命令不入栈:', command)
+      console.log('⚡ 拦截副作用命令不入栈:', storedCommand)
       return
     }
 
@@ -120,7 +121,7 @@ export const useEditorStore = defineStore('editor', () => {
 
       // 6. 成功入栈
       if (isExecSuccess) {
-        commandStack.value.push(command)
+        commandStack.value.push(storedCommand)
         console.log('push commandStack', commandStack.value, command)
         if (commandStack.value.length > maxHistory.value) commandStack.value.shift()
         currentIndex.value = commandStack.value.length - 1
@@ -170,6 +171,20 @@ export const useEditorStore = defineStore('editor', () => {
       // 解锁
       isHistoryLocked.value = false
     }
+  }
+  /** 从尾部清理掉画笔历史记录 */
+  const clearPenPathHistory = async () => {
+    let min = commandStack.value.length - 1
+    for (let i = commandStack.value.length - 1; i >= 0; i--) {
+      if (commandStack.value[i].type === 'pen') {
+        min = i
+      } else {
+        break
+      }
+    }
+    commandStack.value = commandStack.value.slice(0, min)
+    console.log(commandStack.value)
+    console.log(currentIndex.value)
   }
 
   const projectID = ref<number>()
@@ -301,6 +316,7 @@ export const useEditorStore = defineStore('editor', () => {
     isHistoryLocked,
     setEditor,
     originProps,
-    setOriginProps
+    setOriginProps,
+    clearPenPathHistory
   }
 })

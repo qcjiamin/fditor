@@ -3,7 +3,10 @@ import type { FabricObject } from 'fabric'
 export interface UndoableStates {
   selectedIds: string[]
 }
+
+type commandType = 'normal' | 'pen'
 export interface Command {
+  type?: commandType
   do: () => Promise<void>
   undo: () => Promise<void>
 }

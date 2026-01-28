@@ -21,3 +21,8 @@ export type penSegment = {
   handleOut?: string
   selected: boolean
 }
+
+export type penData = {
+  points: penPoint[]
+  segments: penSegment[]
+}

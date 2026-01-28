@@ -38,13 +38,22 @@ export default class SubSelect extends BaseSubPen {
   }
 
   onMouseDown(pen: BasePen, point: Point): void {
-    pen.clearSelcted()
     // 是否点在控制点
     const hoverPenPoint = pen.isOverPoint(point)
     if (hoverPenPoint) {
+      const clickSelectedPoint = hoverPenPoint.selected
+      pen.clearSelcted()
       this.startPoint = point
       this.dragPoint = hoverPenPoint
       hoverPenPoint.selected = true
+      if (!clickSelectedPoint) {
+        pen.pushHistory()
+      }
+    } else {
+      const cleared = pen.clearSelcted()
+      if (cleared) {
+        pen.pushHistory()
+      }
     }
     this._render(pen)
   }
@@ -69,6 +78,14 @@ export default class SubSelect extends BaseSubPen {
     this._render(pen)
   }
   onMouseUp(pen: BasePen, point: Point): void {
+    if (this.dragPoint) {
+      const endPoint = pen.isOverPoint(point)
+      // 是否拖动并发生变化了
+      const changed = this.dragPoint !== endPoint
+      if (changed) {
+        pen.pushHistory()
+      }
+    }
     this.dragPoint = null
     this.startPoint = null
   }

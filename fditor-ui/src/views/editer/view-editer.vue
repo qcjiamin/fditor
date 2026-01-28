@@ -37,6 +37,7 @@
   import { getIdsFromObject } from '@/stores/utils/util'
   import { useModifyHandle } from '@/stores/commands/useModifyHandle'
   import { useAddAndDeleteElement } from '@/stores/commands/useAddAndRemoveElement'
+  import { usePenPath } from '@/stores/commands/usePenPath'
 
   const mainRef = ref<InstanceType<typeof workspaceMain>>(null!)
 
@@ -48,6 +49,8 @@
 
   const { modifyCommand } = useModifyHandle(editor)
   const { addElement } = useAddAndDeleteElement(editor)
+
+  const { penChange } = usePenPath(editor)
   let handler: ReturnType<typeof setTimeout>
   window.editor = editor
   onMounted(async () => {
@@ -109,8 +112,18 @@
         modifyCommand(options.target, editorStore.originProps, true)
       }
     })
+    // 钢笔工具的修改
+    editor.stage.on('pen:change', () => {
+      penChange()
+    })
     editor.on('confirm:clip', () => {
       editorStore.setCvsState('normal')
+    })
+    editor.on('exit:penMode', (path) => {
+      if (path) {
+        editorStore.clearPenPathHistory()
+        addElement(path)
+      }
     })
     editor.on('subPenType:change', ({ newType }) => {
       if (newType === 'pen') {
