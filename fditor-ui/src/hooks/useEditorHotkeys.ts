@@ -108,10 +108,11 @@ export function useEditorHotkeys(editor: Editor) {
         if (subTool.state === 'line') {
           subTool.chengeState('move')
         } else if (subTool.state === 'move') {
-          editor.leavePenMode()
+          editorStore.setCanvasMode('move')
         }
       } else if (subTool.type === 'select') {
-        editor.leavePenMode()
+        editorStore.setCanvasMode('move')
+        // editor.leavePenMode()
       }
     } else if (editorStore.canvasMode === 'pencil') {
       editorStore.setCanvasMode('move')

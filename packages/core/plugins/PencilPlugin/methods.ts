@@ -26,7 +26,7 @@ Editor.prototype.enterPencilMode = function (lastBrush?: brushType) {
   const initBrush = new brushConstructorMap[initBrushType](this.stage)
   this.stage.freeDrawingBrush = initBrush
   // 清除画布的选中状态
-  this.stage.discardActiveObject()
+  this.stage._discardActiveObject()
   this.render()
   this.emit('enter:pencilMode', undefined)
 }
