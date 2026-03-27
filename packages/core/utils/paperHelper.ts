@@ -185,10 +185,10 @@ export function roundPathCorners(pathStr: string, radius: number) {
     const path = new paperFull.Path(pathStr)
 
     // 3. 计算该路径的最大可用圆角半径
-    const maxRadius = calculateMaxRadiusForPath(path)
+    const maxRadius = calculateMaxRadiusForPath(path) - 1
 
     // 4. 将输入的半径限制在最大值范围内
-    const clampedRadius = Math.min(radius, maxRadius)
+    const clampedRadius = Math.min(radius, maxRadius < 0 ? 0 : maxRadius)
 
     // 如果半径被限制了,在开发环境下输出提示信息
     if (clampedRadius < radius && process.env.NODE_ENV === 'development') {
