@@ -17,6 +17,7 @@
     "@types/uuid": "^10.0.0",
     "events": "^3.3.0",
     "fabric": "^6.6.4",
+    "mediabunny": "^1.40.1",
     "paper": "^0.12.18",
     "svg-round-corners": "^0.4.3",
     "svgpath": "^2.6.0",
