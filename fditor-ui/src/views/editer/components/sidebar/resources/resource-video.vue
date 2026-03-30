@@ -1,14 +1,22 @@
 <script lang="ts" setup>
   import { onMounted } from 'vue'
   import resourceHeader from '@/views/editer/components/sidebar/resources/components/resource-header.vue'
-
+  import { FVideo } from '@fditor/core'
+  import { useAddAndDeleteElement } from '@/stores/commands/useAddAndRemoveElement'
+  const { addElement } = useAddAndDeleteElement()
   onMounted(() => {})
+
+  async function addVideo() {
+    const video = await FVideo.fromUrl('https://remotion.media/BigBuckBunny.mp4', {})
+    await addElement(video)
+  }
 </script>
 
 <template>
   <div class="resource-container">
     <resource-header class="header" title="Video"></resource-header>
     <div class="content-block">
+      <button @click="addVideo">测试视频</button>
       <div class="placeholder-content">
         <div class="placeholder-icon">▶</div>
         <div class="placeholder-text">Video resources will appear here</div>

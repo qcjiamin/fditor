@@ -25,5 +25,6 @@ export * from './customShape/FRect'
 export * from './customShape/FTriangle'
 export * from './customShape/FHexagon'
 export * from './customShape/FPenPath'
+export * from './customShape/FVideo'
 
 export { Editor, WorkspacePlugin, AlignPlugin, SelectionPlugin, LockPlugin, SnapPlugin, PencilPlugin, PenPlugin }
